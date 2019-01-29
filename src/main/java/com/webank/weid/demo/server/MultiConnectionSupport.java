@@ -1,5 +1,5 @@
 /*
- *       Copyright© (2018) WeBank Co., Ltd.
+ *       Copyright© (2019) WeBank Co., Ltd.
  *
  *       This file is part of weidentity-sample.
  *
@@ -17,7 +17,7 @@
  *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.webank.demo.server;
+package com.webank.weid.demo.server;
 
 import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Value;

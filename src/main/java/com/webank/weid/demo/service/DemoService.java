@@ -1,5 +1,5 @@
 /*
- *       Copyright© (2018) WeBank Co., Ltd.
+ *       Copyright© (2019) WeBank Co., Ltd.
  *
  *       This file is part of weidentity-sample.
  *
@@ -17,7 +17,7 @@
  *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.webank.demo.service;
+package com.webank.weid.demo.service;
 
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.Credential;
@@ -88,5 +88,4 @@ public interface DemoService {
      * @return returns the result of verify
      */
     public ResponseData<Boolean> verifyCredential(String credentialJson);
-
 }

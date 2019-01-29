@@ -1,5 +1,5 @@
 /*
- *       Copyright© (2018) WeBank Co., Ltd.
+ *       Copyright© (2019) WeBank Co., Ltd.
  *
  *       This file is part of weidentity-sample.
  *
@@ -17,23 +17,34 @@
  *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.webank.demo.server;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+package com.webank.weid.demo.exception;
 
 /**
- * startup class.
- * 
+ * Business Exception.
  * @author v_wbgyang
  *
  */
-@SpringBootApplication
-@ComponentScan({"com.webank.demo", "com.webank.weid.service"})
-public class SampleApp {
+public class BusinessException extends RuntimeException {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SampleApp.class, args);
+    /**
+     * Version UID.
+     */
+    private static final long serialVersionUID = -3606254083553524719L;
+    
+    /**
+     * constructor.
+     * @param message exception message
+     */
+    public BusinessException(String message) {
+        super(message);
+    }
+    
+    /**
+     * constructor.
+     * @param message exception message
+     * @param e  throwable
+     */
+    public BusinessException(String message, Throwable e) {
+        super(message, e);
     }
 }

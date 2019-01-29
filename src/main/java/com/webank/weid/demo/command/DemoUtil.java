@@ -1,5 +1,5 @@
 /*
- *       Copyright© (2018) WeBank Co., Ltd.
+ *       Copyright© (2019) WeBank Co., Ltd.
  *
  *       This file is part of weidentity-sample.
  *
@@ -17,7 +17,7 @@
  *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.webank.demo.command;
+package com.webank.weid.demo.command;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,8 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.webank.demo.common.util.FileUtil;
 import com.webank.weid.constant.WeIdConstant;
+import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.protocol.base.Credential;
 
 /**

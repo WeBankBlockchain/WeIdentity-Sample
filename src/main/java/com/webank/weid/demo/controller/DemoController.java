@@ -1,5 +1,5 @@
 /*
- *       Copyright© (2018) WeBank Co., Ltd.
+ *       Copyright© (2019) WeBank Co., Ltd.
  *
  *       This file is part of weidentity-sample.
  *
@@ -17,7 +17,7 @@
  *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.webank.demo.controller;
+package com.webank.weid.demo.controller;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -37,11 +37,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.webank.demo.common.dto.PasswordKey;
-import com.webank.demo.common.util.FileUtil;
-import com.webank.demo.common.util.PropertiesUtils;
-import com.webank.demo.service.DemoService;
 import com.webank.weid.constant.ErrorCode;
+import com.webank.weid.demo.common.dto.PasswordKey;
+import com.webank.weid.demo.common.util.FileUtil;
+import com.webank.weid.demo.common.util.PropertiesUtils;
+import com.webank.weid.demo.service.DemoService;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.Credential;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;

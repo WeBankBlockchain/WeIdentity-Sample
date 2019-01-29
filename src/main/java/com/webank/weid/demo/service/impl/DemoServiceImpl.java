@@ -1,5 +1,5 @@
 /*
- *       Copyright© (2018) WeBank Co., Ltd.
+ *       Copyright© (2019) WeBank Co., Ltd.
  *
  *       This file is part of weidentity-sample.
  *
@@ -17,7 +17,7 @@
  *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.webank.demo.service.impl;
+package com.webank.weid.demo.service.impl;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -28,10 +28,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.demo.common.util.FileUtil;
-import com.webank.demo.common.util.PropertiesUtils;
-import com.webank.demo.service.DemoService;
 import com.webank.weid.constant.ErrorCode;
+import com.webank.weid.demo.common.util.FileUtil;
+import com.webank.weid.demo.common.util.PropertiesUtils;
+import com.webank.weid.demo.service.DemoService;
 import com.webank.weid.protocol.base.AuthorityIssuer;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.Credential;

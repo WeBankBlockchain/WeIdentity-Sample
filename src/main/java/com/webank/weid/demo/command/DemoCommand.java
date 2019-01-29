@@ -1,5 +1,5 @@
 /*
- *       Copyright© (2018) WeBank Co., Ltd.
+ *       Copyright© (2019) WeBank Co., Ltd.
  *
  *       This file is part of weidentity-sample.
  *
@@ -17,7 +17,7 @@
  *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.webank.demo.command;
+package com.webank.weid.demo.command;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.webank.demo.common.util.FileUtil;
+import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.Credential;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
@@ -81,12 +81,17 @@ public class DemoCommand {
      */
     public static void main(String[] args) {
 
-        if (null == args) {
+        if (null == args || args.length != 1) {
             args = new String[1];
-            args[0] = "issuer";
         }
         
-        switch (args[0]) {
+        String command = args[0];
+        
+        if (command == null) {
+            command = "default";
+        }
+        
+        switch (command) {
             case "issuer":
                 issue();
                 break;
@@ -172,7 +177,6 @@ public class DemoCommand {
         try {
             paramMap = om.readValue(json, Map.class);
         } catch (IOException e) {
-            e.printStackTrace();
             logger.error("read temp.data error", e);
         }
         if (null == paramMap) {

@@ -1,5 +1,5 @@
 /*
- *       Copyright© (2018) WeBank Co., Ltd.
+ *       Copyright© (2019) WeBank Co., Ltd.
  *
  *       This file is part of weidentity-sample.
  *
@@ -17,7 +17,7 @@
  *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.webank.demo.command;
+package com.webank.weid.demo.command;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -43,22 +43,6 @@ import org.springframework.beans.BeanUtils;
 public class BaseBean {
     
     private static final Logger logger = LoggerFactory.getLogger(BaseBean.class);
-    
-    private static final String LINE_CHARAC = System.lineSeparator();
-    
-    private static final String LEFT_MID_BRACKETS = "[";
-    
-    private static final String RIGHT_MID_BRACKETS = "]";
-    
-    private static final String COLON_CHARAC = ":";
-    
-    private static final String LEFT_BRACKETS = "(";
-    
-    private static final String RIGHT_BRACKETS = ")";
-    
-    private static final String BLANK_SPACE = " ";
-    
-    private static final String BLANK_STR = "null";
 
     private static SimpleDateFormat getFormat() {
         return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -81,13 +65,17 @@ public class BaseBean {
                     Method m = obj.getClass().getMethod("get"
                         + f[i].getName().substring(0, 1).toUpperCase(Locale.getDefault())
                         + f[i].getName().substring(1), new Class[0]);
-                    beanStr.append(f[i].getName()).append(COLON_CHARAC).append(BLANK_SPACE)
+                    beanStr.append(f[i].getName())
+                        .append(BeanConstant.COLON_CHARAC)
+                        .append(BeanConstant.BLANK_SPACE)
                         .append(String.valueOf(m.invoke(obj, new Object[] {})))
-                        .append(LINE_CHARAC);
+                        .append(BeanConstant.LINE_CHARAC);
                 }
             } catch (NoSuchMethodException ex) {
-                beanStr.append("no attribute:").append(f[i].getName())
-                    .append(" to match for the method").append(LINE_CHARAC);
+                beanStr.append("no attribute:")
+                    .append(f[i].getName())
+                    .append(" to match for the method")
+                    .append(BeanConstant.LINE_CHARAC);
             } catch (IllegalAccessException e) {
                 logger.error("printBean error:", e);
             } catch (IllegalArgumentException e) {
@@ -106,13 +94,15 @@ public class BaseBean {
         if (null == c) {
             return;
         }
-        StringBuilder beanStr = new StringBuilder(LINE_CHARAC);
+        StringBuilder beanStr = new StringBuilder(BeanConstant.LINE_CHARAC);
         
         Iterator<?> it = c.iterator();
         int i = 0;
         while (it.hasNext()) {
-            beanStr.append(LEFT_MID_BRACKETS).append(i++).append(RIGHT_MID_BRACKETS)
-                .append(LINE_CHARAC);
+            beanStr.append(BeanConstant.LEFT_MID_BRACKETS)
+                .append(i++)
+                .append(BeanConstant.RIGHT_MID_BRACKETS)
+                .append(BeanConstant.LINE_CHARAC);
             printSimpleBean(it.next(), beanStr);
         }
         logger.info(beanStr.toString());
@@ -126,16 +116,22 @@ public class BaseBean {
         if (null == map) {
             return;
         }
-        StringBuilder beanStr = new StringBuilder(LINE_CHARAC);
+        StringBuilder beanStr = new StringBuilder(BeanConstant.LINE_CHARAC);
         
         for (Entry<?,?> entry : map.entrySet()) {
             Object obj = entry.getKey();
             if ((obj instanceof Date)) {
-                beanStr.append(getFormat().format((Date) obj)).append(COLON_CHARAC)
-                    .append(BLANK_SPACE).append(entry.getValue()).append(LINE_CHARAC);
+                beanStr.append(getFormat().format((Date) obj))
+                    .append(BeanConstant.COLON_CHARAC)
+                    .append(BeanConstant.BLANK_SPACE)
+                    .append(entry.getValue())
+                    .append(BeanConstant.LINE_CHARAC);
             } else {
-                beanStr.append(obj).append(COLON_CHARAC).append(BLANK_SPACE)
-                    .append(entry.getValue()).append(LINE_CHARAC);
+                beanStr.append(obj)
+                    .append(BeanConstant.COLON_CHARAC)
+                    .append(BeanConstant.BLANK_SPACE)
+                    .append(entry.getValue())
+                    .append(BeanConstant.LINE_CHARAC);
             }
         }
         logger.info(beanStr.toString());
@@ -143,18 +139,27 @@ public class BaseBean {
 
     private static void printBean(String blank, Object obj, StringBuilder beanStr) {
         if (isSimpleValueType(obj)) {
-            beanStr.append(blank).append(String.valueOf(obj)).append(LINE_CHARAC);
+            beanStr.append(blank)
+                .append(String.valueOf(obj))
+                .append(BeanConstant.LINE_CHARAC);
             return;
         }
         if ((obj instanceof Date)) {
-            beanStr.append(blank).append(getFormat().format(obj)).append(LINE_CHARAC);
+            beanStr.append(blank)
+                .append(getFormat().format(obj))
+                .append(BeanConstant.LINE_CHARAC);
             return;
         }
         if ((obj instanceof String[])) {
             String[] a = (String[]) obj;
             for (int i = 0; i < a.length; i++) {
-                beanStr.append(LEFT_MID_BRACKETS).append(i).append(RIGHT_MID_BRACKETS)
-                    .append(COLON_CHARAC).append(BLANK_SPACE).append(a[i]).append(LINE_CHARAC);
+                beanStr.append(BeanConstant.LEFT_MID_BRACKETS)
+                    .append(i)
+                    .append(BeanConstant.RIGHT_MID_BRACKETS)
+                    .append(BeanConstant.COLON_CHARAC)
+                    .append(BeanConstant.BLANK_SPACE)
+                    .append(a[i])
+                    .append(BeanConstant.LINE_CHARAC);
             }
         }
         Field[] f = obj.getClass().getDeclaredFields();
@@ -169,8 +174,11 @@ public class BaseBean {
                     printByType(blank, left, right, beanStr);
                 }
             } catch (NoSuchMethodException ex) {
-                beanStr.append(blank).append(" no attribute:").append(f[i].getName())
-                    .append(" to match for the method").append(LINE_CHARAC);
+                beanStr.append(blank)
+                    .append(" no attribute:")
+                    .append(f[i].getName())
+                    .append(" to match for the method")
+                    .append(BeanConstant.LINE_CHARAC);
             } catch (IllegalAccessException e) {
                 logger.error("printBean error:", e);
             } catch (IllegalArgumentException e) {
@@ -190,23 +198,39 @@ public class BaseBean {
         while (it.hasNext()) {
             Object obj = it.next();
             if (null == obj) {
-                beanStr.append(blank).append(LEFT_MID_BRACKETS).append(i++)
-                .append(RIGHT_MID_BRACKETS).append(COLON_CHARAC)
-                .append(BLANK_STR).append(LINE_CHARAC);
+                beanStr.append(blank)
+                    .append(BeanConstant.LEFT_MID_BRACKETS)
+                    .append(i++)
+                    .append(BeanConstant.RIGHT_MID_BRACKETS)
+                    .append(BeanConstant.COLON_CHARAC)
+                    .append(BeanConstant.BLANK_STR)
+                    .append(BeanConstant.LINE_CHARAC);
                 continue;
             }
             if (isSimpleValueType(obj)) {
-                beanStr.append(blank).append(LEFT_MID_BRACKETS).append(i++)
-                    .append(RIGHT_MID_BRACKETS).append(COLON_CHARAC)
-                    .append(obj).append(LINE_CHARAC);
+                beanStr.append(blank)
+                    .append(BeanConstant.LEFT_MID_BRACKETS)
+                    .append(i++)
+                    .append(BeanConstant.RIGHT_MID_BRACKETS)
+                    .append(BeanConstant.COLON_CHARAC)
+                    .append(obj)
+                    .append(BeanConstant.LINE_CHARAC);
             } else if ((obj instanceof Date)) {
-                beanStr.append(blank).append(LEFT_MID_BRACKETS).append(i++)
-                    .append(RIGHT_MID_BRACKETS).append(COLON_CHARAC)
-                    .append(getFormat().format(obj)).append(LINE_CHARAC);
+                beanStr.append(blank)
+                    .append(BeanConstant.LEFT_MID_BRACKETS)
+                    .append(i++)
+                    .append(BeanConstant.RIGHT_MID_BRACKETS)
+                    .append(BeanConstant.COLON_CHARAC)
+                    .append(getFormat().format(obj))
+                    .append(BeanConstant.LINE_CHARAC);
             } else {
-                beanStr.append(blank).append(LEFT_MID_BRACKETS).append(i++)
-                    .append(RIGHT_MID_BRACKETS).append(COLON_CHARAC)
-                    .append(obj.getClass().getName()).append(LINE_CHARAC);
+                beanStr.append(blank)
+                    .append(BeanConstant.LEFT_MID_BRACKETS)
+                    .append(i++)
+                    .append(BeanConstant.RIGHT_MID_BRACKETS)
+                    .append(BeanConstant.COLON_CHARAC)
+                    .append(obj.getClass().getName())
+                    .append(BeanConstant.LINE_CHARAC);
                 print(blank + "   ", obj, beanStr);
             }
         }
@@ -223,7 +247,7 @@ public class BaseBean {
         }
     }
 
-    protected static boolean isSimpleValueType(Object obj) {
+    private static boolean isSimpleValueType(Object obj) {
         
         if (null == obj) {
             return false;
@@ -242,8 +266,11 @@ public class BaseBean {
         
         Object leftObj = left;
         if (null == right) {
-            beanStr.append(blank).append(String.valueOf(leftObj)).append(COLON_CHARAC)
-                .append(BLANK_STR).append(LINE_CHARAC);
+            beanStr.append(blank)
+                .append(String.valueOf(leftObj))
+                .append(BeanConstant.COLON_CHARAC)
+                .append(BeanConstant.BLANK_STR)
+                .append(BeanConstant.LINE_CHARAC);
             return;
         }
         if ((null != leftObj) && ((leftObj instanceof Date))) {
@@ -251,25 +278,45 @@ public class BaseBean {
         }
         Class<?> clazz = right.getClass();
         if (isSimpleValueType(right)) {
-            beanStr.append(blank).append(String.valueOf(leftObj)).append(COLON_CHARAC)
-                .append(BLANK_SPACE).append(String.valueOf(right)).append(LINE_CHARAC);
+            beanStr.append(blank)
+                .append(String.valueOf(leftObj))
+                .append(BeanConstant.COLON_CHARAC)
+                .append(BeanConstant.BLANK_SPACE)
+                .append(String.valueOf(right))
+                .append(BeanConstant.LINE_CHARAC);
         } else if ((right instanceof Date)) {
-            beanStr.append(blank).append(String.valueOf(leftObj)).append(COLON_CHARAC)
-                .append(BLANK_SPACE).append(getFormat().format(right)).append(LINE_CHARAC);
+            beanStr.append(blank)
+                .append(String.valueOf(leftObj))
+                .append(BeanConstant.COLON_CHARAC)
+                .append(BeanConstant.BLANK_SPACE)
+                .append(getFormat().format(right))
+                .append(BeanConstant.LINE_CHARAC);
         } else if ((right instanceof Collection)) {
-            beanStr.append(blank).append(String.valueOf(leftObj)).append(COLON_CHARAC)
-                .append(LEFT_BRACKETS).append(clazz.getName()).append(RIGHT_BRACKETS)
-                .append(LINE_CHARAC);
+            beanStr.append(blank)
+                .append(String.valueOf(leftObj))
+                .append(BeanConstant.COLON_CHARAC)
+                .append(BeanConstant.LEFT_BRACKETS)
+                .append(clazz.getName())
+                .append(BeanConstant.RIGHT_BRACKETS)
+                .append(BeanConstant.LINE_CHARAC);
             printCollection(blank + "   ", (Collection<?>) right, beanStr);
         } else if ((right instanceof Map)) {
-            beanStr.append(blank).append(String.valueOf(leftObj)).append(COLON_CHARAC)
-                .append(LEFT_BRACKETS).append(clazz.getName()).append(RIGHT_BRACKETS)
-                .append(LINE_CHARAC);
+            beanStr.append(blank)
+                .append(String.valueOf(leftObj))
+                .append(BeanConstant.COLON_CHARAC)
+                .append(BeanConstant.LEFT_BRACKETS)
+                .append(clazz.getName())
+                .append(BeanConstant.RIGHT_BRACKETS)
+                .append(BeanConstant.LINE_CHARAC);
             printMap(blank + "   ", (Map<?, ?>) right, beanStr);
         } else {
-            beanStr.append(blank).append(String.valueOf(leftObj)).append(COLON_CHARAC)
-                .append(LEFT_BRACKETS).append(clazz.getName()).append(RIGHT_BRACKETS)
-                .append(LINE_CHARAC);
+            beanStr.append(blank)
+                .append(String.valueOf(leftObj))
+                .append(BeanConstant.COLON_CHARAC)
+                .append(BeanConstant.LEFT_BRACKETS)
+                .append(clazz.getName())
+                .append(BeanConstant.RIGHT_BRACKETS)
+                .append(BeanConstant.LINE_CHARAC);
             printBean(blank + "   ", right, beanStr);
         }
     }

@@ -7,4 +7,4 @@ if [[ $1 != 'issuer' ]];then
     fi
   fi
 fi
-java  -cp dist/conf/:dist/lib/*:dist/app/* com.webank.demo.command.DemoCommand $1
+java  -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1
