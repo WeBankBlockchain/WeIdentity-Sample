@@ -19,12 +19,10 @@
 
 package com.webank.weid.demo.command;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bcos.contract.tools.ToolConf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +52,17 @@ public class DemoCommand {
     /**
      * schema.
      */
-    private  static final String SCHEMA;
+    private static final String SCHEMA;
     
     /**
      * claimData.
      */
-    private  static final String CLAIMDATA;
+    private static final String CLAIMDATA;
+    
+    /**
+     * Hexadecimal.
+     */
+    private static final int HEXADECIMAL = 16;
 
     static {
         context = new ClassPathXmlApplicationContext(new String[] {
@@ -67,7 +70,7 @@ public class DemoCommand {
             "classpath:SpringApplicationContext-demo.xml"});
 
         ToolConf toolConf = context.getBean(ToolConf.class);
-        PRIVATEKEY = new BigInteger(toolConf.getPrivKey(), 16).toString();
+        PRIVATEKEY = new BigInteger(toolConf.getPrivKey(), HEXADECIMAL).toString();
         
         //get jsonSchema.
         SCHEMA = FileUtil.getDataByPath("./claim/JsonSchema.json");
@@ -159,7 +162,6 @@ public class DemoCommand {
      * 1, create weId
      * 2, provide CPT template data, authority issue credential for them
      */
-    @SuppressWarnings("unchecked")
     private static void user() {
         
         BaseBean.print("user() init...");
@@ -169,16 +171,8 @@ public class DemoCommand {
         BaseBean.print("begin createWeId...");
         // user registration weId.
         final CreateWeIdDataResult createWeId = demo.createWeId();
-        
-        // getting authority data from temporary file.
-        String json = FileUtil.getDataByPath(DemoUtil.TEMP_FILE);
-        ObjectMapper om = new ObjectMapper();
-        Map<String, String> paramMap = null;
-        try {
-            paramMap = om.readValue(json, Map.class);
-        } catch (IOException e) {
-            logger.error("read temp.data error", e);
-        }
+
+        Map<String, String> paramMap = DemoUtil.getTempDataFromFile();
         if (null == paramMap) {
             logger.error("read temp.data is null");
             return;

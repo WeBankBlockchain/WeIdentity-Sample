@@ -19,21 +19,13 @@
 
 package com.webank.weid.demo.command;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.webank.weid.constant.WeIdConstant;
 import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.protocol.base.Credential;
 
@@ -49,7 +41,10 @@ public class DemoUtil {
     
     private static final String CRED_FILE = TEMP_DIR + "credential.json";
     
-    public static final String TEMP_FILE = TEMP_DIR + "temp.data";
+    /**
+     * temporary data file.
+     */
+    private static final String TEMP_FILE = TEMP_DIR + "temp.data";
     
     /**
      * read credential.
@@ -67,6 +62,25 @@ public class DemoUtil {
         }
         return credential;
     }
+    
+    /**
+     * get temporary data from file.
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, String> getTempDataFromFile() {
+        
+        // getting authority data from temporary file.
+        String json = FileUtil.getDataByPath(DemoUtil.TEMP_FILE);
+        ObjectMapper om = new ObjectMapper();
+        Map<String, String> paramMap = null;
+        try {
+            paramMap = om.readValue(json, Map.class);
+        } catch (IOException e) {
+            logger.error("read temp.data error", e);
+        }
+        return paramMap;
+    }
 
     /**
      * save credential.
@@ -74,41 +88,10 @@ public class DemoUtil {
      */
     public static String saveCredential(Credential credential) {
         
-        ObjectMapper mapper = new ObjectMapper();
-        String credentialJson = null;
-        try {
-            credentialJson = mapper.writeValueAsString(credential);
-        } catch (JsonProcessingException e) {
-            logger.error("writeValueAsString error:", e);
-        }
+        String dataStr = FileUtil.formatObjectToString(credential);
+        FileUtil.checkDir(TEMP_DIR);
+        return FileUtil.saveFile(CRED_FILE, dataStr);
         
-        OutputStreamWriter ow = null;
-        try {
-            FileUtil.checkDir(TEMP_DIR);
-            String fileStr = CRED_FILE;
-            File file = new File(fileStr);
-            if (file.exists()) {
-                if (!file.delete()) {
-                    logger.error("delete file fail..");
-                }
-            }
-            ow = new OutputStreamWriter(new FileOutputStream(file), WeIdConstant.UTF_8);
-            String content = new StringBuffer().append(credentialJson).toString();
-            ow.write(content);
-            ow.close();
-            return file.getAbsolutePath();
-        } catch (IOException e) {
-            logger.error("writer file exception", e);
-        } finally {
-            if (null != ow) {
-                try {
-                    ow.close();
-                } catch (IOException e) {
-                    logger.error("io close exception", e);
-                }
-            }
-        }
-        return StringUtils.EMPTY;
     }
     
     /**
@@ -116,31 +99,9 @@ public class DemoUtil {
      * @param map require
      */
     public static void saveTemData(Map<String, String> map) {
-        ObjectMapper mapper = new ObjectMapper();
-        String s = "";
-        try {
-            s = mapper.writeValueAsString(map);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        BufferedWriter bufferedWriter = null;
-        try {
-            FileUtil.checkDir(TEMP_DIR);
-            bufferedWriter = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(TEMP_FILE), WeIdConstant.UTF_8));
-            bufferedWriter.write(s);
-        } catch (FileNotFoundException e) {
-            logger.error("saveTemData error:", e);
-        } catch (IOException e) {
-            logger.error("saveTemData error:", e);
-        } finally {
-            if (bufferedWriter != null) {
-                try {
-                    bufferedWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }    
+        
+        String dataStr = FileUtil.formatObjectToString(map);
+        FileUtil.checkDir(TEMP_DIR);
+        FileUtil.saveFile(TEMP_FILE, dataStr);
+    } 
 }

@@ -24,7 +24,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,11 @@ public class FileUtil {
     private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
     
     /**
+     * slash.
+     */
+    private static final String SLASH_CHARACTER = "/";
+    
+    /**
      * this method stores weId private key information by file and stores
      * private key information by itself in actual scene.
      * 
@@ -51,29 +59,19 @@ public class FileUtil {
      * @return returns saved results
      */
     public static boolean savePrivateKey(String path, String weId, String privateKey) {
-        FileOutputStream fos = null;
+
         try {
             if (null == weId) {
                 return false;
             }
             String fileName = weId.substring(weId.lastIndexOf(":") + 1);
-            String chckPath = checkDir(path);
-            String filePath = chckPath + fileName;
-            File file = new File(filePath);
-            fos = new FileOutputStream(file);
-            fos.write(privateKey.getBytes(WeIdConstant.UTF_8));
+            String checkPath = checkDir(path);
+            String filePath = checkPath + fileName;
+            FileUtil.saveFile(filePath, privateKey);
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("savePrivateKey error", e);
-        } finally {
-            if (null != fos) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    logger.error("fis.close error", e);
-                }
-            }
-        }
+        } 
         return false;    
     }
     
@@ -85,33 +83,14 @@ public class FileUtil {
      * @return returns the private key
      */
     public static String getPrivateKeyByWeId(String path, String weId) {
-        FileInputStream fis = null;
-        try {
-            if (null == weId) {
-                return StringUtils.EMPTY;
-            }
-            String fileName = weId.substring(weId.lastIndexOf(":") + 1);
-            String chckPath = checkDir(path);
-            String filePath = chckPath + fileName;
-            File file = new File(filePath);
-            fis = new FileInputStream(file);
-            byte[] buff = new byte[fis.available()];
-            int size = fis.read(buff);
-            if (size > 0) {
-                return new String(buff, WeIdConstant.UTF_8);
-            }
-        } catch (IOException e) {
-            logger.error("getPrivateKeyByWeId error", e);
-        } finally {
-            if (null != fis) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    logger.error("fis.close error", e);
-                }
-            }
+        
+        if (null == weId) {
+            return StringUtils.EMPTY;
         }
-        return StringUtils.EMPTY;
+        String fileName = weId.substring(weId.lastIndexOf(":") + 1);
+        String checkPath = checkDir(path);
+        String filePath = checkPath + fileName;
+        return getDataByPath(filePath);
     }
     
     /**
@@ -120,9 +99,10 @@ public class FileUtil {
      * @return returns the path
      */
     public static String checkDir(String path) {
+        
         String checkPath = path;
-        if (!checkPath.endsWith("/")) {
-            checkPath = checkPath + "/";
+        if (!checkPath.endsWith(SLASH_CHARACTER)) {
+            checkPath = checkPath + SLASH_CHARACTER;
         }
         File checkDir = new File(checkPath);
         if (!checkDir.exists()) {
@@ -141,6 +121,7 @@ public class FileUtil {
      * @return returns the data
      */
     public static String getDataByPath(String path) {
+        
         FileInputStream fis = null;
         String str = null;
         try {
@@ -164,5 +145,51 @@ public class FileUtil {
             }
         }
         return str;
+    }
+    
+    /**
+     * format Object to String.
+     * @return
+     */
+    public static String formatObjectToString(Object obj) {
+        
+        ObjectMapper mapper = new ObjectMapper();
+        String dataStr = "";
+        try {
+            dataStr = mapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            logger.error("writeValueAsString error:", e);
+        }
+        return dataStr;
+    }
+    
+    /**
+     * save data.
+     * @param filePath save file path
+     * @param dataStr save data
+     * @return
+     */
+    public static String saveFile(String filePath, String dataStr) {
+        
+        OutputStreamWriter ow = null;
+        try {
+            String fileStr = filePath;
+            File file = new File(fileStr);
+            ow = new OutputStreamWriter(new FileOutputStream(file), WeIdConstant.UTF_8);
+            String content = new StringBuffer().append(dataStr).toString();
+            ow.write(content);
+            return file.getAbsolutePath();
+        } catch (IOException e) {
+            logger.error("writer file exception", e);
+        } finally {
+            if (null != ow) {
+                try {
+                    ow.close();
+                } catch (IOException e) {
+                    logger.error("io close exception", e);
+                }
+            }
+        }
+        return StringUtils.EMPTY;
     }
 }

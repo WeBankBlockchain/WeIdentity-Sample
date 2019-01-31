@@ -63,7 +63,7 @@ build {
 }
 
 repositories {
-	mavenLocal()
+    mavenLocal()
     mavenCentral()
 }
 

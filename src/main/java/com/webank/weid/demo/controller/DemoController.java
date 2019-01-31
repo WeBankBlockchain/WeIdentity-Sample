@@ -28,6 +28,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JsonLoader;
+import org.apache.commons.lang3.StringUtils;
 import org.bcos.web3j.crypto.ECKeyPair;
 import org.bcos.web3j.crypto.Keys;
 import org.slf4j.Logger;
@@ -89,7 +90,8 @@ public class DemoController {
             FileUtil.savePrivateKey(
                 keyDir, 
                 response.getResult().getWeId(),
-                response.getResult().getUserWeIdPrivateKey().getPrivateKey());
+                response.getResult().getUserWeIdPrivateKey().getPrivateKey()
+            );
         }
         /*
          *  private keys are not allowed to be transmitted over http, so this place
@@ -167,16 +169,33 @@ public class DemoController {
      * @return returns CptBaseInfo
      */
     @PostMapping("/registCpt")
-    public ResponseData<CptBaseInfo> registCpt(@RequestBody String jsonStr)
-        throws IOException {
+    public ResponseData<CptBaseInfo> registCpt(@RequestBody String jsonStr) {
         
-        JsonNode jsonNode = JsonLoader.fromString(jsonStr);
-        String publisher = jsonNode.get("publisher").textValue();
-        String claim = jsonNode.get("claim").toString();
-        String privateKey = FileUtil.getPrivateKeyByWeId(keyDir, publisher);
-        logger.info("param,publisher:{},privateKey:{},claim:{}", publisher, privateKey, claim);
-        claim = this.getJsonSchema(claim);
-        return demoService.registCpt(publisher, privateKey, claim);
+        ResponseData<CptBaseInfo> response = null;
+        try {
+            JsonNode jsonNode = JsonLoader.fromString(jsonStr);
+            
+            JsonNode publisherNode = jsonNode.get("publisher");
+            String publisher = null;
+            if (publisherNode != null) {
+                publisher = publisherNode.textValue();
+            }
+            
+            JsonNode claimNode = jsonNode.get("claim");
+            String claim = null;
+            if (claimNode != null) {
+                claim = claimNode.toString();
+            }
+           
+            String privateKey = FileUtil.getPrivateKeyByWeId(keyDir, publisher);
+            logger.info("param,publisher:{},privateKey:{},claim:{}", publisher, privateKey, claim);
+            claim = this.getJsonSchema(claim);
+            response = demoService.registCpt(publisher, privateKey, claim);
+        } catch (Exception e) {
+            logger.error("registCpt error", e);
+            response = new ResponseData<CptBaseInfo>(null, ErrorCode.TRANSACTION_EXECUTE_ERROR);
+        }
+        return response;
     }
 
     /**
@@ -186,23 +205,45 @@ public class DemoController {
      * @throws IOException  it's possible to throw an exception
      */
     @PostMapping("/createCredential")
-    public ResponseData<Credential> createCredential(@RequestBody String jsonStr)
-        throws IOException {
+    public ResponseData<Credential> createCredential(@RequestBody String jsonStr) {
         
-        JsonNode jsonNode = JsonLoader.fromString(jsonStr);
-        String cptIdStr = jsonNode.get("cptId").textValue();
-        String issuer = jsonNode.get("issuer").textValue();
-        String claimData = jsonNode.get("claimData").toString();
-        Integer cptId = Integer.parseInt(cptIdStr);
-
-        String privateKey = FileUtil.getPrivateKeyByWeId(keyDir, issuer);
-        logger.info("param,cptId:{},issuer:{},privateKey:{},claimData:{}", 
-            cptId, 
-            issuer,
-            privateKey, 
-            claimData);
-        
-        return demoService.createCredential(cptId, issuer, privateKey, claimData);
+        ResponseData<Credential> response = null;
+        try {
+            JsonNode jsonNode = JsonLoader.fromString(jsonStr);
+            
+            JsonNode cptIdNode = jsonNode.get("cptId");
+            Integer cptId = null;
+            if (cptIdNode != null && StringUtils.isNotBlank(cptIdNode.textValue())) {
+                cptId = Integer.parseInt(cptIdNode.textValue());
+            }
+            
+            JsonNode issuerNode = jsonNode.get("issuer");
+            String issuer = null;
+            if (issuerNode != null) {
+                issuer = issuerNode.textValue();
+            }
+            
+            JsonNode claimDataNode = jsonNode.get("claimData");
+            String claimData = null;
+            if (claimDataNode != null) {
+                claimData = claimDataNode.toString();
+            }
+            
+            String privateKey = FileUtil.getPrivateKeyByWeId(keyDir, issuer);
+            logger.info(
+                "param,cptId:{},issuer:{},privateKey:{},claimData:{}", 
+                cptId, 
+                issuer,
+                privateKey, 
+                claimData
+            );
+            
+            response = demoService.createCredential(cptId, issuer, privateKey, claimData);
+        } catch (IOException e) {
+            logger.error("createCredential error", e);
+            response = new ResponseData<Credential>(null, ErrorCode.CREDENTIAL_ERROR);
+        }
+        return response;
     }
 
     /**

@@ -136,8 +136,10 @@ public class DemoServiceImpl implements DemoService {
 
         // 1, create weId, this method automatically creates public and private keys
         ResponseData<CreateWeIdDataResult> createResult = weIdService.createWeId();
-        logger.info("weIdService is result,errorCode:{},errorMessage:{}",
-            createResult.getErrorCode(), createResult.getErrorMessage());
+        logger.info(
+            "weIdService is result,errorCode:{},errorMessage:{}",
+            createResult.getErrorCode(), createResult.getErrorMessage()
+        );
 
         if (createResult.getErrorCode().intValue() != ErrorCode.SUCCESS.getCode()) {
             return createResult;
@@ -175,9 +177,11 @@ public class DemoServiceImpl implements DemoService {
             .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
 
         ResponseData<Boolean> setResponse = weIdService.setPublicKey(setPublicKeyArgs);
-        logger.info("setPublicKey is result,errorCode:{},errorMessage:{}",
+        logger.info(
+            "setPublicKey is result,errorCode:{},errorMessage:{}",
             setResponse.getErrorCode(), 
-            setResponse.getErrorMessage());
+            setResponse.getErrorMessage()
+        );
 
         return setResponse;
     }
@@ -197,9 +201,11 @@ public class DemoServiceImpl implements DemoService {
             .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
 
         ResponseData<Boolean> setResponse = weIdService.setAuthentication(setAuthenticationArgs);
-        logger.info("setAuthentication is result,errorCode:{},errorMessage:{}",
+        logger.info(
+            "setAuthentication is result,errorCode:{},errorMessage:{}",
             setResponse.getErrorCode(), 
-            setResponse.getErrorMessage());
+            setResponse.getErrorMessage()
+        );
 
         return setResponse;
     }
@@ -229,9 +235,11 @@ public class DemoServiceImpl implements DemoService {
 
         ResponseData<Boolean> registResponse =
             authorityIssuerService.registerAuthorityIssuer(registerAuthorityIssuerArgs);
-        logger.info("registerAuthorityIssuer is result,errorCode:{},errorMessage:{}",
+        logger.info(
+            "registerAuthorityIssuer is result,errorCode:{},errorMessage:{}",
             registResponse.getErrorCode(), 
-            registResponse.getErrorMessage());
+            registResponse.getErrorMessage()
+        );
         
         return registResponse;
     }
@@ -257,9 +265,11 @@ public class DemoServiceImpl implements DemoService {
         registerCptArgs.setCptJsonSchema(claim);
 
         ResponseData<CptBaseInfo> response = cptService.registerCpt(registerCptArgs);
-        logger.info("registerCpt is result,errorCode:{},errorMessage:{}", 
+        logger.info(
+            "registerCpt is result,errorCode:{},errorMessage:{}", 
             response.getErrorCode(),
-            response.getErrorMessage());
+            response.getErrorMessage()
+        );
         
         return response;
     }
@@ -291,9 +301,11 @@ public class DemoServiceImpl implements DemoService {
             .setExpirationDate(System.currentTimeMillis() + EXPIRATION_DATE);
 
         ResponseData<Credential> response = credentialService.createCredential(registerCptArgs);
-        logger.info("createCredential is result,errorCode:{},errorMessage:{}",
+        logger.info(
+            "createCredential is result,errorCode:{},errorMessage:{}",
             response.getErrorCode(), 
-            response.getErrorMessage());
+            response.getErrorMessage()
+        );
         
         return response;
     }
@@ -307,7 +319,7 @@ public class DemoServiceImpl implements DemoService {
     @Override
     public ResponseData<Boolean> verifyCredential(String credentialJson) {
 
-        ResponseData<Boolean> verifyResponse = new ResponseData<Boolean>();
+        ResponseData<Boolean> verifyResponse = null;
         ObjectMapper objectMapper = new ObjectMapper();
         Credential credential = null;
 
@@ -315,16 +327,16 @@ public class DemoServiceImpl implements DemoService {
             credential = objectMapper.readValue(credentialJson, Credential.class);
         } catch (IOException e) {
             logger.error("resolve credentialJson error.", e);
-            verifyResponse.setResult(false);
-            verifyResponse.setErrorCode(ErrorCode.CREDENTIAL_ERROR.getCode());
-            verifyResponse.setErrorMessage(ErrorCode.CREDENTIAL_ERROR.getCodeDesc());
+            verifyResponse = new ResponseData<Boolean>(false, ErrorCode.CREDENTIAL_ERROR);
             return verifyResponse;
         }
 
         verifyResponse = credentialService.verifyCredential(credential);
-        logger.info("verifyCredential is result,errorCode:{},errorMessage:{}",
+        logger.info(
+            "verifyCredential is result,errorCode:{},errorMessage:{}",
             verifyResponse.getErrorCode(), 
-            verifyResponse.getErrorMessage());
+            verifyResponse.getErrorMessage()
+        );
         
         return verifyResponse;
     }
