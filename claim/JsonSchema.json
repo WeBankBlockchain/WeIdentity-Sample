@@ -1,0 +1,21 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "cpt template",
+	"description": "information requirements for users",
+	"type": "object",
+	"properties": {
+		"WeId": {
+			"type": "string",
+			"description": "user weId"
+		},
+		"Name": {
+			"type": "string",
+			"description": "user name"
+		},
+		"Gender": {
+			"type": "string",
+			"description": "user gender"
+		}
+	},
+	"additionalProperties": false
+}
