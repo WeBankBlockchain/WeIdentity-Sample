@@ -1,0 +1,113 @@
+
+buildscript {
+    repositories {
+        maven {
+            url "http://maven.aliyun.com/nexus/content/groups/public/"
+        }
+        mavenLocal()
+        mavenCentral()//依赖Maven仓库
+    }
+    dependencies {
+        //使用1.5.4.RELEASE版本的Spring框架
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.4.RELEASE")
+        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.5"
+    }
+}
+
+plugins {
+    id "com.github.spotbugs" version "1.6.5"
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'checkstyle'
+apply plugin: "com.github.spotbugs"
+
+version = "1.0.0"
+
+//添加编译时的依赖
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web"){
+        exclude group:"ch.qos.logback"
+    }
+    compile group: 'com.webank', name: 'weidentity-java-sdk', version: '1.0.3'
+    compile group: 'com.webank', name: 'weidentity-contract-java', version: '1.0.0'
+    compile files("libs/web3sdk.jar")
+}
+
+//生成的jar包包名和版本
+jar {
+    destinationDir file('dist/app')
+    archiveName project.name + '-' + version + '.jar'
+    
+    doFirst {
+   		exclude '/*.*'
+    }
+    
+    doLast {
+        copy {
+            from file('src/main/resources/')
+            into 'dist/conf'
+        }
+        copy {
+            from configurations.compile
+            into 'dist/lib'
+        }
+        mkdir 'dist/logs'
+    }
+}
+
+build {
+    doLast {
+        delete "dist/app/" + project.name + ".jar"
+        file("dist/app/" + project.name + ".jar.original").renameTo("dist/app/" + project.name + ".jar")
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+//设置jdk的版本
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+clean {
+    delete("dist")
+}
+
+
+checkstyle {
+    ignoreFailures false
+    showViolations true
+    toolVersion '8.12'
+    configProperties.projectDir = project.projectDir
+    checkstyleMain.configFile = new File(project.projectDir, '/config/checkstyle/webank_google_checks.xml')
+}
+
+tasks.withType(Checkstyle) {
+    include '**/*.java'
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+spotbugs {
+    ignoreFailures = true
+    showProgress = true
+    toolVersion = "3.1.8"
+    effort = "max"
+    reportLevel = "low"
+    excludeFilter = file("${project.rootDir}/config/spotbugs/spotbugs_filter.xml")
+}
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+        xml.enabled false
+        html.enabled true
+        html.stylesheet resources.text.fromFile('config/spotbugs.xsl')
+    }
+}
