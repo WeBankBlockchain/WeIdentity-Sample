@@ -82,7 +82,7 @@
             <property name="clientCertPassWord" value="123456"/>
             <property name="connectionsStr">
               <list>
-                   <value>WeIdentity@127.0.0.1:8900</value>
+                   <value>WeIdentity@IP:PORT</value>
               </list>
             </property>
           </bean>
