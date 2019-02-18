@@ -19,11 +19,9 @@
 
 package com.webank.weid.demo.command;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bcos.contract.tools.ToolConf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -41,13 +39,10 @@ import com.webank.weid.protocol.response.CreateWeIdDataResult;
  * @author v_wbpenghu
  */
 public class DemoCommand {
-
-    // SDK private key.
-    static final String PRIVATEKEY;
     
     private static final  ApplicationContext context;
     
-    private static final Logger logger = LoggerFactory.getLogger(DemoCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DemoCommand.class);
 
     /**
      * schema.
@@ -58,20 +53,11 @@ public class DemoCommand {
      * claimData.
      */
     private static final String CLAIMDATA;
-    
-    /**
-     * Hexadecimal.
-     */
-    private static final int HEXADECIMAL = 16;
 
     static {
         context = new ClassPathXmlApplicationContext(new String[] {
-            "classpath:applicationContext.xml",
             "classpath:SpringApplicationContext-demo.xml"});
 
-        ToolConf toolConf = context.getBean(ToolConf.class);
-        PRIVATEKEY = new BigInteger(toolConf.getPrivKey(), HEXADECIMAL).toString();
-        
         //get jsonSchema.
         SCHEMA = FileUtil.getDataByPath("./claim/JsonSchema.json");
         //get schemaData.
@@ -93,7 +79,7 @@ public class DemoCommand {
         if (command == null) {
             command = "default";
         }
-        
+
         switch (command) {
             case "issuer":
                 issue();
@@ -174,7 +160,7 @@ public class DemoCommand {
 
         Map<String, String> paramMap = DemoUtil.getTempDataFromFile();
         if (null == paramMap) {
-            logger.error("read temp.data is null");
+            LOGGER.error("read temp.data is null");
             return;
         }
         

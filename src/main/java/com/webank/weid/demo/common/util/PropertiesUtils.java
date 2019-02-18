@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PropertiesUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(PropertiesUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesUtils.class);
     private static Properties props;
     private static final String APPLICATION_FILE = "application.properties";
 
@@ -49,7 +49,7 @@ public class PropertiesUtils {
         try {
             props.load(resourceAsStream);
         } catch (IOException e) {
-            logger.error("loadProps error", e);
+            LOGGER.error("loadProps error", e);
         }
     }
 

@@ -20,13 +20,16 @@
 package com.webank.weid.demo.command;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.webank.weid.demo.common.util.FileUtil;
+import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.protocol.base.Credential;
 
 /**
@@ -35,7 +38,7 @@ import com.webank.weid.protocol.base.Credential;
  */
 public class DemoUtil {
     
-    private static final Logger logger = LoggerFactory.getLogger(DemoUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DemoUtil.class);
     
     private static final String TEMP_DIR = "./tmp/";
     
@@ -45,6 +48,24 @@ public class DemoUtil {
      * temporary data file.
      */
     private static final String TEMP_FILE = TEMP_DIR + "temp.data";
+    
+    /**
+     *  SDK private key.
+     */
+    public static final String SDK_PRIVATE_KEY;
+    
+    /**
+     * Hexadecimal.
+     */
+    private static final int HEXADECIMAL = 16;
+    
+    static {
+        
+        FileUtil.checkDir(TEMP_DIR);
+        
+        String sdkPrivateKey = FileUtil.getDataByPath(PrivateKeyUtil.SDK_PRIVKEY_PATH);
+        SDK_PRIVATE_KEY = new BigInteger(sdkPrivateKey, HEXADECIMAL).toString();
+    }
     
     /**
      * read credential.
@@ -58,7 +79,7 @@ public class DemoUtil {
         try {
             credential = objectMapper.readValue(jsonStr, Credential.class);
         } catch (IOException e) {
-            logger.error("getCredentialFromJson error", e);
+            LOGGER.error("getCredentialFromJson error", e);
         }
         return credential;
     }
@@ -77,7 +98,7 @@ public class DemoUtil {
         try {
             paramMap = om.readValue(json, Map.class);
         } catch (IOException e) {
-            logger.error("read temp.data error", e);
+            LOGGER.error("read temp.data error", e);
         }
         return paramMap;
     }
@@ -88,8 +109,7 @@ public class DemoUtil {
      */
     public static String saveCredential(Credential credential) {
         
-        String dataStr = FileUtil.formatObjectToString(credential);
-        FileUtil.checkDir(TEMP_DIR);
+        String dataStr = DemoUtil.formatObjectToString(credential);
         return FileUtil.saveFile(CRED_FILE, dataStr);
         
     }
@@ -100,8 +120,23 @@ public class DemoUtil {
      */
     public static void saveTemData(Map<String, String> map) {
         
-        String dataStr = FileUtil.formatObjectToString(map);
-        FileUtil.checkDir(TEMP_DIR);
+        String dataStr = DemoUtil.formatObjectToString(map);
         FileUtil.saveFile(TEMP_FILE, dataStr);
     } 
+    
+    /**
+     * format Object to String.
+     * @return
+     */
+    public static String formatObjectToString(Object obj) {
+        
+        ObjectMapper mapper = new ObjectMapper();
+        String dataStr = "";
+        try {
+            dataStr = mapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("writeValueAsString error:", e);
+        }
+        return dataStr;
+    }
 }

@@ -26,8 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,56 +40,12 @@ import com.webank.weid.constant.WeIdConstant;
  */
 public class FileUtil {
     
-    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
     
     /**
      * slash.
      */
     private static final String SLASH_CHARACTER = "/";
-    
-    /**
-     * this method stores weId private key information by file and stores
-     * private key information by itself in actual scene.
-     * 
-     * @param path save path
-     * @param weId the weId
-     * @param privateKey the private key
-     * @return returns saved results
-     */
-    public static boolean savePrivateKey(String path, String weId, String privateKey) {
-
-        try {
-            if (null == weId) {
-                return false;
-            }
-            String fileName = weId.substring(weId.lastIndexOf(":") + 1);
-            String checkPath = checkDir(path);
-            String filePath = checkPath + fileName;
-            FileUtil.saveFile(filePath, privateKey);
-            return true;
-        } catch (Exception e) {
-            logger.error("savePrivateKey error", e);
-        } 
-        return false;    
-    }
-    
-    /**
-     * get the private key by weId.
-     * 
-     * @param path the path
-     * @param weId the weId
-     * @return returns the private key
-     */
-    public static String getPrivateKeyByWeId(String path, String weId) {
-        
-        if (null == weId) {
-            return StringUtils.EMPTY;
-        }
-        String fileName = weId.substring(weId.lastIndexOf(":") + 1);
-        String checkPath = checkDir(path);
-        String filePath = checkPath + fileName;
-        return getDataByPath(filePath);
-    }
     
     /**
      * check the path is exists, create and return the path if it does not exist.
@@ -108,7 +62,7 @@ public class FileUtil {
         if (!checkDir.exists()) {
             boolean success = checkDir.mkdirs();
             if (!success) {
-                logger.error("checkDir.mkdirs");
+                LOGGER.error("checkDir.mkdirs");
             }
         }
         return checkPath;
@@ -132,35 +86,19 @@ public class FileUtil {
                 str = new String(buff, WeIdConstant.UTF_8);
             }
         } catch (FileNotFoundException e) {
-            logger.error("getDataByPath error", e);
+            LOGGER.error("getDataByPath error", e);
         } catch (IOException e) {
-            logger.error("getDataByPath error", e);
+            LOGGER.error("getDataByPath error", e);
         } finally {
             if (null != fis) {
                 try {
                     fis.close();
                 } catch (IOException e) {
-                    logger.error("getDataByPath error", e);
+                    LOGGER.error("getDataByPath error", e);
                 }
             }
         }
         return str;
-    }
-    
-    /**
-     * format Object to String.
-     * @return
-     */
-    public static String formatObjectToString(Object obj) {
-        
-        ObjectMapper mapper = new ObjectMapper();
-        String dataStr = "";
-        try {
-            dataStr = mapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            logger.error("writeValueAsString error:", e);
-        }
-        return dataStr;
     }
     
     /**
@@ -180,13 +118,13 @@ public class FileUtil {
             ow.write(content);
             return file.getAbsolutePath();
         } catch (IOException e) {
-            logger.error("writer file exception", e);
+            LOGGER.error("writer file exception", e);
         } finally {
             if (null != ow) {
                 try {
                     ow.close();
                 } catch (IOException e) {
-                    logger.error("io close exception", e);
+                    LOGGER.error("io close exception", e);
                 }
             }
         }

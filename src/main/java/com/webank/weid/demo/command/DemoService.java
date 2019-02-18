@@ -20,6 +20,8 @@
 package com.webank.weid.demo.command;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,11 +31,13 @@ import com.webank.weid.demo.exception.BusinessException;
 import com.webank.weid.protocol.base.AuthorityIssuer;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.Credential;
+import com.webank.weid.protocol.base.CredentialWrapper;
+import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
+import com.webank.weid.protocol.request.CptStringArgs;
 import com.webank.weid.protocol.request.CreateCredentialArgs;
 import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
-import com.webank.weid.protocol.request.RegisterCptArgs;
 import com.webank.weid.protocol.request.SetAuthenticationArgs;
 import com.webank.weid.protocol.request.SetPublicKeyArgs;
 import com.webank.weid.protocol.request.SetServiceArgs;
@@ -43,6 +47,7 @@ import com.webank.weid.rpc.AuthorityIssuerService;
 import com.webank.weid.rpc.CptService;
 import com.webank.weid.rpc.CredentialService;
 import com.webank.weid.rpc.WeIdService;
+import com.webank.weid.util.JsonUtil;
 
 /**
  * the service for command.
@@ -178,13 +183,17 @@ public class DemoService {
     public CptBaseInfo registCpt(CreateWeIdDataResult weIdResult, String cptJsonSchema)
         throws BusinessException {
 
-        RegisterCptArgs registerCptArgs = new RegisterCptArgs();
-        WeIdPrivateKey weIdPrivateKey = new WeIdPrivateKey();
-        weIdPrivateKey.setPrivateKey(weIdResult.getUserWeIdPrivateKey().getPrivateKey());
-        registerCptArgs.setCptPublisher(weIdResult.getWeId());
-        registerCptArgs.setCptPublisherPrivateKey(weIdPrivateKey);
-        registerCptArgs.setCptJsonSchema(cptJsonSchema);
-        ResponseData<CptBaseInfo> response = cptService.registerCpt(registerCptArgs);
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeId(weIdResult.getWeId());
+        weIdAuthentication.setWeIdPrivateKey(new WeIdPrivateKey());
+        weIdAuthentication.getWeIdPrivateKey()
+            .setPrivateKey(weIdResult.getUserWeIdPrivateKey().getPrivateKey());
+        
+        CptStringArgs cptStringArgs = new CptStringArgs();
+        cptStringArgs.setWeIdAuthentication(weIdAuthentication);
+        cptStringArgs.setCptJsonSchema(cptJsonSchema);
+
+        ResponseData<CptBaseInfo> response = cptService.registerCpt(cptStringArgs);
         BaseBean.print("registerCpt result:");
         BaseBean.print(response);
         
@@ -214,7 +223,7 @@ public class DemoService {
         RegisterAuthorityIssuerArgs registerAuthorityIssuerArgs = new RegisterAuthorityIssuerArgs();
         registerAuthorityIssuerArgs.setAuthorityIssuer(authorityIssuerResult);
         registerAuthorityIssuerArgs.setWeIdPrivateKey(new WeIdPrivateKey());
-        registerAuthorityIssuerArgs.getWeIdPrivateKey().setPrivateKey(DemoCommand.PRIVATEKEY);
+        registerAuthorityIssuerArgs.getWeIdPrivateKey().setPrivateKey(DemoUtil.SDK_PRIVATE_KEY);
 
         ResponseData<Boolean> response =
             authorityIssuerService.registerAuthorityIssuer(registerAuthorityIssuerArgs);
@@ -238,15 +247,19 @@ public class DemoService {
         long expirationDate)
         throws BusinessException {
 
+        Map<String, Object> claimDataMap = (Map<String, Object>) JsonUtil.jsonStrToObj(
+                new HashMap<String, Object>(),
+                claim);
+        
         CreateCredentialArgs args = new CreateCredentialArgs();
-        args.setClaim(claim);
+        args.setClaim(claimDataMap);
         args.setCptId(cptId);
         args.setExpirationDate(expirationDate);
         args.setIssuer(weIdResult.getWeId());
         WeIdPrivateKey weIdPrivateKey = new WeIdPrivateKey();
         weIdPrivateKey.setPrivateKey(weIdResult.getUserWeIdPrivateKey().getPrivateKey());
         args.setWeIdPrivateKey(weIdPrivateKey);
-        ResponseData<Credential> response = credentialService.createCredential(args);
+        ResponseData<CredentialWrapper> response = credentialService.createCredential(args);
         BaseBean.print("createCredential result:");
         BaseBean.print(response);
         
@@ -255,7 +268,7 @@ public class DemoService {
             || null == response.getResult()) {
             throw new BusinessException(response.getErrorMessage());
         }
-        return response.getResult();
+        return response.getResult().getCredential();
     }
 
     /**
@@ -263,7 +276,7 @@ public class DemoService {
      */
     public boolean verifyCredential(Credential credential) throws BusinessException {
         
-        ResponseData<Boolean> response = credentialService.verifyCredential(credential);
+        ResponseData<Boolean> response = credentialService.verify(credential);
         BaseBean.print("verifyCredential result:");
         BaseBean.print(response);
         
