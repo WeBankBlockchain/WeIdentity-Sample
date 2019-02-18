@@ -42,99 +42,10 @@ import org.springframework.beans.BeanUtils;
  */
 public class BaseBean {
     
-    private static final Logger logger = LoggerFactory.getLogger(BaseBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseBean.class);
 
     private static SimpleDateFormat getFormat() {
         return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    }
-
-    /**
-     * printSimpe Bean.
-     * @param obj  required
-     */
-    private static void printSimpleBean(Object obj, StringBuilder beanStr) {
-        
-        if (null == obj) {
-            return;
-        }
-        
-        Field[] f = obj.getClass().getDeclaredFields();
-        for (int i = 0; i < f.length; i++) {
-            try {
-                if (f[i].getModifiers() == Modifier.PRIVATE) {
-                    Method m = obj.getClass().getMethod("get"
-                        + f[i].getName().substring(0, 1).toUpperCase(Locale.getDefault())
-                        + f[i].getName().substring(1), new Class[0]);
-                    beanStr.append(f[i].getName())
-                        .append(BeanConstant.COLON_CHARAC)
-                        .append(BeanConstant.BLANK_SPACE)
-                        .append(String.valueOf(m.invoke(obj, new Object[] {})))
-                        .append(BeanConstant.LINE_CHARAC);
-                }
-            } catch (NoSuchMethodException ex) {
-                beanStr.append("no attribute:")
-                    .append(f[i].getName())
-                    .append(" to match for the method")
-                    .append(BeanConstant.LINE_CHARAC);
-            } catch (IllegalAccessException e) {
-                logger.error("printBean error:", e);
-            } catch (IllegalArgumentException e) {
-                logger.error("printBean error:", e);
-            } catch (InvocationTargetException e) {
-                logger.error("printBean error:", e);
-            }
-        }
-    }
-
-    /**
-     * printSimple Collection.
-     * @param c this is object of Collection
-     */
-    public static void printSimpleCollection(Collection<?> c) {
-        if (null == c) {
-            return;
-        }
-        StringBuilder beanStr = new StringBuilder(BeanConstant.LINE_CHARAC);
-        
-        Iterator<?> it = c.iterator();
-        int i = 0;
-        while (it.hasNext()) {
-            beanStr.append(BeanConstant.LEFT_MID_BRACKETS)
-                .append(i++)
-                .append(BeanConstant.RIGHT_MID_BRACKETS)
-                .append(BeanConstant.LINE_CHARAC);
-            printSimpleBean(it.next(), beanStr);
-        }
-        logger.info(beanStr.toString());
-    }
-
-    /**
-     * printSimple Map.
-     * @param map this is map
-     */
-    public static void printSimpleMap(Map<?, ?> map) {
-        if (null == map) {
-            return;
-        }
-        StringBuilder beanStr = new StringBuilder(BeanConstant.LINE_CHARAC);
-        
-        for (Entry<?,?> entry : map.entrySet()) {
-            Object obj = entry.getKey();
-            if ((obj instanceof Date)) {
-                beanStr.append(getFormat().format((Date) obj))
-                    .append(BeanConstant.COLON_CHARAC)
-                    .append(BeanConstant.BLANK_SPACE)
-                    .append(entry.getValue())
-                    .append(BeanConstant.LINE_CHARAC);
-            } else {
-                beanStr.append(obj)
-                    .append(BeanConstant.COLON_CHARAC)
-                    .append(BeanConstant.BLANK_SPACE)
-                    .append(entry.getValue())
-                    .append(BeanConstant.LINE_CHARAC);
-            }
-        }
-        logger.info(beanStr.toString());
     }
 
     private static void printBean(String blank, Object obj, StringBuilder beanStr) {
@@ -180,11 +91,11 @@ public class BaseBean {
                     .append(" to match for the method")
                     .append(BeanConstant.LINE_CHARAC);
             } catch (IllegalAccessException e) {
-                logger.error("printBean error:", e);
+                LOGGER.error("printBean error:", e);
             } catch (IllegalArgumentException e) {
-                logger.error("printBean error:", e);
+                LOGGER.error("printBean error:", e);
             } catch (InvocationTargetException e) {
-                logger.error("printBean error:", e);
+                LOGGER.error("printBean error:", e);
             }
         }
     }

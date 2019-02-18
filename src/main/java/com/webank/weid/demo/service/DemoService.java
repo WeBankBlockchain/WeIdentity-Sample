@@ -19,8 +19,10 @@
 
 package com.webank.weid.demo.service;
 
+import java.util.Map;
+
 import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.Credential;
+import com.webank.weid.protocol.base.CredentialWrapper;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 
@@ -64,7 +66,10 @@ public interface DemoService {
      * @param claim claim is CPT
      * @return returns cptBaseInfo
      */
-    public ResponseData<CptBaseInfo> registCpt(String publisher, String privateKey, String claim);
+    public ResponseData<CptBaseInfo> registCpt(
+        String publisher, 
+        String privateKey, 
+        Map<String, Object> claim);
 
     /**
      * create credential.
@@ -75,11 +80,11 @@ public interface DemoService {
      * @param claimDate the data of claim
      * @return returns credential
      */
-    public ResponseData<Credential> createCredential(
+    public ResponseData<CredentialWrapper> createCredential(
         Integer cptId, 
         String issuer,
         String privateKey, 
-        String claimDate);
+        Map<String, Object> claimDate);
 
     /**
      * verify credential.
