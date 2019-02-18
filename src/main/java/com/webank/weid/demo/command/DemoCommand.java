@@ -22,12 +22,6 @@ package com.webank.weid.demo.command;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.Credential;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
@@ -38,32 +32,7 @@ import com.webank.weid.protocol.response.CreateWeIdDataResult;
  * 
  * @author v_wbpenghu
  */
-public class DemoCommand {
-    
-    private static final  ApplicationContext context;
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(DemoCommand.class);
-
-    /**
-     * schema.
-     */
-    private static final String SCHEMA;
-    
-    /**
-     * claimData.
-     */
-    private static final String CLAIMDATA;
-
-    static {
-        context = new ClassPathXmlApplicationContext(new String[] {
-            "classpath:SpringApplicationContext-demo.xml"});
-
-        //get jsonSchema.
-        SCHEMA = FileUtil.getDataByPath("./claim/JsonSchema.json");
-        //get schemaData.
-        CLAIMDATA = FileUtil.getDataByPath("./claim/ClaimData.json");
-    }
-
+public class DemoCommand extends DemoBase {
 
     /**
      * main.
@@ -79,7 +48,7 @@ public class DemoCommand {
         if (command == null) {
             command = "default";
         }
-
+        
         switch (command) {
             case "issuer":
                 issue();
