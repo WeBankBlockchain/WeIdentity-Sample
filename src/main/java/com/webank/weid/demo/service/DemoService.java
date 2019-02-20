@@ -69,7 +69,8 @@ public interface DemoService {
     public ResponseData<CptBaseInfo> registCpt(
         String publisher, 
         String privateKey, 
-        Map<String, Object> claim);
+        Map<String, Object> claim
+    );
 
     /**
      * create credential.
@@ -84,7 +85,8 @@ public interface DemoService {
         Integer cptId, 
         String issuer,
         String privateKey, 
-        Map<String, Object> claimDate);
+        Map<String, Object> claimDate
+    );
 
     /**
      * verify credential.

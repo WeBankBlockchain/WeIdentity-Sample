@@ -28,7 +28,6 @@ import com.webank.weid.protocol.base.Credential;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 
-
 /**
  * WeIdentity DID demo.
  *
@@ -40,7 +39,7 @@ public class DemoTest extends DemoBase {
      * set validity period to 360 days by default.
      */
     private static final long EXPIRATION_DATE  = 1000L * 60 * 60 * 24 * 360;
-    
+
     /**
      * main of demo.
      * @throws ParseException the parseException
@@ -57,35 +56,41 @@ public class DemoTest extends DemoBase {
 
         // set WeIdentity DID
         demo.setPublicKey(createWeId, "secp256k1");
-        demo.setService(createWeId,
+        demo.setService(
+            createWeId,
             "drivingCardService",
-            "https://weidentity.webank.com/endpoint/8377464");
-        demo.setAuthenticate(createWeId, "RsaSignatureAuthentication2018");
+            "https://weidentity.webank.com/endpoint/8377464"
+        );
+        demo.setAuthentication(createWeId, "RsaSignatureAuthentication2018");
 
-        // get WeId Dom
+        // get WeId DOM.
         WeIdDocument weIdDom = demo.getWeIdDom(createWeId.getWeId());
         BaseBean.print(weIdDom);
 
-        // regist authority issuer
+        // registered authority issuer.
         demo.registerAuthorityIssuer(createWeId, "webank", "0");
 
-        // registCpt
+        // registered CPT.
         CptBaseInfo cptResult =
             demo.registCpt(
                 createWeId,
                 DemoTest.buildCptJsonSchema()
             );
         BaseBean.print(cptResult);
-        
+
         long expirationDate = System.currentTimeMillis() + EXPIRATION_DATE;
 
-        // create Credential
-        Credential credential = demo.createCredential(createWeId,
-            cptResult.getCptId(),
-            DemoTest.buildCptJsonSchemaData(),
-            expirationDate);
+        // create Credential.
+        Credential credential = 
+            demo.createCredential(
+                createWeId,
+                cptResult.getCptId(),
+                DemoTest.buildCptJsonSchemaData(),
+                expirationDate
+            );
         BaseBean.print(credential);
 
+        // verify the credential.
         boolean result = demo.verifyCredential(credential);
         if (result) {
             BaseBean.print("verify success");
@@ -93,7 +98,7 @@ public class DemoTest extends DemoBase {
             BaseBean.print("verify fail");
         }
     }
-    
+
     /**
      * build cpt json schema.
      * @return HashMap
@@ -116,7 +121,7 @@ public class DemoTest extends DemoBase {
         HashMap<String, Object> propertitesMap3 = new HashMap<String, Object>(2);
         propertitesMap3.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATE_TYPE_NUMBER);
         propertitesMap3.put(JsonSchemaConstant.DESCRIPTION_KEY, "this is age");
-        
+
         HashMap<String, Object> propertitesMap4 = new HashMap<String, Object>(2);
         propertitesMap4.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATE_TYPE_STRING);
         propertitesMap4.put(JsonSchemaConstant.DESCRIPTION_KEY, "this is weid");
@@ -126,7 +131,7 @@ public class DemoTest extends DemoBase {
         cptJsonSchema.put("gender", propertitesMap2);
         cptJsonSchema.put("age", propertitesMap3);
         cptJsonSchema.put("weid", propertitesMap4);
-        
+
         cptJsonSchemaNew.put(JsonSchemaConstant.PROPERTIES_KEY, cptJsonSchema);
 
         String[] genderRequired = {"name", "gender"};

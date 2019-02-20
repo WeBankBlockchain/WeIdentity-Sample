@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,6 +60,8 @@ import com.webank.weid.util.JsonUtil;
 @Component
 public class DemoService {
 
+    private static final Logger logger = LoggerFactory.getLogger(DemoService.class);
+
     @Autowired
     private AuthorityIssuerService authorityIssuerService;
 
@@ -71,7 +75,9 @@ public class DemoService {
     private WeIdService weIdService;
 
     /**
-     * create WeIdentity DID.
+     * Create a WeIdentity DID with null input param.
+     *
+     * @return the result of createWeId
      */
     public CreateWeIdDataResult createWeId() throws BusinessException {
 
@@ -79,21 +85,28 @@ public class DemoService {
         ResponseData<CreateWeIdDataResult> responseCreate = weIdService.createWeId();
         BaseBean.print("createWeId result:");
         BaseBean.print(responseCreate);
-        
-        // check result is success
+
+        // throw an exception if it does not succeed.
         if (responseCreate.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error("failed to call createWeId method, code={}, message={}",
+                responseCreate.getErrorCode(),
+                responseCreate.getErrorMessage()
+            );
             throw new BusinessException(responseCreate.getErrorMessage());
         }
         return responseCreate.getResult();
     }
 
     /**
-     * setPublicKey.
+     * Set Public Key For WeIdentity DID Document.
+     *
+     * @param createResult the Object of CreateWeIdDataResult
+     * @param keyType the data is key type
      */
     public void setPublicKey(CreateWeIdDataResult createResult, String keyType)
         throws BusinessException {
 
-        // setPublicKey for this WeId
+        // build SetPublicKeyArgs for setPublicKey.
         SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
         setPublicKeyArgs.setWeId(createResult.getWeId());
         setPublicKeyArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
@@ -101,19 +114,29 @@ public class DemoService {
         setPublicKeyArgs.setUserWeIdPrivateKey(
             this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
         );
+
+        // call the setPublicKey on chain.
         ResponseData<Boolean> responseSetPub = weIdService.setPublicKey(setPublicKeyArgs);
         BaseBean.print("setPublicKey result:");
         BaseBean.print(responseSetPub);
-        
-        // check is success
+
+        // throw an exception if it does not succeed.
         if (responseSetPub.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || !responseSetPub.getResult()) {
+            logger.error("failed to call setPublicKey method, code={}, message={}",
+                responseSetPub.getErrorCode(),
+                responseSetPub.getErrorMessage()
+            );
             throw new BusinessException(responseSetPub.getErrorMessage());
         }
     }
 
     /**
-     * setService.
+     * Set Service For WeIdentity DID Document.
+     *
+     * @param createResult the Object of CreateWeIdDataResult
+     * @param serviceType the set service args
+     * @param serviceEnpoint the set service args
      */
     public void setService(
         CreateWeIdDataResult createResult,
@@ -121,7 +144,7 @@ public class DemoService {
         String serviceEnpoint)
         throws BusinessException {
 
-        // setService for this WeIdentity DID
+        // build SetServiceArgs for setService.
         SetServiceArgs setServiceArgs = new SetServiceArgs();
         setServiceArgs.setWeId(createResult.getWeId());
         setServiceArgs.setType(serviceType);
@@ -129,24 +152,33 @@ public class DemoService {
         setServiceArgs.setUserWeIdPrivateKey(
             this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
         );
+
+        // call the setService on chain.
         ResponseData<Boolean> responseSetSer = weIdService.setService(setServiceArgs);
         BaseBean.print("setService result:");
         BaseBean.print(responseSetSer);
-        
-        // check is success
+
+        // throw an exception if it does not succeed.
         if (responseSetSer.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || !responseSetSer.getResult()) {
+            logger.error("failed to call setService method, code={}, message={}",
+                responseSetSer.getErrorCode(),
+                responseSetSer.getErrorMessage()
+            );
             throw new BusinessException(responseSetSer.getErrorMessage());
         }
     }
 
     /**
-     * setAuthenticate.
+     * Set Authentication for WeIdentity DID Document.
+     *
+     * @param createResult the Object of CreateWeIdDataResult
+     * @param authType the set authentication args
      */
-    public void setAuthenticate(CreateWeIdDataResult createResult, String authType)
+    public void setAuthentication(CreateWeIdDataResult createResult, String authType)
         throws BusinessException {
 
-        // setAuthenticate for this WeIdentity DID
+        // build SetAuthenticationArgs for setAuthentication.
         SetAuthenticationArgs setAuthenticationArgs = new SetAuthenticationArgs();
         setAuthenticationArgs.setWeId(createResult.getWeId());
         setAuthenticationArgs.setType(authType);
@@ -154,88 +186,139 @@ public class DemoService {
         setAuthenticationArgs.setUserWeIdPrivateKey(
             this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
         );
-        
+
+        // call the setAuthentication on chain.
         ResponseData<Boolean> responseSetAuth =
             weIdService.setAuthentication(setAuthenticationArgs);
         BaseBean.print("setAuthentication result:");
         BaseBean.print(responseSetAuth);
-        
-        // check is success
+
+        // throw an exception if it does not succeed.
         if (responseSetAuth.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || !responseSetAuth.getResult()) {
+            logger.error("failed to call setAuthentication method, code={}, message={}",
+                responseSetAuth.getErrorCode(),
+                responseSetAuth.getErrorMessage()
+            );
             throw new BusinessException(responseSetAuth.getErrorMessage());
         }
     }
 
+    /**
+     * Build WeIdPrivateKey object.
+     * 
+     * @param privateKey private key
+     * @return return WeIdPrivateKey object
+     */
     private WeIdPrivateKey buildWeIdPrivateKey(String privateKey) {
         WeIdPrivateKey weIdPrivateKey = new WeIdPrivateKey();
         weIdPrivateKey.setPrivateKey(privateKey);
         return weIdPrivateKey;
     }
-    
+
     /**
-     * getWeIdDom.
+     * Get a WeIdentity DID Document.
+     *
+     * @param weId the WeIdentity DID
+     * @return the WeIdentity DID document
      */
     public WeIdDocument getWeIdDom(String weId) throws BusinessException {
 
-        // get weIdDom
+        // getting weIdDOM by weId on chain.
         ResponseData<WeIdDocument> responseResult = weIdService.getWeIdDocument(weId);
         BaseBean.print("getWeIdDocument result:");
         BaseBean.print(responseResult);
-        
-        // check result
+
+        // throw an exception if it does not succeed.
         if (responseResult.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || null == responseResult.getResult()) {
+            logger.error("failed to call getWeIdDocument method, code={}, message={}",
+                responseResult.getErrorCode(),
+                responseResult.getErrorMessage()
+            );
             throw new BusinessException(responseResult.getErrorMessage());
         }
         return responseResult.getResult();
     }
 
     /**
-     * regist cpt.
+     * register a new CPT on chain.
+     * 
+     * @param weIdResult weId information containing private keys
+     * @param cptJsonSchema the String data is a JSON schema for registered CPT
+     * @return the data of CPT Base Information
+     * @throws BusinessException throw a exception when register fail
      */
     public CptBaseInfo registCpt(CreateWeIdDataResult weIdResult, String cptJsonSchema)
         throws BusinessException {
 
+        logger.info("regist CPT with CptStringArgs");
+
+        // build CptStringArgs for registerCpt.
         CptStringArgs cptStringArgs = new CptStringArgs();
         cptStringArgs.setWeIdAuthentication(this.buildWeIdAuthentication(weIdResult));
         cptStringArgs.setCptJsonSchema(cptJsonSchema);
 
+        // call the registerCpt on chain.
         ResponseData<CptBaseInfo> response = cptService.registerCpt(cptStringArgs);
         BaseBean.print("registerCpt result:");
         BaseBean.print(response);
-        
-        // check result
+
+        // throw an exception if it does not succeed.
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || null == response.getResult()) {
+            logger.error("failed to call registerCpt method, code={}, message={}",
+                response.getErrorCode(),
+                response.getErrorMessage()
+            );
             throw new BusinessException(response.getErrorMessage());
         }
         return response.getResult();
     }
-    
+
     /**
-     * regist cpt.
+     * register a new CPT on chain.
+     * 
+     * @param weIdResult weId information containing private keys
+     * @param cptJsonSchemaMap schema of map type
+     * @return return CPT information
+     * @throws BusinessException throw a exception when register fail
      */
     public CptBaseInfo registCpt(
         CreateWeIdDataResult weIdResult,
-        Map<String,Object> cptJsonSchemaMap) throws BusinessException {
+        Map<String,Object> cptJsonSchemaMap)
+        throws BusinessException {
 
+        logger.info("regist CPT with CptMapArgs");
+
+        // build CptMapArgs for registerCpt.
         CptMapArgs cptMapArgs = new CptMapArgs();
         cptMapArgs.setWeIdAuthentication(this.buildWeIdAuthentication(weIdResult));
         cptMapArgs.setCptJsonSchema(cptJsonSchemaMap);
 
+        // call the registerCpt on chain.
         ResponseData<CptBaseInfo> responseMap = cptService.registerCpt(cptMapArgs);
         BaseBean.print("registerCpt result:");
         BaseBean.print(responseMap);
-        
-        // check result
+
+        // throw an exception if it does not succeed.
         if (responseMap.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || null == responseMap.getResult()) {
+            logger.error("failed to call registerCpt method, code={}, message={}",
+                responseMap.getErrorCode(),
+                responseMap.getErrorMessage()
+            );
             throw new BusinessException(responseMap.getErrorMessage());
         }
         return responseMap.getResult();
     }
-    
+
+    /**
+     * build WeIdAuthentication object by CreateWeIdDataResult object.
+     * 
+     * @param weIdResult CreateWeIdDataResult object
+     * @return return WeIdAuthentication object
+     */
     private WeIdAuthentication buildWeIdAuthentication(CreateWeIdDataResult weIdResult) {
         WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
         weIdAuthentication.setWeId(weIdResult.getWeId());
@@ -246,7 +329,12 @@ public class DemoService {
     }
 
     /**
-     * regist authority issuer.
+     * Register a new Authority Issuer on Chain.
+     * 
+     * @param weIdResult the object of CreateWeIdDataResult
+     * @param name this is Authority name
+     * @param accValue this is accValue
+     * @throws BusinessException throw a exception when register fail
      */
     public void registerAuthorityIssuer(
         CreateWeIdDataResult weIdResult,
@@ -254,32 +342,46 @@ public class DemoService {
         String accValue)
         throws BusinessException {
 
+        // build AuthorityIssuer object.
         AuthorityIssuer authorityIssuerResult = new AuthorityIssuer();
         authorityIssuerResult.setWeId(weIdResult.getWeId());
         authorityIssuerResult.setName(name);
         authorityIssuerResult.setCreated(new Date().getTime());
         authorityIssuerResult.setAccValue(accValue);
 
+        // build RegisterAuthorityIssuerArgs for registerAuthorityIssuer.
         RegisterAuthorityIssuerArgs registerAuthorityIssuerArgs = new RegisterAuthorityIssuerArgs();
         registerAuthorityIssuerArgs.setAuthorityIssuer(authorityIssuerResult);
         registerAuthorityIssuerArgs.setWeIdPrivateKey(
             this.buildWeIdPrivateKey(DemoUtil.SDK_PRIVATE_KEY)
         );
 
+        // call the registerAuthorityIssuer on chain.
         ResponseData<Boolean> response =
             authorityIssuerService.registerAuthorityIssuer(registerAuthorityIssuerArgs);
         BaseBean.print("registerAuthorityIssuer result:");
         BaseBean.print(response);
-        
 
-        // check is success
-        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode() || !response.getResult()) {
+        // throw an exception if it does not succeed.
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode() 
+            || !response.getResult()) {
+            logger.error("failed to call registerAuthorityIssuer method, code={}, message={}",
+                response.getErrorCode(),
+                response.getErrorMessage()
+            );
             throw new BusinessException(response.getErrorMessage());
         }
     }
 
     /**
-     * create Credential.
+     * create a credential for user.
+     * 
+     * @param weIdResult the data of organization's weId information
+     * @param cptId CPT number issued by organization
+     * @param claim the claim data for create credential
+     * @param expirationDate the validity period of the credential
+     * @return return the credential
+     * @throws BusinessException throw a exception when create fail
      */
     public Credential createCredential(
         CreateWeIdDataResult weIdResult,
@@ -288,15 +390,28 @@ public class DemoService {
         long expirationDate)
         throws BusinessException {
 
-        Map<String, Object> claimDataMap = (Map<String, Object>) JsonUtil.jsonStrToObj(
+        logger.info(
+            "create credential using string-type claim and convert claim from string to map"
+        );
+        // converting claim of strings to map.
+        Map<String, Object> claimDataMap = 
+            (Map<String, Object>) JsonUtil.jsonStrToObj(
                 new HashMap<String, Object>(),
-                claim);
-        
+                claim
+            );
+
         return this.createCredential(weIdResult, cptId, claimDataMap, expirationDate);
     }
-    
+
     /**
-     * create Credential.
+     * create a credential for user.
+     * 
+     * @param weIdResult the data of organization's weId information
+     * @param cptId CPT number issued by organization
+     * @param claimDataMap the claim data for create credential
+     * @param expirationDate the validity period of the credential
+     * @return return the credential
+     * @throws BusinessException throw a exception when create fail
      */
     public Credential createCredential(
         CreateWeIdDataResult weIdResult,
@@ -305,6 +420,9 @@ public class DemoService {
         long expirationDate)
         throws BusinessException {
 
+        logger.info("create credential using map-type claim");
+
+        // build CreateCredentialArgs for createCredential
         CreateCredentialArgs args = new CreateCredentialArgs();
         args.setClaim(claimDataMap);
         args.setCptId(cptId);
@@ -313,30 +431,42 @@ public class DemoService {
         args.setWeIdPrivateKey(
             this.buildWeIdPrivateKey(weIdResult.getUserWeIdPrivateKey().getPrivateKey())
         );
-        
+
         ResponseData<CredentialWrapper> response = credentialService.createCredential(args);
         BaseBean.print("createCredential result:");
         BaseBean.print(response);
-        
-        // check result
+
+        // throw an exception if it does not succeed.
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || null == response.getResult()) {
+            logger.error("failed to call createCredential method, code={}, message={}",
+                response.getErrorCode(),
+                response.getErrorMessage()
+            );
             throw new BusinessException(response.getErrorMessage());
         }
         return response.getResult().getCredential();
     }
 
     /**
-     * verifyCredential.
+     * verify the credential on chain.
+     * 
+     * @param credential user-provided credentials
+     * @return return the result of verify, true is success, false is fail
+     * @throws BusinessException throw a exception when the result code is not success
      */
     public boolean verifyCredential(Credential credential) throws BusinessException {
-        
+
         ResponseData<Boolean> response = credentialService.verify(credential);
         BaseBean.print("verifyCredential result:");
         BaseBean.print(response);
-        
-        // check is success
+
+        // throw an exception if it does not succeed.
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error("failed to call verify method, code={}, message={}",
+                response.getErrorCode(),
+                response.getErrorMessage()
+            );
             throw new BusinessException(response.getErrorMessage());
         }
         return response.getResult();

@@ -26,30 +26,42 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.webank.weid.demo.common.util.FileUtil;
 
-public class DemoBase {
-    
+/**
+ * Demo base class for initializing spring containers and getting jsonSchema and claimData.
+ * 
+ * @author v_wbgyang
+ *
+ */
+public abstract class DemoBase {
+
+    private static final Logger logger = LoggerFactory.getLogger(DemoBase.class);
+
+    /**
+     * spring context.
+     */
     protected static final  ApplicationContext context;
-    
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DemoCommand.class);
 
     /**
      * schema.
      */
     protected static final String SCHEMA;
-    
+
     /**
      * claimData.
      */
     protected static final String CLAIMDATA;
 
     static {
+        
+        // initializing spring containers
         context = new ClassPathXmlApplicationContext(new String[] {
             "classpath:SpringApplicationContext-demo.xml"});
-
-        //get jsonSchema.
+        logger.info("initializing spring containers finish...");
+ 
+        //get jsonSchema data.
         SCHEMA = FileUtil.getDataByPath("./claim/JsonSchema.json");
-        //get schemaData.
+        
+        //get schemaData data.
         CLAIMDATA = FileUtil.getDataByPath("./claim/ClaimData.json");
     }
-
 }
