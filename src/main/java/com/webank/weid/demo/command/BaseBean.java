@@ -41,9 +41,13 @@ import org.springframework.beans.BeanUtils;
  *
  */
 public class BaseBean {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseBean.class);
 
+    private static final Logger logger = LoggerFactory.getLogger(BaseBean.class);
+
+    /**
+     * date format.
+     * @return object of SimpleDateFormat
+     */
     private static SimpleDateFormat getFormat() {
         return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     }
@@ -90,25 +94,26 @@ public class BaseBean {
                     .append(f[i].getName())
                     .append(" to match for the method")
                     .append(BeanConstant.LINE_CHARAC);
+                logger.error("no attribute to match for the method", ex);
             } catch (IllegalAccessException e) {
-                LOGGER.error("printBean error:", e);
+                logger.error("printBean error:", e);
             } catch (IllegalArgumentException e) {
-                LOGGER.error("printBean error:", e);
+                logger.error("printBean error:", e);
             } catch (InvocationTargetException e) {
-                LOGGER.error("printBean error:", e);
+                logger.error("printBean error:", e);
             }
         }
     }
 
     private static void printCollection(String blank, Collection<?> c,StringBuilder beanStr) {
-        if (null == c) {
+        if (c == null) {
             return;
         }
         Iterator<?> it = c.iterator();
         int i = 0;
         while (it.hasNext()) {
             Object obj = it.next();
-            if (null == obj) {
+            if (obj == null) {
                 beanStr.append(blank)
                     .append(BeanConstant.LEFT_MID_BRACKETS)
                     .append(i++)
@@ -148,7 +153,7 @@ public class BaseBean {
     }
 
     private static void printMap(String blank, Map<?, ?> map, StringBuilder beanStr) {
-        if (null == map) {
+        if (map == null) {
             return;
         }
         for (Entry<?,?> entry : map.entrySet()) {
@@ -160,7 +165,7 @@ public class BaseBean {
 
     private static boolean isSimpleValueType(Object obj) {
         
-        if (null == obj) {
+        if (obj == null) {
             return false;
         }
         if (Date.class.isAssignableFrom(obj.getClass())) {
@@ -176,7 +181,7 @@ public class BaseBean {
         StringBuilder beanStr) {
         
         Object leftObj = left;
-        if (null == right) {
+        if (right == null) {
             beanStr.append(blank)
                 .append(String.valueOf(leftObj))
                 .append(BeanConstant.COLON_CHARAC)
@@ -184,7 +189,7 @@ public class BaseBean {
                 .append(BeanConstant.LINE_CHARAC);
             return;
         }
-        if ((null != leftObj) && ((leftObj instanceof Date))) {
+        if ((leftObj != null) && ((leftObj instanceof Date))) {
             leftObj = getFormat().format((Date) leftObj);
         }
         Class<?> clazz = right.getClass();
@@ -233,7 +238,7 @@ public class BaseBean {
     }
 
     private static void print(String blank, Object obj, StringBuilder beanStr) {
-        if (null == obj) {
+        if (obj == null) {
             return;
         }
         if ((obj instanceof Collection)) {
@@ -251,7 +256,7 @@ public class BaseBean {
      */
     public static void print(Object obj) {
         StringBuilder beanStr = new StringBuilder();
-        if (null == obj) {
+        if (obj == null) {
             return;
         }
         if ((obj instanceof Collection)) {

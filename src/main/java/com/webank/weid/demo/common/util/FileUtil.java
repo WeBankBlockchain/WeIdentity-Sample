@@ -25,12 +25,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.webank.weid.constant.WeIdConstant;
 
 /**
  * file tool.
@@ -39,30 +38,34 @@ import com.webank.weid.constant.WeIdConstant;
  *
  */
 public class FileUtil {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
+
     /**
      * slash.
      */
     private static final String SLASH_CHARACTER = "/";
-    
+
     /**
      * check the path is exists, create and return the path if it does not exist.
      * @param path the path
      * @return returns the path
      */
     public static String checkDir(String path) {
-        
+
         String checkPath = path;
+
+        // stitching the last slash.
         if (!checkPath.endsWith(SLASH_CHARACTER)) {
             checkPath = checkPath + SLASH_CHARACTER;
         }
+        
+        // check the path, create the path when it does not exist.
         File checkDir = new File(checkPath);
         if (!checkDir.exists()) {
             boolean success = checkDir.mkdirs();
             if (!success) {
-                LOGGER.error("checkDir.mkdirs");
+                logger.error("checkDir.mkdirs");
             }
         }
         return checkPath;
@@ -75,7 +78,8 @@ public class FileUtil {
      * @return returns the data
      */
     public static String getDataByPath(String path) {
-        
+
+        logger.info("get data form [{}]", path);
         FileInputStream fis = null;
         String str = null;
         try {
@@ -83,48 +87,48 @@ public class FileUtil {
             byte[] buff = new byte[fis.available()];
             int size = fis.read(buff);
             if (size > 0) {
-                str = new String(buff, WeIdConstant.UTF_8);
+                str = new String(buff, StandardCharsets.UTF_8);
             }
         } catch (FileNotFoundException e) {
-            LOGGER.error("getDataByPath error", e);
+            logger.error("getDataByPath error", e);
         } catch (IOException e) {
-            LOGGER.error("getDataByPath error", e);
+            logger.error("getDataByPath error", e);
         } finally {
             if (null != fis) {
                 try {
                     fis.close();
                 } catch (IOException e) {
-                    LOGGER.error("getDataByPath error", e);
+                    logger.error("getDataByPath error", e);
                 }
             }
         }
         return str;
     }
-    
+
     /**
-     * save data.
+     * save data in a specified file.
+     * 
      * @param filePath save file path
      * @param dataStr save data
-     * @return
+     * @return return the file path
      */
     public static String saveFile(String filePath, String dataStr) {
-        
+
+        logger.info("save data in to [{}]", filePath);
         OutputStreamWriter ow = null;
         try {
-            String fileStr = filePath;
-            File file = new File(fileStr);
-            ow = new OutputStreamWriter(new FileOutputStream(file), WeIdConstant.UTF_8);
-            String content = new StringBuffer().append(dataStr).toString();
-            ow.write(content);
+            File file = new File(filePath);
+            ow = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+            ow.write(dataStr);
             return file.getAbsolutePath();
         } catch (IOException e) {
-            LOGGER.error("writer file exception", e);
+            logger.error("writer file exception", e);
         } finally {
             if (null != ow) {
                 try {
                     ow.close();
                 } catch (IOException e) {
-                    LOGGER.error("io close exception", e);
+                    logger.error("io close exception", e);
                 }
             }
         }

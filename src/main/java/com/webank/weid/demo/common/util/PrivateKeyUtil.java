@@ -29,15 +29,15 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PrivateKeyUtil {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(PrivateKeyUtil.class);
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(PrivateKeyUtil.class);
+
     /**
      * SDK private key storage path.
      */
     public static final String SDK_PRIVKEY_PATH = 
         PropertiesUtils.getProperty("admin.privKeyPath");
-    
+
     /**
      * this method stores weId private key information by file and stores
      * private key information by itself in actual scene.
@@ -51,19 +51,28 @@ public class PrivateKeyUtil {
 
         try {
             if (null == weId) {
+                logger.error("weId is null");
                 return false;
             }
+
+            // get the third paragraph of weId.
             String fileName = weId.substring(weId.lastIndexOf(":") + 1);
+
+            // check whether the path exists or not, then create the path and return.
             String checkPath = FileUtil.checkDir(path);
             String filePath = checkPath + fileName;
+
+            logger.info("save private key into file, weId={}, filePath={}", weId, filePath);
+
+            // save the private key information as the file name for the third paragraph of weId.
             FileUtil.saveFile(filePath, privateKey);
             return true;
         } catch (Exception e) {
-            LOGGER.error("savePrivateKey error", e);
+            logger.error("savePrivateKey error", e);
         } 
         return false;    
     }
-    
+
     /**
      * get the private key by weId.
      * 
@@ -72,13 +81,22 @@ public class PrivateKeyUtil {
      * @return returns the private key
      */
     public static String getPrivateKeyByWeId(String path, String weId) {
-        
+
         if (null == weId) {
+            logger.error("weId is null");
             return StringUtils.EMPTY;
         }
+
+        // get the third paragraph of weId.
         String fileName = weId.substring(weId.lastIndexOf(":") + 1);
+        
+        // check whether the path exists or not, then create the path and return.
         String checkPath = FileUtil.checkDir(path);
         String filePath = checkPath + fileName;
+
+        logger.info("get private key from file, weId={}, filePath={}", weId, filePath);
+
+        // get private key information from a file according to the third paragraph of weId.
         return FileUtil.getDataByPath(filePath);
     }
 }
