@@ -346,7 +346,6 @@ public class DemoService {
         AuthorityIssuer authorityIssuerResult = new AuthorityIssuer();
         authorityIssuerResult.setWeId(weIdResult.getWeId());
         authorityIssuerResult.setName(name);
-        authorityIssuerResult.setCreated(new Date().getTime());
         authorityIssuerResult.setAccValue(accValue);
 
         // build RegisterAuthorityIssuerArgs for registerAuthorityIssuer.
