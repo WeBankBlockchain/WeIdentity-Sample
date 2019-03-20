@@ -31,7 +31,7 @@ public class PasswordKey {
      * private key.
      */
     private String privateKey;
-    
+
     /**
      * public key.
      */
