@@ -30,9 +30,10 @@
     id="appConfig">
     <property name="properties">
       <props>
-             <prop key="weId.contractaddress">0xeba952bcddecbb2d8a008ceffe2103802f3d9bf2</prop>
-             <prop key="cpt.contractaddress">0x207ad69717ef3f28f4e86352888cf8af2e53161b</prop>
-             <prop key="issuer.contractaddress">0x1e25198d290b4de160ded447c73dfb4bfb4b24d7</prop>
+           <prop key="weId.contractaddress">0x23df89a2893120f686a4aa03b41acf6836d11e5d</prop>
+           <prop key="cpt.contractaddress">0xfcd14ed03e6d94ca127d557a1883dd042a81ea11</prop>
+           <prop key="issuer.contractaddress">0x60d4ee5c461677840ab3552a6845fdf7db4a5317</prop>
+           <prop key="evidence.contractaddress">0x73479ed8162e198b9627b962eb4aae7098bdc770</prop>
       </props>
     </property>
   </bean>

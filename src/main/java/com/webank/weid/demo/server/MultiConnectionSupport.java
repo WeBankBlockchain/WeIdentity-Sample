@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class MultiConnectionSupport {
-     
+
     /**
      * get HTTP port, default 20191.
      */

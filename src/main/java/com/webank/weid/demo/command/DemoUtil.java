@@ -20,13 +20,16 @@
 package com.webank.weid.demo.command;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.webank.weid.demo.common.util.FileUtil;
+import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.protocol.base.Credential;
 
 /**
@@ -34,26 +37,58 @@ import com.webank.weid.protocol.base.Credential;
  *
  */
 public class DemoUtil {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(DemoUtil.class);
-    
+
+    /**
+     * temporary file directory.
+     */
     private static final String TEMP_DIR = "./tmp/";
-    
+
+    /**
+     * credential data file.
+     */
     private static final String CRED_FILE = TEMP_DIR + "credential.json";
-    
+
     /**
      * temporary data file.
      */
     private static final String TEMP_FILE = TEMP_DIR + "temp.data";
-    
+
+    /**
+     *  SDK private key.
+     */
+    public static final String SDK_PRIVATE_KEY;
+
+    /**
+     * Hexadecimal.
+     */
+    private static final int HEXADECIMAL = 16;
+
+    static {
+
+        // check the temporary file directory, create it when it does not exists.
+        FileUtil.checkDir(TEMP_DIR);
+
+        // getting SDK private key information from a file.
+        String sdkPrivateKey = FileUtil.getDataByPath(PrivateKeyUtil.SDK_PRIVKEY_PATH);
+
+        // converting a hexadecimal private key to a digital private key.
+        SDK_PRIVATE_KEY = new BigInteger(sdkPrivateKey, HEXADECIMAL).toString();
+    }
+
     /**
      * read credential.
-     * @return
+     * @return object of Credential
      */
     public static Credential getCredentialFromJson() {
-        
+
         Credential credential = null;
+
+        // get credential string from the file.
         String jsonStr = FileUtil.getDataByPath(CRED_FILE);
+        
+        // converting credential string to Credential object.
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             credential = objectMapper.readValue(jsonStr, Credential.class);
@@ -62,14 +97,15 @@ public class DemoUtil {
         }
         return credential;
     }
-    
+
     /**
      * get temporary data from file.
-     * @return
+     * 
+     * @return return map format data
      */
     @SuppressWarnings("unchecked")
     public static Map<String, String> getTempDataFromFile() {
-        
+
         // getting authority data from temporary file.
         String json = FileUtil.getDataByPath(DemoUtil.TEMP_FILE);
         ObjectMapper om = new ObjectMapper();
@@ -83,25 +119,49 @@ public class DemoUtil {
     }
 
     /**
-     * save credential.
+     * save credential in a specified file.
+     * 
      * @param credential require
+     * @return return to save path
      */
     public static String saveCredential(Credential credential) {
-        
-        String dataStr = FileUtil.formatObjectToString(credential);
-        FileUtil.checkDir(TEMP_DIR);
+
+        // converting Credential object to JSON string.
+        String dataStr = DemoUtil.formatObjectToString(credential);
+
+        // save the JSON string in the file.
         return FileUtil.saveFile(CRED_FILE, dataStr);
         
     }
-    
+
     /**
      * save temporary data.
+     * 
      * @param map require
      */
     public static void saveTemData(Map<String, String> map) {
-        
-        String dataStr = FileUtil.formatObjectToString(map);
-        FileUtil.checkDir(TEMP_DIR);
+
+        // converting Map to JSON string.
+        String dataStr = DemoUtil.formatObjectToString(map);
+
+        // save the JSON string in the file.
         FileUtil.saveFile(TEMP_FILE, dataStr);
-    } 
+    }
+
+    /**
+     * format Object to String.
+     * 
+     * @return return JSON string
+     */
+    public static String formatObjectToString(Object obj) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        String dataStr = "";
+        try {
+            dataStr = mapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            logger.error("writeValueAsString error:", e);
+        }
+        return dataStr;
+    }
 }

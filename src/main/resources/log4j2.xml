@@ -90,7 +90,7 @@
 
     <Loggers>
         <Root level="info">
-           <AppenderRef ref="fileAppender"/>
+           <AppenderRef ref="console"/>
         </Root>
     </Loggers>
 </Configuration>

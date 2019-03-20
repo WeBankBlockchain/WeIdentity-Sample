@@ -25,14 +25,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.webank.weid.constant.WeIdConstant;
 
 /**
  * file tool.
@@ -41,69 +38,29 @@ import com.webank.weid.constant.WeIdConstant;
  *
  */
 public class FileUtil {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
-    
+
     /**
      * slash.
      */
     private static final String SLASH_CHARACTER = "/";
-    
-    /**
-     * this method stores weId private key information by file and stores
-     * private key information by itself in actual scene.
-     * 
-     * @param path save path
-     * @param weId the weId
-     * @param privateKey the private key
-     * @return returns saved results
-     */
-    public static boolean savePrivateKey(String path, String weId, String privateKey) {
 
-        try {
-            if (null == weId) {
-                return false;
-            }
-            String fileName = weId.substring(weId.lastIndexOf(":") + 1);
-            String checkPath = checkDir(path);
-            String filePath = checkPath + fileName;
-            FileUtil.saveFile(filePath, privateKey);
-            return true;
-        } catch (Exception e) {
-            logger.error("savePrivateKey error", e);
-        } 
-        return false;    
-    }
-    
-    /**
-     * get the private key by weId.
-     * 
-     * @param path the path
-     * @param weId the weId
-     * @return returns the private key
-     */
-    public static String getPrivateKeyByWeId(String path, String weId) {
-        
-        if (null == weId) {
-            return StringUtils.EMPTY;
-        }
-        String fileName = weId.substring(weId.lastIndexOf(":") + 1);
-        String checkPath = checkDir(path);
-        String filePath = checkPath + fileName;
-        return getDataByPath(filePath);
-    }
-    
     /**
      * check the path is exists, create and return the path if it does not exist.
      * @param path the path
      * @return returns the path
      */
     public static String checkDir(String path) {
-        
+
         String checkPath = path;
+
+        // stitching the last slash.
         if (!checkPath.endsWith(SLASH_CHARACTER)) {
             checkPath = checkPath + SLASH_CHARACTER;
         }
+        
+        // check the path, create the path when it does not exist.
         File checkDir = new File(checkPath);
         if (!checkDir.exists()) {
             boolean success = checkDir.mkdirs();
@@ -121,7 +78,8 @@ public class FileUtil {
      * @return returns the data
      */
     public static String getDataByPath(String path) {
-        
+
+        logger.info("get data form [{}]", path);
         FileInputStream fis = null;
         String str = null;
         try {
@@ -129,7 +87,7 @@ public class FileUtil {
             byte[] buff = new byte[fis.available()];
             int size = fis.read(buff);
             if (size > 0) {
-                str = new String(buff, WeIdConstant.UTF_8);
+                str = new String(buff, StandardCharsets.UTF_8);
             }
         } catch (FileNotFoundException e) {
             logger.error("getDataByPath error", e);
@@ -146,38 +104,22 @@ public class FileUtil {
         }
         return str;
     }
-    
+
     /**
-     * format Object to String.
-     * @return
-     */
-    public static String formatObjectToString(Object obj) {
-        
-        ObjectMapper mapper = new ObjectMapper();
-        String dataStr = "";
-        try {
-            dataStr = mapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            logger.error("writeValueAsString error:", e);
-        }
-        return dataStr;
-    }
-    
-    /**
-     * save data.
+     * save data in a specified file.
+     * 
      * @param filePath save file path
      * @param dataStr save data
-     * @return
+     * @return return the file path
      */
     public static String saveFile(String filePath, String dataStr) {
-        
+
+        logger.info("save data in to [{}]", filePath);
         OutputStreamWriter ow = null;
         try {
-            String fileStr = filePath;
-            File file = new File(fileStr);
-            ow = new OutputStreamWriter(new FileOutputStream(file), WeIdConstant.UTF_8);
-            String content = new StringBuffer().append(dataStr).toString();
-            ow.write(content);
+            File file = new File(filePath);
+            ow = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+            ow.write(dataStr);
             return file.getAbsolutePath();
         } catch (IOException e) {
             logger.error("writer file exception", e);
