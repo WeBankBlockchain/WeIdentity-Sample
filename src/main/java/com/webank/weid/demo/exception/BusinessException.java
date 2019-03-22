@@ -30,7 +30,7 @@ public class BusinessException extends RuntimeException {
      * Version UID.
      */
     private static final long serialVersionUID = -3606254083553524719L;
-    
+
     /**
      * constructor.
      * @param message exception message
@@ -38,11 +38,11 @@ public class BusinessException extends RuntimeException {
     public BusinessException(String message) {
         super(message);
     }
-    
+
     /**
      * constructor.
      * @param message exception message
-     * @param e  throwable
+     * @param e  exception object
      */
     public BusinessException(String message, Throwable e) {
         super(message, e);

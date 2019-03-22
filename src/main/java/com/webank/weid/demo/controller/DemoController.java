@@ -23,10 +23,10 @@ import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JsonLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.bcos.web3j.crypto.ECKeyPair;
@@ -40,13 +40,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.common.dto.PasswordKey;
-import com.webank.weid.demo.common.util.FileUtil;
+import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.common.util.PropertiesUtils;
 import com.webank.weid.demo.service.DemoService;
 import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.Credential;
+import com.webank.weid.protocol.base.CredentialWrapper;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
+import com.webank.weid.util.JsonUtil;
 
 /**
  * Demo Controller.
@@ -65,17 +66,7 @@ public class DemoController {
      * this directory is used to store private keys, but keep your private
      * keys properly in your project.
      */
-    private String keyDir = PropertiesUtils.getProperty("weid.keys.dir");
-
-    /**
-     * jsonSchema.
-     */
-    public static final String SCHEMA;
-
-    static {
-        // default jsonSchema template
-        SCHEMA = FileUtil.getDataByPath("./claim/JsonSchema.json");
-    }
+    private static final String KEY_DIR = PropertiesUtils.getProperty("weid.keys.dir");
 
     /**
      * create weId without parameters and call the settings property method.
@@ -84,15 +75,19 @@ public class DemoController {
      */
     @PostMapping("/createWeId")
     public ResponseData<CreateWeIdDataResult> createWeId() {
+
+        // create weId and set related properties.
         ResponseData<CreateWeIdDataResult> response = demoService.createWeIdWithSetAttr();
 
+        // if weId is created successfully, save its private key.
         if (response.getErrorCode().intValue() == ErrorCode.SUCCESS.getCode()) {
-            FileUtil.savePrivateKey(
-                keyDir, 
+            PrivateKeyUtil.savePrivateKey(
+                KEY_DIR, 
                 response.getResult().getWeId(),
                 response.getResult().getUserWeIdPrivateKey().getPrivateKey()
             );
         }
+
         /*
          *  private keys are not allowed to be transmitted over http, so this place
          *  annotates the return of private keys to avoid misuse.
@@ -110,6 +105,7 @@ public class DemoController {
      * @return returns public and private keys
      */
     public PasswordKey createKeys() {
+
         PasswordKey passwordKey = new PasswordKey();
         try {
             ECKeyPair keyPair = Keys.createEcKeyPair();
@@ -135,14 +131,17 @@ public class DemoController {
      *
      */
     public ResponseData<String> createWeIdByKeys(@RequestBody Map<String, String> paramMap) {
+
         String publicKey = paramMap.get("publicKey");
         String privateKey = paramMap.get("privateKey");
         logger.info("param,publicKey:{},privateKey:{}", publicKey, privateKey);
 
+        // create weId and set related properties.
         ResponseData<String> response = demoService.createWeIdAndSetAttr(publicKey, privateKey);
 
+        // if weId is created successfully, save its private key.
         if (response.getErrorCode().intValue() == ErrorCode.SUCCESS.getCode()) {
-            FileUtil.savePrivateKey(keyDir, response.getResult(), privateKey);
+            PrivateKeyUtil.savePrivateKey(KEY_DIR, response.getResult(), privateKey);
         }
         return response;
     }
@@ -155,11 +154,13 @@ public class DemoController {
     @PostMapping("/registerAuthorityIssuer")
     public ResponseData<Boolean> registerAuthorityIssuer(
         @RequestBody Map<String, String> paramMap) {
-        
+
         String issuer = paramMap.get("issuer");
         String authorityName = paramMap.get("authorityName");
 
         logger.info("param,issuer:{},authorityName:{}", issuer, authorityName);
+
+        // call method registered as authority.
         return demoService.registerAuthorityIssuer(issuer, authorityName);
     }
 
@@ -170,27 +171,40 @@ public class DemoController {
      */
     @PostMapping("/registCpt")
     public ResponseData<CptBaseInfo> registCpt(@RequestBody String jsonStr) {
-        
+
         ResponseData<CptBaseInfo> response = null;
         try {
+
+            // converting request data in JSON format into JsonNode.
             JsonNode jsonNode = JsonLoader.fromString(jsonStr);
-            
+
+            // getting publisher data.
             JsonNode publisherNode = jsonNode.get("publisher");
             String publisher = null;
             if (publisherNode != null) {
                 publisher = publisherNode.textValue();
             }
-            
+
+            // getting claim data.
             JsonNode claimNode = jsonNode.get("claim");
             String claim = null;
             if (claimNode != null) {
                 claim = claimNode.toString();
             }
-           
-            String privateKey = FileUtil.getPrivateKeyByWeId(keyDir, publisher);
+
+            // get the private key from the file according to weId.
+            String privateKey = PrivateKeyUtil.getPrivateKeyByWeId(KEY_DIR, publisher);
             logger.info("param,publisher:{},privateKey:{},claim:{}", publisher, privateKey, claim);
-            claim = this.getJsonSchema(claim);
-            response = demoService.registCpt(publisher, privateKey, claim);
+
+            // converting claim in JSON format to map.
+            Map<String, Object> claimMap = 
+                (Map<String, Object>) JsonUtil.jsonStrToObj(
+                    new HashMap<String, Object>(),
+                    claim
+                );
+
+            // call method to register CPT on the chain.
+            response = demoService.registCpt(publisher, privateKey, claimMap);
         } catch (Exception e) {
             logger.error("registCpt error", e);
             response = new ResponseData<CptBaseInfo>(null, ErrorCode.TRANSACTION_EXECUTE_ERROR);
@@ -205,31 +219,37 @@ public class DemoController {
      * @throws IOException  it's possible to throw an exception
      */
     @PostMapping("/createCredential")
-    public ResponseData<Credential> createCredential(@RequestBody String jsonStr) {
-        
-        ResponseData<Credential> response = null;
+    public ResponseData<CredentialWrapper> createCredential(@RequestBody String jsonStr) {
+
+        ResponseData<CredentialWrapper> response = null;
         try {
+
+            // converting request data in JSON format into JsonNode.
             JsonNode jsonNode = JsonLoader.fromString(jsonStr);
-            
+
+            // getting cptId data.
             JsonNode cptIdNode = jsonNode.get("cptId");
             Integer cptId = null;
             if (cptIdNode != null && StringUtils.isNotBlank(cptIdNode.textValue())) {
                 cptId = Integer.parseInt(cptIdNode.textValue());
             }
-            
+
+            // getting issuer data.
             JsonNode issuerNode = jsonNode.get("issuer");
             String issuer = null;
             if (issuerNode != null) {
                 issuer = issuerNode.textValue();
             }
-            
+
+            // getting claimData data.
             JsonNode claimDataNode = jsonNode.get("claimData");
             String claimData = null;
             if (claimDataNode != null) {
                 claimData = claimDataNode.toString();
             }
-            
-            String privateKey = FileUtil.getPrivateKeyByWeId(keyDir, issuer);
+
+            // get the private key from the file according to weId.
+            String privateKey = PrivateKeyUtil.getPrivateKeyByWeId(KEY_DIR, issuer);
             logger.info(
                 "param,cptId:{},issuer:{},privateKey:{},claimData:{}", 
                 cptId, 
@@ -237,11 +257,19 @@ public class DemoController {
                 privateKey, 
                 claimData
             );
-            
-            response = demoService.createCredential(cptId, issuer, privateKey, claimData);
+
+            // converting claimData in JSON format to map.
+            Map<String, Object> claimDataMap = 
+                (Map<String, Object>) JsonUtil.jsonStrToObj(
+                    new HashMap<String, Object>(),
+                    claimData
+                );
+
+            // call method to create credentials.
+            response = demoService.createCredential(cptId, issuer, privateKey, claimDataMap);
         } catch (IOException e) {
             logger.error("createCredential error", e);
-            response = new ResponseData<Credential>(null, ErrorCode.CREDENTIAL_ERROR);
+            response = new ResponseData<CredentialWrapper>(null, ErrorCode.CREDENTIAL_ERROR);
         }
         return response;
     }
@@ -254,21 +282,10 @@ public class DemoController {
      */
     @PostMapping("/verifyCredential")
     public ResponseData<Boolean> verifyCredential(@RequestBody String credentialJson) {
-        logger.info("param,credentialJson:{}", credentialJson);
-        return demoService.verifyCredential(credentialJson);
-    }
 
-    /**
-     * converting the user's incoming claim into the required jsonSchema.
-     *
-     * @param claim cpt
-     * @return schema jsonSchema
-     */
-    @SuppressWarnings("deprecation")
-    private String getJsonSchema(String claim) throws IOException {
-        JsonNode jsonNode = JsonLoader.fromString(SCHEMA);
-        ObjectNode objectNode = (ObjectNode) jsonNode;
-        objectNode.put("properties", JsonLoader.fromString(claim));
-        return jsonNode.toString();
+        logger.info("param,credentialJson:{}", credentialJson);
+
+        // call method to verify credential.
+        return demoService.verifyCredential(credentialJson);
     }
 }
