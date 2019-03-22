@@ -21,6 +21,7 @@ package com.webank.weid.demo.service.impl;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -30,17 +31,19 @@ import org.springframework.stereotype.Service;
 
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.common.util.FileUtil;
-import com.webank.weid.demo.common.util.PropertiesUtils;
+import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.service.DemoService;
 import com.webank.weid.protocol.base.AuthorityIssuer;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.Credential;
+import com.webank.weid.protocol.base.CredentialWrapper;
+import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.base.WeIdPublicKey;
+import com.webank.weid.protocol.request.CptMapArgs;
 import com.webank.weid.protocol.request.CreateCredentialArgs;
 import com.webank.weid.protocol.request.CreateWeIdArgs;
 import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
-import com.webank.weid.protocol.request.RegisterCptArgs;
 import com.webank.weid.protocol.request.SetAuthenticationArgs;
 import com.webank.weid.protocol.request.SetPublicKeyArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
@@ -71,16 +74,11 @@ public class DemoServiceImpl implements DemoService {
 
     @Autowired
     private WeIdService weIdService;
-    
+
     /**
      * set validity period to 360 days by default.
      */
     private static final long EXPIRATION_DATE  = 1000L * 60 * 60 * 24 * 360;
-
-    /**
-     * SDK private key storage path.
-     */
-    private String privKeyPath = PropertiesUtils.getProperty("admin.privKeyPath");
 
     /**
      * create weId with public and private keys and set related properties.
@@ -90,6 +88,8 @@ public class DemoServiceImpl implements DemoService {
      * @return returns the create weId
      */
     public ResponseData<String> createWeIdAndSetAttr(String publicKey, String privateKey) {
+
+        logger.info("begin create weId and set attribute without parameter");
 
         // 1, create weId using the incoming public and private keys
         CreateWeIdArgs createWeIdArgs = new CreateWeIdArgs();
@@ -117,7 +117,7 @@ public class DemoServiceImpl implements DemoService {
         }
 
         // 3, call set authentication
-        ResponseData<Boolean> setAuthenticateRes = this.setAuthenticate(weIdData);
+        ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(weIdData);
         if (!setAuthenticateRes.getResult()) {
             createResult.setErrorCode(setAuthenticateRes.getErrorCode());
             createResult.setErrorMessage(setAuthenticateRes.getErrorMessage());
@@ -129,10 +129,12 @@ public class DemoServiceImpl implements DemoService {
     /**
      * create weId and set related properties.
      * 
-     * @return returns the create weId  and public private keys
+     * @return returns the create weId and public private keys
      */
     @Override
     public ResponseData<CreateWeIdDataResult> createWeIdWithSetAttr() {
+
+        logger.info("begin create weId and set attribute");
 
         // 1, create weId, this method automatically creates public and private keys
         ResponseData<CreateWeIdDataResult> createResult = weIdService.createWeId();
@@ -154,7 +156,7 @@ public class DemoServiceImpl implements DemoService {
         }
 
         // 3, call set authentication
-        ResponseData<Boolean> setAuthenticateRes = this.setAuthenticate(createResult.getResult());
+        ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
         if (!setAuthenticateRes.getResult()) {
             createResult.setErrorCode(setAuthenticateRes.getErrorCode());
             createResult.setErrorMessage(setAuthenticateRes.getErrorMessage());
@@ -164,10 +166,14 @@ public class DemoServiceImpl implements DemoService {
     }
 
     /**
-     * set public key.
+     * Set Public Key For WeIdentity DID Document.
+     *
+     * @param createWeIdDataResult the object of CreateWeIdDataResult
+     * @return the response data
      */
     private ResponseData<Boolean> setPublicKey(CreateWeIdDataResult createWeIdDataResult) {
 
+        // build setPublicKey parameters.
         SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
         setPublicKeyArgs.setWeId(createWeIdDataResult.getWeId());
         setPublicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
@@ -176,21 +182,25 @@ public class DemoServiceImpl implements DemoService {
         setPublicKeyArgs.getUserWeIdPrivateKey()
             .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
 
+        // call SDK method to chain set attribute.
         ResponseData<Boolean> setResponse = weIdService.setPublicKey(setPublicKeyArgs);
         logger.info(
             "setPublicKey is result,errorCode:{},errorMessage:{}",
             setResponse.getErrorCode(), 
             setResponse.getErrorMessage()
         );
-
         return setResponse;
     }
 
     /**
-     * set authentication.
+     * Set Authentication For WeIdentity DID Document.
+     *
+     * @param createWeIdDataResult createWeIdDataResult the object of CreateWeIdDataResult
+     * @return the response data
      */
-    private ResponseData<Boolean> setAuthenticate(CreateWeIdDataResult createWeIdDataResult) {
+    private ResponseData<Boolean> setAuthentication(CreateWeIdDataResult createWeIdDataResult) {
 
+        // build setAuthentication parameters.
         SetAuthenticationArgs setAuthenticationArgs = new SetAuthenticationArgs();
         setAuthenticationArgs.setWeId(createWeIdDataResult.getWeId());
         setAuthenticationArgs.setType("RsaSignatureAuthentication2018");
@@ -200,13 +210,13 @@ public class DemoServiceImpl implements DemoService {
         setAuthenticationArgs.getUserWeIdPrivateKey()
             .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
 
+        // call SDK method to chain set attribute.
         ResponseData<Boolean> setResponse = weIdService.setAuthentication(setAuthenticationArgs);
         logger.info(
             "setAuthentication is result,errorCode:{},errorMessage:{}",
             setResponse.getErrorCode(), 
             setResponse.getErrorMessage()
         );
-
         return setResponse;
     }
 
@@ -219,6 +229,7 @@ public class DemoServiceImpl implements DemoService {
     @Override
     public ResponseData<Boolean> registerAuthorityIssuer(String issuer, String authorityName) {
 
+        // build registerAuthorityIssuer parameters.
         AuthorityIssuer authorityIssuerResult = new AuthorityIssuer();
         authorityIssuerResult.setWeId(issuer);
         authorityIssuerResult.setName(authorityName);
@@ -228,8 +239,10 @@ public class DemoServiceImpl implements DemoService {
         registerAuthorityIssuerArgs.setAuthorityIssuer(authorityIssuerResult);
         registerAuthorityIssuerArgs.setWeIdPrivateKey(new WeIdPrivateKey());
 
-        String privKey = FileUtil.getDataByPath(privKeyPath);
+        // getting SDK private key from file.
+        String privKey = FileUtil.getDataByPath(PrivateKeyUtil.SDK_PRIVKEY_PATH);
 
+        // converting Hexadecimal private key data into Digital private key.
         String privateKey = new BigInteger(privKey, 16).toString();
         registerAuthorityIssuerArgs.getWeIdPrivateKey().setPrivateKey(privateKey);
 
@@ -240,7 +253,6 @@ public class DemoServiceImpl implements DemoService {
             registResponse.getErrorCode(), 
             registResponse.getErrorMessage()
         );
-        
         return registResponse;
     }
 
@@ -256,21 +268,25 @@ public class DemoServiceImpl implements DemoService {
     public ResponseData<CptBaseInfo> registCpt(
         String publisher, 
         String privateKey, 
-        String claim) {
+        Map<String, Object> claim) {
 
-        RegisterCptArgs registerCptArgs = new RegisterCptArgs();
-        registerCptArgs.setCptPublisher(publisher);
-        registerCptArgs.setCptPublisherPrivateKey(new WeIdPrivateKey());
-        registerCptArgs.getCptPublisherPrivateKey().setPrivateKey(privateKey);
-        registerCptArgs.setCptJsonSchema(claim);
+        // build registerCpt parameters.
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeId(publisher);
+        weIdAuthentication.setWeIdPrivateKey(new WeIdPrivateKey());
+        weIdAuthentication.getWeIdPrivateKey().setPrivateKey(privateKey);
 
-        ResponseData<CptBaseInfo> response = cptService.registerCpt(registerCptArgs);
+        CptMapArgs cptMapArgs = new CptMapArgs();
+        cptMapArgs.setWeIdAuthentication(weIdAuthentication);
+        cptMapArgs.setCptJsonSchema(claim);
+
+        // create CPT by SDK
+        ResponseData<CptBaseInfo> response = cptService.registerCpt(cptMapArgs);
         logger.info(
             "registerCpt is result,errorCode:{},errorMessage:{}", 
             response.getErrorCode(),
             response.getErrorMessage()
         );
-        
         return response;
     }
 
@@ -284,29 +300,32 @@ public class DemoServiceImpl implements DemoService {
      * @return returns credential
      */
     @Override
-    public ResponseData<Credential> createCredential(
+    public ResponseData<CredentialWrapper> createCredential(
         Integer cptId, 
         String issuer,
         String privateKey,
-        String claimDate) {
+        Map<String, Object> claimDate) {
 
+        // build createCredential parameters.
         CreateCredentialArgs registerCptArgs = new CreateCredentialArgs();
         registerCptArgs.setCptId(cptId);
         registerCptArgs.setIssuer(issuer);
         registerCptArgs.setWeIdPrivateKey(new WeIdPrivateKey());
         registerCptArgs.getWeIdPrivateKey().setPrivateKey(privateKey);
         registerCptArgs.setClaim(claimDate);
+
         // the validity period is 360 days
         registerCptArgs
             .setExpirationDate(System.currentTimeMillis() + EXPIRATION_DATE);
 
-        ResponseData<Credential> response = credentialService.createCredential(registerCptArgs);
+        // create credentials by SDK.
+        ResponseData<CredentialWrapper> response = 
+            credentialService.createCredential(registerCptArgs);
         logger.info(
             "createCredential is result,errorCode:{},errorMessage:{}",
             response.getErrorCode(), 
             response.getErrorMessage()
         );
-        
         return response;
     }
 
@@ -324,6 +343,7 @@ public class DemoServiceImpl implements DemoService {
         Credential credential = null;
 
         try {
+            // converting credential strings to credential objects.
             credential = objectMapper.readValue(credentialJson, Credential.class);
         } catch (IOException e) {
             logger.error("resolve credentialJson error.", e);
@@ -331,13 +351,13 @@ public class DemoServiceImpl implements DemoService {
             return verifyResponse;
         }
 
-        verifyResponse = credentialService.verifyCredential(credential);
+        // verify credential on chain.
+        verifyResponse = credentialService.verify(credential);
         logger.info(
             "verifyCredential is result,errorCode:{},errorMessage:{}",
             verifyResponse.getErrorCode(), 
             verifyResponse.getErrorMessage()
         );
-        
         return verifyResponse;
     }
 }
