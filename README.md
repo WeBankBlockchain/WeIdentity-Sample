@@ -21,13 +21,17 @@
 
 ## 开始使用
 
-#### 1. 将weidentity-sample.zip上传到Linux服务器，并解压代码包：
+#### 1. 参照[如何集成weidentity-java-sdk](https://weidentity.readthedocs.io/projects/javasdk/zh_CN/latest/docs/weidentity-installation.html)，部署 WeIdentity 智能合约的部署并完成配置。
+
+完成后会生产配置文件 `applicationContext.xml`。
+
+#### 2. 下载weidentity-sample源码：
 
 ```shell
-unzip weidentity-sample.zip
+git clone https://github.com/WeBankFinTech/weidentity-sample.git
 ```
 
-#### 2. 配置 https 和 http 端口
+#### 3. 配置 https 和 http 端口
 注： （默认配置的端口是20190和20191，如果不需要更改，可以跳过这一步）。
 
 weidentity-sample 启动后，会以 https 和 http 的方式对外提供服务：
@@ -70,8 +74,12 @@ admin.privKeyPath=./keys/priv/sdkkey
 weid.keys.dir=./keys/
 ```
 
+#### 4. 配置文件
 
-#### 3. 编译
+将第1步得到的三个文件: `applicationContext.xml` 文件，以及 `ca.crt`，`client.keystore` 拷贝到 `weidentity-sample/src/main/resources/` 目录下。
+
+
+#### 5. 编译
 
 执行：
 
@@ -82,7 +90,7 @@ gradle build
 
 注：需要安装gradle。
 
-#### 4. 添加执行权限
+#### 6. 添加执行权限
 
 给```command.sh```，```start.sh```，```stop.sh``` 脚本添加执行权限:
 
@@ -91,7 +99,7 @@ chmod +x *.sh
 ```
 
 
-#### 5. 启动weidentity-sample服务:
+#### 7. 启动weidentity-sample服务:
 
 ```shell
 ./start.sh
@@ -115,6 +123,7 @@ ls src/main/resources/server.cer
 * 如何停止服务
 
 项目根目录执行：
+
 ```shell
 ./stop.sh
 ```
