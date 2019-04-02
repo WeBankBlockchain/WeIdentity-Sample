@@ -111,16 +111,18 @@ public class DemoServiceImpl implements DemoService {
         // 2, call set public key
         ResponseData<Boolean> setPublicKeyRes = this.setPublicKey(weIdData);
         if (!setPublicKeyRes.getResult()) {
-            createResult.setErrorCode(setPublicKeyRes.getErrorCode());
-            createResult.setErrorMessage(setPublicKeyRes.getErrorMessage());
+            createResult.setErrorCode(
+                ErrorCode.getTypeByErrorCode(setPublicKeyRes.getErrorCode())
+            );
             return createResult;
         }
 
         // 3, call set authentication
         ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(weIdData);
         if (!setAuthenticateRes.getResult()) {
-            createResult.setErrorCode(setAuthenticateRes.getErrorCode());
-            createResult.setErrorMessage(setAuthenticateRes.getErrorMessage());
+            createResult.setErrorCode(
+                ErrorCode.getTypeByErrorCode(setAuthenticateRes.getErrorCode())
+            );
             return createResult;
         }
         return createResult;
@@ -150,16 +152,18 @@ public class DemoServiceImpl implements DemoService {
         // 2, call set public key
         ResponseData<Boolean> setPublicKeyRes = this.setPublicKey(createResult.getResult());
         if (!setPublicKeyRes.getResult()) {
-            createResult.setErrorCode(setPublicKeyRes.getErrorCode());
-            createResult.setErrorMessage(setPublicKeyRes.getErrorMessage());
+            createResult.setErrorCode(
+                ErrorCode.getTypeByErrorCode(setPublicKeyRes.getErrorCode())
+            );
             return createResult;
         }
 
         // 3, call set authentication
         ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
         if (!setAuthenticateRes.getResult()) {
-            createResult.setErrorCode(setAuthenticateRes.getErrorCode());
-            createResult.setErrorMessage(setAuthenticateRes.getErrorMessage());
+            createResult.setErrorCode(
+                ErrorCode.getTypeByErrorCode(setAuthenticateRes.getErrorCode())
+            );
             return createResult;
         }
         return createResult;
