@@ -90,7 +90,11 @@
 
     <Loggers>
         <Root level="info">
-           <AppenderRef ref="console"/>
+            <AppenderRef ref="asyncFile"/>
+            <AppenderRef ref="asyncDEBUG"/>
+            <AppenderRef ref="asyncINFO"/>
+            <AppenderRef ref="asyncWARN"/>
+            <AppenderRef ref="asyncERROR"/>
         </Root>
     </Loggers>
 </Configuration>
