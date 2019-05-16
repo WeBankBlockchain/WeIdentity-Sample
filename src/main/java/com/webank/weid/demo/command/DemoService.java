@@ -543,7 +543,7 @@ public class DemoService {
         ResponseData<String> response = 
             TransportationFactory
                 .newJsonTransportation()
-                .serialize(presentationE,new ProtocolProperty(EncodeType.CIPHER));
+                .serialize(presentationE,new ProtocolProperty(EncodeType.ORIGINAL));
         BaseBean.print(response);
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
             logger.error(
@@ -566,7 +566,7 @@ public class DemoService {
         ResponseData<String> response = 
             TransportationFactory
                 .newQrCodeTransportation()
-                .serialize(presentationE,new ProtocolProperty(EncodeType.CIPHER));
+                .serialize(presentationE,new ProtocolProperty(EncodeType.ORIGINAL));
         BaseBean.print(response);
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
             logger.error(
