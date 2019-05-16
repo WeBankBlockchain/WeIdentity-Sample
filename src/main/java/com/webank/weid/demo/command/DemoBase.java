@@ -62,6 +62,16 @@ public abstract class DemoBase {
     public static final String DISCLOSURE2;
     
     /**
+     * policy.
+     */
+    public static final String POLICY1;
+    
+    /**
+     * policy.
+     */
+    public static final String POLICY2;
+    
+    /**
      * claimData.
      */
     protected static final String CLAIMDATA;
@@ -84,6 +94,12 @@ public abstract class DemoBase {
         
         //get Disclosure data.
         DISCLOSURE2 = FileUtil.getDataByPath("./claim/Disclosure2.json");
+        
+        //get Policy data.
+        POLICY1 = FileUtil.getDataByPath("./claim/Policy1.json");
+        
+        //get Policy data.
+        POLICY2 = FileUtil.getDataByPath("./claim/Policy2.json");
         
         //get schemaData data.
         CLAIMDATA = FileUtil.getDataByPath("./claim/ClaimData.json");
