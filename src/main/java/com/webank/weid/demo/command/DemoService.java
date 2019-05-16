@@ -19,8 +19,8 @@
 
 package com.webank.weid.demo.command;
 
-import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -31,15 +31,20 @@ import org.springframework.stereotype.Component;
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.exception.BusinessException;
 import com.webank.weid.protocol.base.AuthorityIssuer;
+import com.webank.weid.protocol.base.Challenge;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.Credential;
+import com.webank.weid.protocol.base.CredentialPojoWrapper;
 import com.webank.weid.protocol.base.CredentialWrapper;
+import com.webank.weid.protocol.base.PresentationE;
+import com.webank.weid.protocol.base.PresentationPolicyE;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.request.CptMapArgs;
 import com.webank.weid.protocol.request.CptStringArgs;
 import com.webank.weid.protocol.request.CreateCredentialArgs;
+import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
 import com.webank.weid.protocol.request.SetAuthenticationArgs;
 import com.webank.weid.protocol.request.SetPublicKeyArgs;
@@ -48,8 +53,12 @@ import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.rpc.AuthorityIssuerService;
 import com.webank.weid.rpc.CptService;
+import com.webank.weid.rpc.CredentialPojoService;
 import com.webank.weid.rpc.CredentialService;
 import com.webank.weid.rpc.WeIdService;
+import com.webank.weid.suite.api.transportation.TransportationFactory;
+import com.webank.weid.suite.api.transportation.params.EncodeType;
+import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
 import com.webank.weid.util.JsonUtil;
 
 /**
@@ -73,6 +82,9 @@ public class DemoService {
 
     @Autowired
     private WeIdService weIdService;
+    
+    @Autowired
+    private CredentialPojoService credentialPojoService;
 
     /**
      * Create a WeIdentity DID with null input param.
@@ -173,15 +185,13 @@ public class DemoService {
      * Set Authentication for WeIdentity DID Document.
      *
      * @param createResult the Object of CreateWeIdDataResult
-     * @param authType the set authentication args
      */
-    public void setAuthentication(CreateWeIdDataResult createResult, String authType)
+    public void setAuthentication(CreateWeIdDataResult createResult)
         throws BusinessException {
 
         // build SetAuthenticationArgs for setAuthentication.
         SetAuthenticationArgs setAuthenticationArgs = new SetAuthenticationArgs();
         setAuthenticationArgs.setWeId(createResult.getWeId());
-        setAuthenticationArgs.setType(authType);
         setAuthenticationArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
         setAuthenticationArgs.setUserWeIdPrivateKey(
             this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
@@ -446,7 +456,24 @@ public class DemoService {
         }
         return response.getResult().getCredential();
     }
-
+    
+    /**
+     * create a credential for user.
+     * @param arg the CreateCredentialPojoArgs
+     * @return
+     */
+    public <T> CredentialPojoWrapper createCredential(CreateCredentialPojoArgs<T> arg) {
+        ResponseData<CredentialPojoWrapper> response = 
+                credentialPojoService.createCredential(arg);
+        BaseBean.print("createCredential result:");
+        BaseBean.print(response);
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error("credentialPojoService.createCredential failed,error:{}",response);
+            throw new BusinessException(response.getErrorMessage());
+        }
+        return response.getResult();
+    }
+    
     /**
      * verify the credential on chain.
      * 
@@ -470,4 +497,152 @@ public class DemoService {
         }
         return response.getResult();
     }
+    
+    /**
+     *  create presentation with policy.
+     * @param credentialList the credentialList of user
+     * @param presentationPolicyE the policy for create selective credential 
+     * @param challenge the challenge form verifier
+     * @param createWeId the weId information of user 
+     * @return the object of PresentationE 
+     */
+    public PresentationE createPresentation(
+        List<CredentialPojoWrapper> credentialList,
+        PresentationPolicyE presentationPolicyE,
+        Challenge challenge,
+        CreateWeIdDataResult createWeId) {
+        
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeId(createWeId.getWeId());
+        weIdAuthentication.setWeIdPublicKeyId(createWeId.getWeId() + "#keys-0");
+        weIdAuthentication.setWeIdPrivateKey(createWeId.getUserWeIdPrivateKey());
+        ResponseData<PresentationE> response = 
+            credentialPojoService.createPresentation(
+                credentialList, 
+                presentationPolicyE, 
+                challenge, 
+                weIdAuthentication
+            );
+        BaseBean.print("createPresentation result:");
+        BaseBean.print(response);
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error("credentialPojoService.createPresentation failed,error:{}",response);
+            throw new BusinessException(response.getErrorMessage());
+        }
+        return response.getResult();
+    }
+    
+    /**
+     * serialize presentation to String by JsonTransportation.
+     * @param weId specifyWeIds to verifier
+     * @param presentationE the presentationE
+     * @return serialize string
+     */
+    public String presentationEToJson(String weId, PresentationE presentationE) {
+        
+        ResponseData<String> response = 
+            TransportationFactory
+                .newJsonTransportation()
+                .serialize(presentationE,new ProtocolProperty(EncodeType.CIPHER));
+        BaseBean.print(response);
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error(
+                "jsonTransportation.serialize failed,responseData:{}",
+                response
+            );
+            throw new BusinessException(response.getErrorMessage());
+        }
+        return response.getResult();
+    }
+    
+    /**
+     * serialize presentation to String by QrCodeTransportation.
+     * @param weId specifyWeIds to verifier
+     * @param presentationE the presentationE
+     * @return serialize string
+     */
+    public String presentationEToQrCode(String weId, PresentationE presentationE) {
+        
+        ResponseData<String> response = 
+            TransportationFactory
+                .newQrCodeTransportation()
+                .serialize(presentationE,new ProtocolProperty(EncodeType.CIPHER));
+        BaseBean.print(response);
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error(
+                "QRCodeTransportation.serialize failed,responseData:{}",
+                response
+            );
+            throw new BusinessException(response.getErrorMessage());
+        }
+        return response.getResult();
+    }
+    
+    /**
+     * deserialize transString by JsonTransportation.
+     * @param presentationJson JSON String
+     * @return PresentationE
+     */
+    public PresentationE deserializePresentationJson(String presentationJson) {
+        
+        ResponseData<PresentationE> response = 
+            TransportationFactory
+                .newJsonTransportation()
+                .deserialize(presentationJson, PresentationE.class);
+        BaseBean.print("JsonTransportation.deserialize result:");
+        BaseBean.print(response);
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error("jsonTransportation.deserialize failed,responseData:{}",
+                response);
+            throw new BusinessException(response.getErrorMessage());
+        }
+        return response.getResult();
+    }
+    
+    /**
+     * deserialize transString by QrCodeTransportation.
+     * @param presentationJson QrCode String
+     * @return PresentationE
+     */
+    public PresentationE deserializePresentationQrCode(String presentationJson) {
+        
+        ResponseData<PresentationE> response = 
+            TransportationFactory
+                .newQrCodeTransportation()
+                .deserialize(presentationJson, PresentationE.class);
+        BaseBean.print("QrCodeTransportation.deserialize result:");
+        BaseBean.print(response);
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error("QrCodeTransportation.deserialize failed,responseData:{}",
+                response);
+            throw new BusinessException(response.getErrorMessage());
+        }
+        return response.getResult();
+    }
+    
+    /**
+     * verify the presentation.
+     * @param weId the weId of userAgent
+     * @param presentationPolicyE the policy of verifier
+     * @param challenge the challenge of verifier
+     * @param presentationE the presentation of userAgent
+     * @return success if true, others fail
+     */
+    public boolean verifyPresentationE(
+        String weId, 
+        PresentationPolicyE presentationPolicyE, 
+        Challenge challenge,
+        PresentationE presentationE) {
+        
+        ResponseData<Boolean> response = 
+            credentialPojoService.verify(weId, presentationPolicyE, challenge, presentationE);
+        BaseBean.print("verify result:");
+        BaseBean.print(response);
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error("credentialPojoService.verify failed,responseData:{}",
+                response);
+            throw new BusinessException(response.getErrorMessage());
+        }
+        return response.getResult();
+    } 
 }
