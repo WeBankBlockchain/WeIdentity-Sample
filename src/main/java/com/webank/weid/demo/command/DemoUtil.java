@@ -20,17 +20,31 @@
 package com.webank.weid.demo.command;
 
 import java.io.IOException;
-import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.webank.weid.constant.ErrorCode;
+import com.webank.weid.cpt.Cpt2000000;
+import com.webank.weid.cpt.Cpt2000000.Gender;
+import com.webank.weid.cpt.Cpt2000001;
+import com.webank.weid.cpt.School;
 import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
-import com.webank.weid.protocol.base.Credential;
+import com.webank.weid.demo.exception.BusinessException;
+import com.webank.weid.protocol.base.CredentialPojoWrapper;
+import com.webank.weid.protocol.base.PolicyAndChallenge;
+import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
+import com.webank.weid.protocol.response.CreateWeIdDataResult;
+import com.webank.weid.protocol.response.ResponseData;
+import com.webank.weid.rpc.AmopService;
+import com.webank.weid.service.impl.AmopServiceImpl;
 
 /**
  * the DemoUtil for command.
@@ -46,9 +60,9 @@ public class DemoUtil {
     private static final String TEMP_DIR = "./tmp/";
 
     /**
-     * credential data file.
+     * credentials data file.
      */
-    private static final String CRED_FILE = TEMP_DIR + "credential.json";
+    private static final String CRED_FILE = TEMP_DIR + "credentials.json";
 
     /**
      * temporary data file.
@@ -60,42 +74,36 @@ public class DemoUtil {
      */
     public static final String SDK_PRIVATE_KEY;
 
-    /**
-     * Hexadecimal.
-     */
-    private static final int HEXADECIMAL = 16;
-
     static {
 
         // check the temporary file directory, create it when it does not exists.
         FileUtil.checkDir(TEMP_DIR);
 
         // getting SDK private key information from a file.
-        String sdkPrivateKey = FileUtil.getDataByPath(PrivateKeyUtil.SDK_PRIVKEY_PATH);
-
-        // converting a hexadecimal private key to a digital private key.
-        SDK_PRIVATE_KEY = new BigInteger(sdkPrivateKey, HEXADECIMAL).toString();
+        SDK_PRIVATE_KEY = FileUtil.getDataByPath(PrivateKeyUtil.SDK_PRIVKEY_PATH);
     }
 
     /**
-     * read credential.
+     * read credential list.
      * @return object of Credential
      */
-    public static Credential getCredentialFromJson() {
-
-        Credential credential = null;
+    public static List<CredentialPojoWrapper> getCredentialListFromJson() {
 
         // get credential string from the file.
         String jsonStr = FileUtil.getDataByPath(CRED_FILE);
         
-        // converting credential string to Credential object.
+        // converting credential string to Credential List.
         ObjectMapper objectMapper = new ObjectMapper();
+        JavaType javaType = objectMapper.getTypeFactory()
+            .constructParametricType(ArrayList.class, CredentialPojoWrapper.class);
+        
+        List<CredentialPojoWrapper> credentialList = null;
         try {
-            credential = objectMapper.readValue(jsonStr, Credential.class);
-        } catch (IOException e) {
-            logger.error("getCredentialFromJson error", e);
+            credentialList = objectMapper.readValue(jsonStr, javaType);
+        }  catch (Exception e) {
+            logger.error("deserialize credentialListJson failed,e:{}",e);
         }
-        return credential;
+        return credentialList;
     }
 
     /**
@@ -121,13 +129,13 @@ public class DemoUtil {
     /**
      * save credential in a specified file.
      * 
-     * @param credential require
+     * @param credentialList require
      * @return return to save path
      */
-    public static String saveCredential(Credential credential) {
+    public static String saveCredentialList(List<CredentialPojoWrapper> credentialList) {
 
         // converting Credential object to JSON string.
-        String dataStr = DemoUtil.formatObjectToString(credential);
+        String dataStr = DemoUtil.formatObjectToString(credentialList);
 
         // save the JSON string in the file.
         return FileUtil.saveFile(CRED_FILE, dataStr);
@@ -163,5 +171,81 @@ public class DemoUtil {
             logger.error("writeValueAsString error:", e);
         }
         return dataStr;
+    }
+    
+    /**
+     *  build the parameter for create credential.
+     * @param cptId the cptId
+     * @param weIdData weId information for issue
+     * @return the CreateCredentialPojoArgs
+     */
+    public static CreateCredentialPojoArgs<Cpt2000001> buildCreateArgs2000001(
+        Integer cptId,
+        CreateWeIdDataResult weIdData) {
+        
+        CreateCredentialPojoArgs<Cpt2000001> arg = new CreateCredentialPojoArgs<Cpt2000001>();
+        arg.setCptId(cptId);
+        arg.setIssuer(weIdData.getWeId());
+        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
+        arg.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
+
+        Cpt2000001 claim = new Cpt2000001();
+        claim.setName("zhangsan");
+        claim.setAge(22.0);
+        claim.setGender(Cpt2000001.Gender.M);
+        School school = new School();
+        school.setName("清华大学");
+        school.setAddress("北京");
+        claim.setSchool(school);
+        arg.setClaim(claim);
+        return arg;
+    }
+    
+    /**
+     *  build the parameter for create credential.
+     * @param cptId the cptId
+     * @param weIdData weId information for issue
+     * @return the CreateCredentialPojoArgs
+     */
+    public static CreateCredentialPojoArgs<Cpt2000000> buildCreateArgs2000000(
+        Integer cptId,
+        CreateWeIdDataResult weIdData) {
+        
+        CreateCredentialPojoArgs<Cpt2000000> arg = new CreateCredentialPojoArgs<Cpt2000000>();
+        arg.setCptId(cptId);
+        arg.setIssuer(weIdData.getWeId());
+        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
+        arg.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
+
+        Cpt2000000 claim = new Cpt2000000();
+        claim.setName("zhangsan");
+        claim.setGender(Gender.F);
+        claim.setAge(22.0);
+        arg.setClaim(claim);
+        return arg;
+    }
+
+    /**
+     * send AMOP message for get the policyAndChallenge.
+     * @param orgId send to orgId
+     * @param policyId the policyId
+     * @return the policyAndChallenge
+     */
+    public static PolicyAndChallenge queryPolicyAndChallenge(String orgId,Integer policyId) {
+        
+        AmopService amopService = new AmopServiceImpl();
+        ResponseData<PolicyAndChallenge> response = 
+            amopService.getPresentationPolicy(orgId, policyId);
+        
+        BaseBean.print("queryPolicyAndChallenge from amop result:");
+        BaseBean.print(response);
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error(
+                "queryPolicyAndChallenge from amop failed,responseData:{}",
+                response
+            );
+            throw new BusinessException(response.getErrorMessage());
+        }
+        return response.getResult();
     }
 }

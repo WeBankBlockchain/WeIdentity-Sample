@@ -44,8 +44,23 @@ public abstract class DemoBase {
     /**
      * schema.
      */
-    protected static final String SCHEMA;
-
+    protected static final String SCHEMA1;
+    
+    /**
+     * schema.
+     */
+    protected static final String SCHEMA2;
+    
+    /**
+     * schema.
+     */
+    public static final String DISCLOSURE1;
+    
+    /**
+     * schema.
+     */
+    public static final String DISCLOSURE2;
+    
     /**
      * claimData.
      */
@@ -59,7 +74,16 @@ public abstract class DemoBase {
         logger.info("initializing spring containers finish...");
  
         //get jsonSchema data.
-        SCHEMA = FileUtil.getDataByPath("./claim/JsonSchema.json");
+        SCHEMA1 = FileUtil.getDataByPath("./claim/JsonSchema1.json");
+        
+        //get jsonSchema data.
+        SCHEMA2 = FileUtil.getDataByPath("./claim/JsonSchema2.json");
+        
+        //get Disclosure data.
+        DISCLOSURE1 = FileUtil.getDataByPath("./claim/Disclosure1.json");
+        
+        //get Disclosure data.
+        DISCLOSURE2 = FileUtil.getDataByPath("./claim/Disclosure2.json");
         
         //get schemaData data.
         CLAIMDATA = FileUtil.getDataByPath("./claim/ClaimData.json");
