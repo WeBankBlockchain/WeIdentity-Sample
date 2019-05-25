@@ -1,0 +1,31 @@
+{
+	"extra": {
+		"key": "value"
+	},
+	"id": 1001,
+	"orgId": "1002",
+	"policy": {
+		"2000000": {
+			"fieldsToBeDisclosed": {
+				"name": 1,
+				"gender": 0,
+				"age": 1
+			},
+			"version": 1
+		},
+		"2000001": {
+			"fieldsToBeDisclosed": {
+				"name": 1,
+				"gender": 0,
+				"age": 1,
+				"school": {
+					"name": 1,
+					"address": 0
+				}
+			},
+			"version": 1
+		}
+	},
+	"version": 1,
+	"weId": "did:weid:0x0231765e19955fc65133ec8591d73e9136306cd0"
+}

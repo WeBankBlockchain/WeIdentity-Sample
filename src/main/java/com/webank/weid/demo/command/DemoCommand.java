@@ -25,17 +25,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.webank.weid.demo.common.util.DbUtils;
+import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.service.impl.PolicyServiceImpl;
 import com.webank.weid.protocol.base.Challenge;
-import com.webank.weid.protocol.base.CredentialPojoWrapper;
+import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.PolicyAndChallenge;
 import com.webank.weid.protocol.base.PresentationE;
 import com.webank.weid.protocol.base.PresentationPolicyE;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
+import com.webank.weid.util.DataToolUtils;
 
 /**
  * command operation.
@@ -127,7 +129,7 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin to registerAuthorityIssuer...");
 
         // registered authority, "webank" is the authority Name, "0" is default.
-        demo.registerAuthorityIssuer(createWeId, "webank", "0");
+        demo.registerAuthorityIssuer(createWeId, "webank" + System.currentTimeMillis(), "0");
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to regist the first Cpt...");
@@ -145,17 +147,17 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin to create the first credential...");
         
         // create the first credential
-        CredentialPojoWrapper credential1 = 
+        CredentialPojo credential1 = 
             demo.createCredential(DemoUtil.buildCreateArgs2000000(2000000, createWeId));
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to create the second credential...");
         
         // create the second credential
-        CredentialPojoWrapper credential2 = 
+        CredentialPojo credential2 = 
             demo.createCredential(DemoUtil.buildCreateArgs2000001(2000001, createWeId));
 
-        List<CredentialPojoWrapper> credentialList = new ArrayList<CredentialPojoWrapper>();
+        List<CredentialPojo> credentialList = new ArrayList<CredentialPojo>();
         credentialList.add(credential1);
         credentialList.add(credential2);
         
@@ -195,19 +197,22 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin to get the credentialList from json...");
         
         // get the CredentialList
-        List<CredentialPojoWrapper> credentialList = DemoUtil.getCredentialListFromJson();
+        final List<CredentialPojo> credentialList = DemoUtil.getCredentialListFromJson();
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to get the PolicyAndChallenge...");
         
         // mock AMOP request data from other org (1002:verifier orgId, 123456:policyId)
-        PolicyAndChallenge policyAndChallenge = DemoUtil.queryPolicyAndChallenge("1002",123456);
+        PolicyAndChallenge policyAndChallenge = 
+            DemoUtil.queryPolicyAndChallenge("1002", 1001, createWeId.getWeId());
+        
+        System.out.println(DataToolUtils.serialize(policyAndChallenge));
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to createPresentation...");
         
         // create presentationE
-        PresentationE presentationE = 
+        final PresentationE presentationE = 
             demo.createPresentation(
                 credentialList, 
                 policyAndChallenge.getPresentationPolicyE(), 
@@ -219,8 +224,12 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin to transfom presentation to json ...");
         
         // serialize presentationE
+        // build same verfier for get the key if use CIPHER to serialize
+        List<String> verfierWeIds = new ArrayList<>();
         String verfierWeId = ""; //this is the verfier weId
-        String presentationJson = demo.presentationEToJson(verfierWeId, presentationE);
+        verfierWeIds.add(verfierWeId);
+        
+        String presentationJson = demo.presentationEToJson(verfierWeIds, presentationE);
         map.put("presentationJson", presentationJson);
         
         
@@ -231,9 +240,25 @@ public class DemoCommand extends DemoBase {
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to save the presentation json...");
-        
         // save the presentation JSON
         DemoUtil.saveTemData(map);
+        
+        BaseBean.print("------------------------------");
+        BaseBean.print("begin to generateQrCode ...");
+        String imageName = System.currentTimeMillis() + ".jpg";
+        String fileName =  DemoUtil.TEMP_DIR + imageName;
+        Integer integer = 
+            DataToolUtils.generateQrCode(
+                presentationQrCode,
+                ErrorCorrectionLevel.L, 
+                fileName
+            );
+        if (integer == ErrorCode.SUCCESS.getCode()) {
+            BaseBean.print("generateQrCode success in file: " + fileName);
+        } else {
+            BaseBean.print("generateQrCode faile, please check the log.");
+        }
+        
         
         BaseBean.print("------------------------------");
         BaseBean.print("userAgent() finish...");
@@ -272,14 +297,12 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin get the PolicyAndChallenge...");
         
         // mock get the data from DB
-        final PresentationPolicyE presentationPolicyE = DbUtils.queryPresentationPolicyE(123456);
-        Challenge challenge = DbUtils.queryChallenge("abcd1234");
-        
+        final PresentationPolicyE presentationPolicyE = PresentationPolicyE.create("1001");
+        Challenge challenge = DbUtils.queryChallenge(presentationE.getNonce());
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin verify presentationE for JSON...");
         String  userWeId = paramMap.get("userWeId");
-        challenge.setWeId(userWeId);
         // verifyvPresentationE
         boolean result = 
             demo.verifyPresentationE(userWeId, presentationPolicyE, challenge, presentationE);

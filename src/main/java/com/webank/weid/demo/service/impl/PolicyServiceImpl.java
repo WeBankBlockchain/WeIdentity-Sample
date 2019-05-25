@@ -1,6 +1,6 @@
 package com.webank.weid.demo.service.impl;
 
-import com.webank.weid.demo.common.util.DbUtils;
+import com.webank.weid.demo.command.DbUtils;
 import com.webank.weid.protocol.base.Challenge;
 import com.webank.weid.protocol.base.PolicyAndChallenge;
 import com.webank.weid.protocol.base.PresentationPolicyE;
@@ -9,13 +9,17 @@ import com.webank.weid.service.impl.callback.PresentationPolicyService;
 public class PolicyServiceImpl extends PresentationPolicyService {
     
     @Override
-    public PolicyAndChallenge policyAndChallengeOnPush(String policyId) {
-       
+    public PolicyAndChallenge policyAndChallengeOnPush(String policyId, String targetWeId) {
+        
         //获取presentationPolicyE
-        PresentationPolicyE presentationPolicyE = 
-            DbUtils.queryPresentationPolicyE(Integer.valueOf(policyId));
+        PresentationPolicyE presentationPolicyE = PresentationPolicyE.create(policyId);
+        
         //获取Challenge
-        Challenge challenge = DbUtils.queryChallenge("abcd1234");
+        Challenge challenge = 
+            Challenge.create(targetWeId, String.valueOf(System.currentTimeMillis()));
+        
+        //保存challenge到数据库
+        DbUtils.save(challenge.getNonce(), challenge);
         
         PolicyAndChallenge policyAndChallenge = new PolicyAndChallenge();
         policyAndChallenge.setChallenge(challenge);
