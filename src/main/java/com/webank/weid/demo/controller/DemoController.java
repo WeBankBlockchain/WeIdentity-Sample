@@ -47,7 +47,7 @@ import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.CredentialWrapper;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.util.JsonUtil;
+import com.webank.weid.util.DataToolUtils;
 
 /**
  * Demo Controller.
@@ -198,9 +198,9 @@ public class DemoController {
 
             // converting claim in JSON format to map.
             Map<String, Object> claimMap = 
-                (Map<String, Object>) JsonUtil.jsonStrToObj(
-                    new HashMap<String, Object>(),
-                    claim
+                (Map<String, Object>) DataToolUtils.deserialize(
+                    claim,
+                    new HashMap<String, Object>().getClass()
                 );
 
             // call method to register CPT on the chain.
@@ -260,9 +260,9 @@ public class DemoController {
 
             // converting claimData in JSON format to map.
             Map<String, Object> claimDataMap = 
-                (Map<String, Object>) JsonUtil.jsonStrToObj(
-                    new HashMap<String, Object>(),
-                    claimData
+                (Map<String, Object>) DataToolUtils.deserialize(
+                    claimData,
+                    new HashMap<String, Object>().getClass()
                 );
 
             // call method to create credentials.

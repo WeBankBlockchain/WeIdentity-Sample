@@ -1,9 +1,0 @@
-{
-    "name":1,
-    "gender":0,
-    "age":1,
-    "school":{
-        "name":1,
-        "address":0
-    }
-}
