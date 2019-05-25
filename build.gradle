@@ -69,13 +69,16 @@ List jackson = [
 ]
 
 List weidentity_contract = [
-    "com.webank:weidentity-contract-java:1.1.0"
+    "com.webank:weidentity-contract-java:1.2.2"
 ]
 
 List mysql_driver = [
     "mysql:mysql-connector-java:5.1.44"
 ]
 
+List zxing = [
+    "com.google.zxing:core:3.3.0"
+]
 
 // In this section you declare the dependencies for your production and test code
 List web3sdk_dependencies = [
@@ -97,7 +100,7 @@ dependencies {
         exclude group:"ch.qos.logback"
     }
     //compile group: 'com.webank', name: 'weidentity-java-sdk', version: '1.1.+'
-    compile logger, lombok, apache_commons, jackson, web3sdk_dependencies, weidentity_contract,mysql_driver
+    compile logger, lombok, apache_commons, jackson, web3sdk_dependencies, weidentity_contract, mysql_driver, zxing
     compile fileTree(dir:'libs', include:'*.jar')
 }
 
