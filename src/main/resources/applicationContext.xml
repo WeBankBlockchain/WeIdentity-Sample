@@ -34,6 +34,7 @@
            <prop key="cpt.contractaddress">0xfcd14ed03e6d94ca127d557a1883dd042a81ea11</prop>
            <prop key="issuer.contractaddress">0x60d4ee5c461677840ab3552a6845fdf7db4a5317</prop>
            <prop key="evidence.contractaddress">0x73479ed8162e198b9627b962eb4aae7098bdc770</prop>
+           <prop key="specificissuer.contractaddress">0xa4e0502f9221a82a54e6664c4b78527f3cb8eb26</prop>
       </props>
     </property>
   </bean>
