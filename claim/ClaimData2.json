@@ -1,0 +1,9 @@
+{
+	"name": "zhangsan",
+	"gender": "F",
+	"age": "22.0",
+	"school": {
+		"address": "北京",
+		"name": "清华大学"
+	}
+}
