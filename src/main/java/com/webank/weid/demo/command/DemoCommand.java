@@ -310,8 +310,8 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("------------------------------");
         BaseBean.print("begin get the PolicyAndChallenge...");
         
-        // mock get the data from DB
-        final PresentationPolicyE presentationPolicyE = PresentationPolicyE.create("1001");
+        // get the data from cache.
+        final PresentationPolicyE presentationPolicyE = PolicyServiceImpl.policMap.get("1001");
         Challenge challenge = DbUtils.queryChallenge(presentationE.getNonce());
         
         BaseBean.print("------------------------------");
