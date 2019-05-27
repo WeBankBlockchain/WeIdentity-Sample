@@ -20,7 +20,6 @@
 package com.webank.weid.demo.service.impl;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -245,9 +244,7 @@ public class DemoServiceImpl implements DemoService {
         // getting SDK private key from file.
         String privKey = FileUtil.getDataByPath(PrivateKeyUtil.SDK_PRIVKEY_PATH);
 
-        // converting Hexadecimal private key data into Digital private key.
-        String privateKey = new BigInteger(privKey, 16).toString();
-        registerAuthorityIssuerArgs.getWeIdPrivateKey().setPrivateKey(privateKey);
+        registerAuthorityIssuerArgs.getWeIdPrivateKey().setPrivateKey(privKey);
 
         ResponseData<Boolean> registResponse =
             authorityIssuerService.registerAuthorityIssuer(registerAuthorityIssuerArgs);
