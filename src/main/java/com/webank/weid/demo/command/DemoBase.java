@@ -55,6 +55,11 @@ public abstract class DemoBase {
      * claimData.
      */
     protected static final String CLAIMDATA;
+    
+    /**
+     * claimData2.
+     */
+    protected static final String CLAIMDATA2;
 
     static {
         
@@ -71,5 +76,8 @@ public abstract class DemoBase {
         
         //get schemaData data.
         CLAIMDATA = FileUtil.getDataByPath("./claim/ClaimData.json");
+        
+        //get schemaData2 data.
+        CLAIMDATA2 = FileUtil.getDataByPath("./claim/ClaimData2.json");
     }
 }

@@ -20,6 +20,7 @@
 package com.webank.weid.demo.command;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -236,6 +237,60 @@ public class DemoUtil {
         return arg;
     }
 
+    /**
+     *  build the parameter for create credential with Map.
+     * @param cptId the cptId
+     * @param weIdData weId information for issue
+     * @return the CreateCredentialPojoArgs
+     */
+    public static CreateCredentialPojoArgs<Map<String, Object>> buildCreateArgsWithMap(
+        Integer cptId,
+        CreateWeIdDataResult weIdData) {
+        
+        CreateCredentialPojoArgs<Map<String, Object>> arg = 
+            new CreateCredentialPojoArgs<Map<String, Object>>();
+        arg.setCptId(cptId);
+        arg.setIssuer(weIdData.getWeId());
+        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
+        arg.setWeIdAuthentication(weIdAuthentication);
+
+        Map<String, Object> claim = new HashMap<String, Object>();
+        claim.put("name", "zhangsan");
+        claim.put("age", "22.0");
+        claim.put("gender", Cpt2000001.Gender.M.toString());
+        
+        Map<String, Object> school = new HashMap<String, Object>();
+        school.put("name", "清华大学");
+        school.put("address", "北京");
+
+        claim.put("school", school);
+        arg.setClaim(claim);
+        return arg;
+    }
+    
+    /**
+     *  build the parameter for create credential with JsonString.
+     * @param cptId the cptId
+     * @param weIdData weId information for issue
+     * @return the CreateCredentialPojoArgs
+     */
+    public static CreateCredentialPojoArgs<String> buildCreateArgsWithJsonString(
+        Integer cptId,
+        CreateWeIdDataResult weIdData) {
+        
+        CreateCredentialPojoArgs<String> arg = new CreateCredentialPojoArgs<String>();
+        arg.setCptId(cptId);
+        arg.setIssuer(weIdData.getWeId());
+        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
+        arg.setWeIdAuthentication(weIdAuthentication);
+        arg.setClaim(DemoBase.CLAIMDATA2);
+        return arg;
+    }
+    
     /**
      * send AMOP message for get the policyAndChallenge.
      * @param orgId send to orgId
