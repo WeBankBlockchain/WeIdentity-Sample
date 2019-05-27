@@ -403,10 +403,11 @@ public class DemoService {
             "create credential using string-type claim and convert claim from string to map"
         );
         // converting claim of strings to map.
-        Map<String, Object> claimDataMap = 
+        Map<String, Object> claimDataMap = new HashMap<String, Object>();
+        claimDataMap = 
             (Map<String, Object>) DataToolUtils.deserialize(
                 claim,
-                new HashMap<String, Object>().getClass()
+                claimDataMap.getClass()
             );
 
         return this.createCredential(weIdResult, cptId, claimDataMap, expirationDate);

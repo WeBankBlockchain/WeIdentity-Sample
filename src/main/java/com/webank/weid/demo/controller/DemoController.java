@@ -197,10 +197,11 @@ public class DemoController {
             logger.info("param,publisher:{},privateKey:{},claim:{}", publisher, privateKey, claim);
 
             // converting claim in JSON format to map.
-            Map<String, Object> claimMap = 
+            Map<String, Object> claimMap = new HashMap<String, Object>();
+            claimMap = 
                 (Map<String, Object>) DataToolUtils.deserialize(
                     claim,
-                    new HashMap<String, Object>().getClass()
+                    claimMap.getClass()
                 );
 
             // call method to register CPT on the chain.
@@ -259,10 +260,11 @@ public class DemoController {
             );
 
             // converting claimData in JSON format to map.
-            Map<String, Object> claimDataMap = 
+            Map<String, Object> claimDataMap = new HashMap<String, Object>();
+            claimDataMap = 
                 (Map<String, Object>) DataToolUtils.deserialize(
                     claimData,
-                    new HashMap<String, Object>().getClass()
+                    claimDataMap.getClass()
                 );
 
             // call method to create credentials.
