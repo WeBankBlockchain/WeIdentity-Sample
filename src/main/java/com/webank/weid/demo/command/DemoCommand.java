@@ -144,14 +144,14 @@ public class DemoCommand extends DemoBase {
         demo.registCpt(createWeId, SCHEMA2);
 
         BaseBean.print("------------------------------");
-        BaseBean.print("begin to create the first credential...");
+        BaseBean.print("begin to create the first credential with pojo...");
         
         // create the first credential
         CredentialPojo credential1 = 
             demo.createCredential(DemoUtil.buildCreateArgs2000000(2000000, createWeId));
         
         BaseBean.print("------------------------------");
-        BaseBean.print("begin to create the second credential...");
+        BaseBean.print("begin to create the second credential with pojo...");
         
         // create the second credential
         CredentialPojo credential2 = 
@@ -160,6 +160,20 @@ public class DemoCommand extends DemoBase {
         List<CredentialPojo> credentialList = new ArrayList<CredentialPojo>();
         credentialList.add(credential1);
         credentialList.add(credential2);
+        
+        BaseBean.print("------------------------------");
+        BaseBean.print("begin to create credential with map...");
+        //create credential with map
+        CredentialPojo credential3 = 
+            demo.createCredential(DemoUtil.buildCreateArgsWithMap(2000001, createWeId));
+        BaseBean.print("the credential id:" + credential3.getId());
+        
+        BaseBean.print("------------------------------");
+        BaseBean.print("begin to create credential with json...");
+        //create credential with json
+        CredentialPojo credential4 = 
+                demo.createCredential(DemoUtil.buildCreateArgsWithJsonString(2000001, createWeId));
+        BaseBean.print("the credential id:" + credential4.getId());
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to save the credentialList...");
