@@ -1,34 +1,42 @@
 {
-    "title": "cpt templet",
-    "description": "five information requirements for users",
-    "properties" : {
-        "name": {
+  "properties":{
+  "name": {
             "type": "string",
             "description": "the name of certificate owner"
         },
-        "gender": {
-            "enum": ["F", "M"],
-            "type": "string",
-            "description": "the gender of certificate owner"
-        },
-        "age": {
-            "type": "number",
-            "description": "the age of certificate owner"
-        },
-        "school" : {
-            "properties" : {
-                "address" : {
-                    "type" : "string",
-                    "description" : "this is school address"
-                },
-                "name" : {
-                    "type" : "string",
-                    "description" : "this is school name"
-                }
+    "meta":{
+        "type":"object",
+        "properties":{
+            "code":{
+            "type":"number",
+            "description": "code"
             },
-            "type" : "object",
-            "required": ["name"]
-        }        
+            "error":{
+                "type":"string",
+                "description": "error"
+            },
+            "info":{
+                "type":"string",
+                "description": "info"
+            }
+        }
     },
-    "required": ["name", "age","school"]
+    "data":{
+        "type":"object",
+        "properties":{
+            "id":{
+            "type":"string",
+            "description": "info"
+            },
+            "sipTellAddress":{
+                "type":"string",
+                "description": "sipTellAddress"
+            },
+            "userlevel":{
+                "type":"integer",
+                "description": "userlevel"
+            }
+        }
+    }    
+  } 
 }

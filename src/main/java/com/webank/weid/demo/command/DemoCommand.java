@@ -106,74 +106,71 @@ public class DemoCommand extends DemoBase {
     private static void issuer() {
 
         BaseBean.print("issuer() init...");
-        DemoService demo = context.getBean(DemoService.class);
-        
         BaseBean.print("begin to createWeId...");
 
         // registered weId, authority need to keep their own weId and private keys.
-        CreateWeIdDataResult createWeId = demo.createWeId();
+        CreateWeIdDataResult createWeId = demoService.createWeId();
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to setPublicKey...");
 
         // call set public key, the type default "secp256k1".
-        demo.setPublicKey(createWeId, "secp256k1");
+        demoService.setPublicKey(createWeId, "secp256k1");
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to setAuthenticate...");
 
         // call set authentication.
-        demo.setAuthentication(createWeId);
+        demoService.setAuthentication(createWeId);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to registerAuthorityIssuer...");
 
         // registered authority, "webank" is the authority Name, "0" is default.
-        demo.registerAuthorityIssuer(createWeId, "webank" + System.currentTimeMillis(), "0");
+        demoService.registerAuthorityIssuer(createWeId, "webank" + System.currentTimeMillis(), "0");
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to regist the first Cpt...");
         
         // registered the first CPT, authority need to keep their own cptId.
-        demo.registCpt(createWeId, SCHEMA1);
+        demoService.registCpt(createWeId, SCHEMA1);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to regist the second Cpt...");  
         
         // registered the second CPT, authority need to keep their own cptId.
-        demo.registCpt(createWeId, SCHEMA2);
+        demoService.registCpt(createWeId, SCHEMA2);
+        
+        BaseBean.print("------------------------------");
+        BaseBean.print("begin to regist the third Cpt...");  
+        
+        // registered the second CPT, authority need to keep their own cptId.
+        demoService.registCpt(createWeId, SCHEMA3);
 
         BaseBean.print("------------------------------");
-        BaseBean.print("begin to create the first credential with pojo...");
+        BaseBean.print("begin to create the first credential with Map...");
         
+        List<CredentialPojo> credentialList = new ArrayList<CredentialPojo>();
         // create the first credential
         CredentialPojo credential1 = 
-            demo.createCredential(DemoUtil.buildCreateArgs2000000(2000000, createWeId));
+            demoService.createCredential(DemoUtil.buildCredentialPojo1000(createWeId));
+        credentialList.add(credential1);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to create the second credential with pojo...");
         
         // create the second credential
         CredentialPojo credential2 = 
-            demo.createCredential(DemoUtil.buildCreateArgs2000001(2000001, createWeId));
-
-        List<CredentialPojo> credentialList = new ArrayList<CredentialPojo>();
-        credentialList.add(credential1);
+            demoService.createCredential(DemoUtil.buildCredentialPojo1001(createWeId));
         credentialList.add(credential2);
         
         BaseBean.print("------------------------------");
-        BaseBean.print("begin to create credential with map...");
-        //create credential with map
-        CredentialPojo credential3 = 
-            demo.createCredential(DemoUtil.buildCreateArgsWithMap(2000001, createWeId));
-        BaseBean.print("the credential id:" + credential3.getId());
+        BaseBean.print("begin to create the third credential with JSONString...");
         
-        BaseBean.print("------------------------------");
-        BaseBean.print("begin to create credential with json...");
-        //create credential with json
-        CredentialPojo credential4 = 
-                demo.createCredential(DemoUtil.buildCreateArgsWithJsonString(2000001, createWeId));
-        BaseBean.print("the credential id:" + credential4.getId());
+        // create the second credential
+        CredentialPojo credential3 = 
+            demoService.createCredential(DemoUtil.buildCredentialPojo1002(createWeId));
+        credentialList.add(credential3);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to save the credentialList...");
@@ -191,21 +188,19 @@ public class DemoCommand extends DemoBase {
     private static void userAgent() {
 
         BaseBean.print("userAgent() init...");
-        DemoService demo = context.getBean(DemoService.class);
-       
         BaseBean.print("------------------------------");
         BaseBean.print("begin to create weId for useragent...");
 
         Map<String, String> map = new HashMap<String, String>();
         // user registration weId.
-        final CreateWeIdDataResult createWeId = demo.createWeId();
+        final CreateWeIdDataResult createWeId = demoService.createWeId();
         map.put("userWeId", createWeId.getWeId());
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to setAuthenticate...");
 
         // call set authentication.
-        demo.setAuthentication(createWeId);
+        demoService.setAuthentication(createWeId);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to get the credentialList from json...");
@@ -218,7 +213,7 @@ public class DemoCommand extends DemoBase {
         
         // mock AMOP request data from other org (1002:verifier orgId, 123456:policyId)
         PolicyAndChallenge policyAndChallenge = 
-            DemoUtil.queryPolicyAndChallenge("1002", 1001, createWeId.getWeId());
+            DemoUtil.queryPolicyAndChallenge("organizationA", 123456, createWeId.getWeId());
         
         System.out.println(DataToolUtils.serialize(policyAndChallenge));
         
@@ -227,7 +222,7 @@ public class DemoCommand extends DemoBase {
         
         // create presentationE
         final PresentationE presentationE = 
-            demo.createPresentation(
+            demoService.createPresentation(
                 credentialList, 
                 policyAndChallenge.getPresentationPolicyE(), 
                 policyAndChallenge.getChallenge(), 
@@ -243,13 +238,13 @@ public class DemoCommand extends DemoBase {
         String verfierWeId = ""; //this is the verfier weId
         verfierWeIds.add(verfierWeId);
         
-        String presentationJson = demo.presentationEToJson(verfierWeIds, presentationE);
+        String presentationJson = demoService.presentationEToJson(verfierWeIds, presentationE);
         map.put("presentationJson", presentationJson);
         
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to transfom presentation to QRCode ...");
-        String presentationQrCode = demo.presentationEToQrCode(verfierWeId, presentationE);
+        String presentationQrCode = demoService.presentationEToQrCode(verfierWeId, presentationE);
         map.put("presentationQrCode", presentationQrCode);
         
         BaseBean.print("------------------------------");
@@ -259,12 +254,13 @@ public class DemoCommand extends DemoBase {
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to generateQrCode ...");
+        String url = "https://github.com/WeBankFinTech/WeIdentity";
         String imageName = System.currentTimeMillis() + ".jpg";
         String fileName =  DemoUtil.TEMP_DIR + imageName;
         Integer integer = 
             DataToolUtils.generateQrCode(
-                presentationQrCode,
-                ErrorCorrectionLevel.L, 
+                url,
+                ErrorCorrectionLevel.H, 
                 fileName
             );
         if (integer == ErrorCode.SUCCESS.getCode()) {
@@ -301,17 +297,15 @@ public class DemoCommand extends DemoBase {
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin deserialize presentationJson...");
-        
-        DemoService demo = context.getBean(DemoService.class);
-        
+
         // deserialize presentationJson.
-        final PresentationE presentationE = demo.deserializePresentationJson(presentationJson);
+        final PresentationE presentationE = demoService.deserializePresentationJson(presentationJson);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin get the PolicyAndChallenge...");
         
         // get the data from cache.
-        final PresentationPolicyE presentationPolicyE = PolicyServiceImpl.policMap.get("1001");
+        final PresentationPolicyE presentationPolicyE = DbUtils.getPolicy("123456");
         Challenge challenge = DbUtils.queryChallenge(presentationE.getNonce());
         
         BaseBean.print("------------------------------");
@@ -319,7 +313,7 @@ public class DemoCommand extends DemoBase {
         String  userWeId = paramMap.get("userWeId");
         // verifyvPresentationE
         boolean result = 
-            demo.verifyPresentationE(userWeId, presentationPolicyE, challenge, presentationE);
+            demoService.verifyPresentationE(userWeId, presentationPolicyE, challenge, presentationE);
         if (result) {
             BaseBean.print("verify success");
         } else {
@@ -335,12 +329,12 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin deserialize presentationQrCode...");
 
         // deserialize presentationQrCode.
-        final PresentationE presentation = demo.deserializePresentationQrCode(presentationQrCode);
+        final PresentationE presentation = demoService.deserializePresentationQrCode(presentationQrCode);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin verify presentationE for QRCode...");
         // verifyvPresentationE
-        result = demo.verifyPresentationE(userWeId, presentationPolicyE, challenge, presentation);
+        result = demoService.verifyPresentationE(userWeId, presentationPolicyE, challenge, presentation);
         if (result) {
             BaseBean.print("verify success");
         } else {
