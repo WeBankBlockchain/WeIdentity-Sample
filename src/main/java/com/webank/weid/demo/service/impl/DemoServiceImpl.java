@@ -51,6 +51,11 @@ import com.webank.weid.rpc.AuthorityIssuerService;
 import com.webank.weid.rpc.CptService;
 import com.webank.weid.rpc.CredentialService;
 import com.webank.weid.rpc.WeIdService;
+import com.webank.weid.service.impl.AuthorityIssuerServiceImpl;
+import com.webank.weid.service.impl.CptServiceImpl;
+import com.webank.weid.service.impl.CredentialServiceImpl;
+import com.webank.weid.service.impl.WeIdServiceImpl;
+import com.webank.weid.util.DataToolUtils;
 
 /**
  * Demo service.
@@ -62,17 +67,13 @@ public class DemoServiceImpl implements DemoService {
 
     private static final Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);
 
-    @Autowired
-    private AuthorityIssuerService authorityIssuerService;
+    private AuthorityIssuerService authorityIssuerService = new AuthorityIssuerServiceImpl();
 
-    @Autowired
-    private CptService cptService;
+    private CptService cptService = new CptServiceImpl();;
 
-    @Autowired
-    private CredentialService credentialService;
+    private CredentialService credentialService = new CredentialServiceImpl();
 
-    @Autowired
-    private WeIdService weIdService;
+    private WeIdService weIdService = new WeIdServiceImpl();
 
     /**
      * set validity period to 360 days by default.
@@ -339,18 +340,8 @@ public class DemoServiceImpl implements DemoService {
     public ResponseData<Boolean> verifyCredential(String credentialJson) {
 
         ResponseData<Boolean> verifyResponse = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-        Credential credential = null;
-
-        try {
-            // converting credential strings to credential objects.
-            credential = objectMapper.readValue(credentialJson, Credential.class);
-        } catch (IOException e) {
-            logger.error("resolve credentialJson error.", e);
-            verifyResponse = new ResponseData<Boolean>(false, ErrorCode.CREDENTIAL_ERROR);
-            return verifyResponse;
-        }
-
+        
+        Credential credential = DataToolUtils.deserialize(credentialJson, Credential.class);
         // verify credential on chain.
         verifyResponse = credentialService.verify(credential);
         logger.info(
