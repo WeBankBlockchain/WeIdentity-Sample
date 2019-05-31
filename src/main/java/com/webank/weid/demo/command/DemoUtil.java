@@ -29,10 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.webank.weid.constant.ErrorCode;
-import com.webank.weid.cpt.Cpt2000000;
-import com.webank.weid.cpt.Cpt2000000.Gender;
-import com.webank.weid.cpt.Cpt2000001;
-import com.webank.weid.cpt.School;
+import com.webank.weid.cpt.Cpt1000;
+import com.webank.weid.cpt.Cpt1001;
+import com.webank.weid.cpt.Data;
+import com.webank.weid.cpt.Meta;
 import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.exception.BusinessException;
@@ -180,115 +180,91 @@ public class DemoUtil {
     public static String queryDataFromFile(String fileName) {
         return FileUtil.getDataByPath(TEMP_DIR + fileName + ".data");
     }
-    
-    /**
-     *  build the parameter for create credential.
-     * @param cptId the cptId
-     * @param weIdData weId information for issue
-     * @return the CreateCredentialPojoArgs
-     */
-    public static CreateCredentialPojoArgs<Cpt2000001> buildCreateArgs2000001(
-        Integer cptId,
-        CreateWeIdDataResult weIdData) {
-        
-        CreateCredentialPojoArgs<Cpt2000001> arg = new CreateCredentialPojoArgs<Cpt2000001>();
-        arg.setCptId(cptId);
-        arg.setIssuer(weIdData.getWeId());
-        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
-        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
-        weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
-        arg.setWeIdAuthentication(weIdAuthentication);
 
-        Cpt2000001 claim = new Cpt2000001();
-        claim.setName("zhangsan");
-        claim.setAge(22.0);
-        claim.setGender(Cpt2000001.Gender.M);
-        School school = new School();
-        school.setName("清华大学");
-        school.setAddress("北京");
-        claim.setSchool(school);
-        arg.setClaim(claim);
-        return arg;
+    private static WeIdAuthentication buildWeIdAuthentication(CreateWeIdDataResult weIdData) {
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeId(weIdData.getWeId());
+        weIdAuthentication.setWeIdPublicKeyId(weIdData.getWeId() + "#keys-0");
+        weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
+        return weIdAuthentication;
     }
     
     /**
      *  build the parameter for create credential.
-     * @param cptId the cptId
-     * @param weIdData weId information for issue
+     * @param createResult weId information for issue
      * @return the CreateCredentialPojoArgs
      */
-    public static CreateCredentialPojoArgs<Cpt2000000> buildCreateArgs2000000(
-        Integer cptId,
-        CreateWeIdDataResult weIdData) {
-        
-        CreateCredentialPojoArgs<Cpt2000000> arg = new CreateCredentialPojoArgs<Cpt2000000>();
-        arg.setCptId(cptId);
-        arg.setIssuer(weIdData.getWeId());
-        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
-        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
-        weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
-        arg.setWeIdAuthentication(weIdAuthentication);
+    public static CreateCredentialPojoArgs<Map<String, Object>> buildCredentialPojo1000(
+        CreateWeIdDataResult createResult
+    ) {
 
-        Cpt2000000 claim = new Cpt2000000();
-        claim.setName("zhangsan");
-        claim.setGender(Gender.F);
-        claim.setAge(22.0);
-        arg.setClaim(claim);
-        return arg;
-    }
-
-    /**
-     *  build the parameter for create credential with Map.
-     * @param cptId the cptId
-     * @param weIdData weId information for issue
-     * @return the CreateCredentialPojoArgs
-     */
-    public static CreateCredentialPojoArgs<Map<String, Object>> buildCreateArgsWithMap(
-        Integer cptId,
-        CreateWeIdDataResult weIdData) {
-        
-        CreateCredentialPojoArgs<Map<String, Object>> arg = 
+       
+        Map<String, Object> cpt1000 = new HashMap<String, Object>();
+        cpt1000.put("age", 23);
+        cpt1000.put("gender", Cpt1000.Gender.F);
+        cpt1000.put("name", "张三");
+        CreateCredentialPojoArgs<Map<String, Object>> createCredentialPojoArgs =
             new CreateCredentialPojoArgs<Map<String, Object>>();
-        arg.setCptId(cptId);
-        arg.setIssuer(weIdData.getWeId());
-        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
-        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
-        weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
-        arg.setWeIdAuthentication(weIdAuthentication);
-
-        Map<String, Object> claim = new HashMap<String, Object>();
-        claim.put("name", "zhangsan");
-        claim.put("age", "22.0");
-        claim.put("gender", Cpt2000001.Gender.M.toString());
-        
-        Map<String, Object> school = new HashMap<String, Object>();
-        school.put("name", "清华大学");
-        school.put("address", "北京");
-
-        claim.put("school", school);
-        arg.setClaim(claim);
-        return arg;
+        createCredentialPojoArgs.setClaim(cpt1000);
+        createCredentialPojoArgs.setCptId(1000);
+        createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + 50000);
+        createCredentialPojoArgs.setIssuer(createResult.getWeId());
+        createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
+        return createCredentialPojoArgs;
     }
-    
+
     /**
-     *  build the parameter for create credential with JsonString.
-     * @param cptId the cptId
-     * @param weIdData weId information for issue
+     *  build the parameter for create credential.
+     * @param createResult weId information for issue
      * @return the CreateCredentialPojoArgs
      */
-    public static CreateCredentialPojoArgs<String> buildCreateArgsWithJsonString(
-        Integer cptId,
-        CreateWeIdDataResult weIdData) {
+    public static CreateCredentialPojoArgs<Cpt1001> buildCredentialPojo1001(
+        CreateWeIdDataResult createResult
+    ) {
         
-        CreateCredentialPojoArgs<String> arg = new CreateCredentialPojoArgs<String>();
-        arg.setCptId(cptId);
-        arg.setIssuer(weIdData.getWeId());
-        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
-        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
-        weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
-        arg.setWeIdAuthentication(weIdAuthentication);
-        arg.setClaim(DemoBase.CLAIMDATA2);
-        return arg;
+        Data data = new Data();
+        data.setId("123");
+        data.setSipTellAddress("sipTellAddress");
+        data.setUserlevel(1);
+        Cpt1001 cpt1001 = new Cpt1001();
+        cpt1001.setData(data);
+        
+        cpt1001.setName("test1001");
+        
+        Meta meta = new Meta();
+        meta.setCode(12.2);
+        meta.setError("metaError");
+        meta.setInfo("metaInfo");
+        
+        cpt1001.setMeta(meta);
+        
+        CreateCredentialPojoArgs<Cpt1001> createCredentialPojoArgs =
+            new CreateCredentialPojoArgs<Cpt1001>();
+        createCredentialPojoArgs.setClaim(cpt1001);
+        createCredentialPojoArgs.setCptId(1001);
+        createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + 50000);
+        createCredentialPojoArgs.setIssuer(createResult.getWeId());
+        createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
+        return createCredentialPojoArgs;
+    }
+
+    /**
+     *  build the parameter for create credential.
+     * @param createResult weId information for issue
+     * @return the CreateCredentialPojoArgs
+     */
+    public static CreateCredentialPojoArgs<String> buildCredentialPojo1002(
+        CreateWeIdDataResult createResult
+    ) {
+        // 创建原始凭证
+        CreateCredentialPojoArgs<String> createCredentialPojoArgs =
+                new CreateCredentialPojoArgs<String>();
+        createCredentialPojoArgs.setClaim(DemoBase.CLAIMDATA);
+        createCredentialPojoArgs.setCptId(1002);
+        createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + 50000);
+        createCredentialPojoArgs.setIssuer(createResult.getWeId());
+        createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
+        return createCredentialPojoArgs;
     }
     
     /**

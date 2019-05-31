@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.webank.weid.constant.ErrorCode;
@@ -56,6 +55,11 @@ import com.webank.weid.rpc.CptService;
 import com.webank.weid.rpc.CredentialPojoService;
 import com.webank.weid.rpc.CredentialService;
 import com.webank.weid.rpc.WeIdService;
+import com.webank.weid.service.impl.AuthorityIssuerServiceImpl;
+import com.webank.weid.service.impl.CptServiceImpl;
+import com.webank.weid.service.impl.CredentialPojoServiceImpl;
+import com.webank.weid.service.impl.CredentialServiceImpl;
+import com.webank.weid.service.impl.WeIdServiceImpl;
 import com.webank.weid.suite.api.transportation.TransportationFactory;
 import com.webank.weid.suite.api.transportation.params.EncodeType;
 import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
@@ -66,25 +70,19 @@ import com.webank.weid.util.DataToolUtils;
  * @author v_wbgyang
  *
  */
-@Component
 public class DemoService {
 
     private static final Logger logger = LoggerFactory.getLogger(DemoService.class);
 
-    @Autowired
-    private AuthorityIssuerService authorityIssuerService;
+    private AuthorityIssuerService authorityIssuerService = new AuthorityIssuerServiceImpl();
 
-    @Autowired
-    private CptService cptService;
+    private CptService cptService = new CptServiceImpl();
 
-    @Autowired
-    private CredentialService credentialService;
+    private CredentialService credentialService = new CredentialServiceImpl();
 
-    @Autowired
-    private WeIdService weIdService;
+    private WeIdService weIdService = new WeIdServiceImpl();
     
-    @Autowired
-    private CredentialPojoService credentialPojoService;
+    private CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();;
 
     /**
      * Create a WeIdentity DID with null input param.
