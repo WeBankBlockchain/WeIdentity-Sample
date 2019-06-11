@@ -37,11 +37,6 @@ public abstract class DemoBase {
     private static final Logger logger = LoggerFactory.getLogger(DemoBase.class);
 
     /**
-     * spring context.
-     */
-    protected static final  ApplicationContext context;
-
-    /**
      * schema.
      */
     protected static final String SCHEMA1;
@@ -54,36 +49,28 @@ public abstract class DemoBase {
     /**
      * schema.
      */
-    public static final String DISCLOSURE1;
-    
-    /**
-     * schema.
-     */
-    public static final String DISCLOSURE2;
+    protected static final String SCHEMA3;
     
     /**
      * claimData.
      */
     protected static final String CLAIMDATA;
 
+    /**
+     * the demo service.
+     */
+    protected static DemoService demoService = new DemoService();
+    
     static {
         
-        // initializing spring containers
-        context = new ClassPathXmlApplicationContext(new String[] {
-            "classpath:SpringApplicationContext-demo.xml"});
-        logger.info("initializing spring containers finish...");
- 
         //get jsonSchema data.
         SCHEMA1 = FileUtil.getDataByPath("./claim/JsonSchema1.json");
         
         //get jsonSchema data.
         SCHEMA2 = FileUtil.getDataByPath("./claim/JsonSchema2.json");
         
-        //get Disclosure data.
-        DISCLOSURE1 = FileUtil.getDataByPath("./claim/Disclosure1.json");
-        
-        //get Disclosure data.
-        DISCLOSURE2 = FileUtil.getDataByPath("./claim/Disclosure2.json");
+        //get jsonSchema data.
+        SCHEMA3 = FileUtil.getDataByPath("./claim/JsonSchema3.json");
         
         //get schemaData data.
         CLAIMDATA = FileUtil.getDataByPath("./claim/ClaimData.json");
