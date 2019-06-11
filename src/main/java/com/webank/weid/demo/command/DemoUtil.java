@@ -20,31 +20,31 @@
 package com.webank.weid.demo.command;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.webank.weid.constant.ErrorCode;
-import com.webank.weid.cpt.Cpt2000000;
-import com.webank.weid.cpt.Cpt2000000.Gender;
-import com.webank.weid.cpt.Cpt2000001;
-import com.webank.weid.cpt.School;
+import com.webank.weid.cpt.Cpt1000;
+import com.webank.weid.cpt.Cpt1001;
+import com.webank.weid.cpt.Data;
+import com.webank.weid.cpt.Meta;
 import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.exception.BusinessException;
-import com.webank.weid.protocol.base.CredentialPojoWrapper;
+import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.PolicyAndChallenge;
+import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.rpc.AmopService;
 import com.webank.weid.service.impl.AmopServiceImpl;
+import com.webank.weid.util.DataToolUtils;
 
 /**
  * the DemoUtil for command.
@@ -57,7 +57,7 @@ public class DemoUtil {
     /**
      * temporary file directory.
      */
-    private static final String TEMP_DIR = "./tmp/";
+    public static final String TEMP_DIR = "./tmp/";
 
     /**
      * credentials data file.
@@ -87,19 +87,15 @@ public class DemoUtil {
      * read credential list.
      * @return object of Credential
      */
-    public static List<CredentialPojoWrapper> getCredentialListFromJson() {
+    public static List<CredentialPojo> getCredentialListFromJson() {
 
         // get credential string from the file.
         String jsonStr = FileUtil.getDataByPath(CRED_FILE);
         
         // converting credential string to Credential List.
-        ObjectMapper objectMapper = new ObjectMapper();
-        JavaType javaType = objectMapper.getTypeFactory()
-            .constructParametricType(ArrayList.class, CredentialPojoWrapper.class);
-        
-        List<CredentialPojoWrapper> credentialList = null;
+        List<CredentialPojo> credentialList = null;
         try {
-            credentialList = objectMapper.readValue(jsonStr, javaType);
+            credentialList = DataToolUtils.deserializeToList(jsonStr, CredentialPojo.class);
         }  catch (Exception e) {
             logger.error("deserialize credentialListJson failed,e:{}",e);
         }
@@ -132,7 +128,7 @@ public class DemoUtil {
      * @param credentialList require
      * @return return to save path
      */
-    public static String saveCredentialList(List<CredentialPojoWrapper> credentialList) {
+    public static String saveCredentialList(List<CredentialPojo> credentialList) {
 
         // converting Credential object to JSON string.
         String dataStr = DemoUtil.formatObjectToString(credentialList);
@@ -162,80 +158,130 @@ public class DemoUtil {
      * @return return JSON string
      */
     public static String formatObjectToString(Object obj) {
+        return DataToolUtils.serialize(obj);
+    }
+    
+    /**
+     * save data into specific file.
+     * 
+     * @param fileName the fileName
+     * @param obj the data to save
+     */
+    public static void saveDataInFile(String fileName, Object obj) {
+        FileUtil.saveFile(TEMP_DIR + fileName + ".data", formatObjectToString(obj));
+    }
+    
+    /**
+     * query data from file.
+     * 
+     * @param fileName the fileName
+     * @return return String data
+     */
+    public static String queryDataFromFile(String fileName) {
+        return FileUtil.getDataByPath(TEMP_DIR + fileName + ".data");
+    }
 
-        ObjectMapper mapper = new ObjectMapper();
-        String dataStr = "";
-        try {
-            dataStr = mapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            logger.error("writeValueAsString error:", e);
-        }
-        return dataStr;
+    private static WeIdAuthentication buildWeIdAuthentication(CreateWeIdDataResult weIdData) {
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeId(weIdData.getWeId());
+        weIdAuthentication.setWeIdPublicKeyId(weIdData.getWeId() + "#keys-0");
+        weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
+        return weIdAuthentication;
     }
     
     /**
      *  build the parameter for create credential.
-     * @param cptId the cptId
-     * @param weIdData weId information for issue
+     * @param createResult weId information for issue
      * @return the CreateCredentialPojoArgs
      */
-    public static CreateCredentialPojoArgs<Cpt2000001> buildCreateArgs2000001(
-        Integer cptId,
-        CreateWeIdDataResult weIdData) {
-        
-        CreateCredentialPojoArgs<Cpt2000001> arg = new CreateCredentialPojoArgs<Cpt2000001>();
-        arg.setCptId(cptId);
-        arg.setIssuer(weIdData.getWeId());
-        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
-        arg.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
+    public static CreateCredentialPojoArgs<Map<String, Object>> buildCredentialPojo1000(
+        CreateWeIdDataResult createResult
+    ) {
 
-        Cpt2000001 claim = new Cpt2000001();
-        claim.setName("zhangsan");
-        claim.setAge(22.0);
-        claim.setGender(Cpt2000001.Gender.M);
-        School school = new School();
-        school.setName("清华大学");
-        school.setAddress("北京");
-        claim.setSchool(school);
-        arg.setClaim(claim);
-        return arg;
+       
+        Map<String, Object> cpt1000 = new HashMap<String, Object>();
+        cpt1000.put("age", 23);
+        cpt1000.put("gender", Cpt1000.Gender.F);
+        cpt1000.put("name", "张三");
+        CreateCredentialPojoArgs<Map<String, Object>> createCredentialPojoArgs =
+            new CreateCredentialPojoArgs<Map<String, Object>>();
+        createCredentialPojoArgs.setClaim(cpt1000);
+        createCredentialPojoArgs.setCptId(1000);
+        createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + 50000);
+        createCredentialPojoArgs.setIssuer(createResult.getWeId());
+        createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
+        return createCredentialPojoArgs;
     }
-    
+
     /**
      *  build the parameter for create credential.
-     * @param cptId the cptId
-     * @param weIdData weId information for issue
+     * @param createResult weId information for issue
      * @return the CreateCredentialPojoArgs
      */
-    public static CreateCredentialPojoArgs<Cpt2000000> buildCreateArgs2000000(
-        Integer cptId,
-        CreateWeIdDataResult weIdData) {
+    public static CreateCredentialPojoArgs<Cpt1001> buildCredentialPojo1001(
+        CreateWeIdDataResult createResult
+    ) {
         
-        CreateCredentialPojoArgs<Cpt2000000> arg = new CreateCredentialPojoArgs<Cpt2000000>();
-        arg.setCptId(cptId);
-        arg.setIssuer(weIdData.getWeId());
-        arg.setExpirationDate(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 100);
-        arg.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
-
-        Cpt2000000 claim = new Cpt2000000();
-        claim.setName("zhangsan");
-        claim.setGender(Gender.F);
-        claim.setAge(22.0);
-        arg.setClaim(claim);
-        return arg;
+        Data data = new Data();
+        data.setId("123");
+        data.setSipTellAddress("sipTellAddress");
+        data.setUserlevel(1);
+        Cpt1001 cpt1001 = new Cpt1001();
+        cpt1001.setData(data);
+        
+        cpt1001.setName("test1001");
+        
+        Meta meta = new Meta();
+        meta.setCode(12.2);
+        meta.setError("metaError");
+        meta.setInfo("metaInfo");
+        
+        cpt1001.setMeta(meta);
+        
+        CreateCredentialPojoArgs<Cpt1001> createCredentialPojoArgs =
+            new CreateCredentialPojoArgs<Cpt1001>();
+        createCredentialPojoArgs.setClaim(cpt1001);
+        createCredentialPojoArgs.setCptId(1001);
+        createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + 50000);
+        createCredentialPojoArgs.setIssuer(createResult.getWeId());
+        createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
+        return createCredentialPojoArgs;
     }
 
+    /**
+     *  build the parameter for create credential.
+     * @param createResult weId information for issue
+     * @return the CreateCredentialPojoArgs
+     */
+    public static CreateCredentialPojoArgs<String> buildCredentialPojo1002(
+        CreateWeIdDataResult createResult
+    ) {
+        // 创建原始凭证
+        CreateCredentialPojoArgs<String> createCredentialPojoArgs =
+                new CreateCredentialPojoArgs<String>();
+        createCredentialPojoArgs.setClaim(DemoBase.CLAIMDATA);
+        createCredentialPojoArgs.setCptId(1002);
+        createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + 50000);
+        createCredentialPojoArgs.setIssuer(createResult.getWeId());
+        createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
+        return createCredentialPojoArgs;
+    }
+    
     /**
      * send AMOP message for get the policyAndChallenge.
      * @param orgId send to orgId
      * @param policyId the policyId
      * @return the policyAndChallenge
      */
-    public static PolicyAndChallenge queryPolicyAndChallenge(String orgId,Integer policyId) {
-        
+    public static PolicyAndChallenge queryPolicyAndChallenge(
+        String orgId,
+        Integer policyId,
+        String targetWeId
+    ) {
+
         AmopService amopService = new AmopServiceImpl();
         ResponseData<PolicyAndChallenge> response = 
-            amopService.getPresentationPolicy(orgId, policyId);
+            amopService.getPolicyAndChallenge(orgId, policyId, targetWeId);
         
         BaseBean.print("queryPolicyAndChallenge from amop result:");
         BaseBean.print(response);

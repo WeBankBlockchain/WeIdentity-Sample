@@ -1,5 +1,64 @@
 {
-	"WeId": "{userWeId}",
-	"Name": "zhangsan",
-	"Gender": "F"
+	"courses": [
+		{
+			"code": 0,
+			"duration": 0,
+			"endDate": 0,
+			"grade": 0,
+			"language": 0,
+			"score": 0,
+			"startDate": 0,
+			"title": {
+				"cn": 0,
+				"en": 0
+			}
+		},
+		{
+			"code": 0,
+			"duration": 0,
+			"endDate": 0,
+			"grade": 0,
+			"language": 0,
+			"score": 0,
+			"startDate": 0,
+			"title": {
+				"cn": 0,
+				"en": 0
+			}
+		}
+	],
+	"cert": {
+		"category": {
+			"cn": 0,
+			"en": 0
+		},
+		"code": 0,
+		"issueDate": 0,
+		"permanent": 0,
+		"title": {
+			"cn": 0,
+			"en": 0
+		},
+		"totalDuration": 0,
+		"validBefore": 0
+	},
+	"fullname": {
+		"cn": 0,
+		"en": 0
+	},
+	"issuers": [
+		{
+			"name": {
+				"cn": 0,
+				"en": 0
+			}
+		},
+		{
+			"name": {
+				"cn": 0,
+				"en": 0
+			}
+		}
+	],
+	"did": 0
 }
