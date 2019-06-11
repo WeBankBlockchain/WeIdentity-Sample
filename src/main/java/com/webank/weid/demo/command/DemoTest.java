@@ -47,32 +47,29 @@ public class DemoTest extends DemoBase {
      */
     public static void main(String[] args) throws RuntimeException, ParseException {
 
-        // get service instance
-        DemoService demo = context.getBean(DemoService.class);
-
         // create weId
-        CreateWeIdDataResult createWeId = demo.createWeId();
+        CreateWeIdDataResult createWeId = demoService.createWeId();
         BaseBean.print(createWeId);
 
         // set WeIdentity DID
-        demo.setPublicKey(createWeId, "secp256k1");
-        demo.setService(
+        demoService.setPublicKey(createWeId, "secp256k1");
+        demoService.setService(
             createWeId,
             "drivingCardService",
             "https://weidentity.webank.com/endpoint/8377464"
         );
-        demo.setAuthentication(createWeId);
+        demoService.setAuthentication(createWeId);
 
         // get WeId DOM.
-        WeIdDocument weIdDom = demo.getWeIdDom(createWeId.getWeId());
+        WeIdDocument weIdDom = demoService.getWeIdDom(createWeId.getWeId());
         BaseBean.print(weIdDom);
 
         // registered authority issuer.
-        demo.registerAuthorityIssuer(createWeId, "webank", "0");
+        demoService.registerAuthorityIssuer(createWeId, "webank", "0");
 
         // registered CPT.
         CptBaseInfo cptResult =
-            demo.registCpt(
+            demoService.registCpt(
                 createWeId,
                 DemoTest.buildCptJsonSchema()
             );
@@ -82,7 +79,7 @@ public class DemoTest extends DemoBase {
 
         // create Credential.
         Credential credential = 
-            demo.createCredential(
+            demoService.createCredential(
                 createWeId,
                 cptResult.getCptId(),
                 DemoTest.buildCptJsonSchemaData(),
@@ -91,7 +88,7 @@ public class DemoTest extends DemoBase {
         BaseBean.print(credential);
 
         // verify the credential.
-        boolean result = demo.verifyCredential(credential);
+        boolean result = demoService.verifyCredential(credential);
         if (result) {
             BaseBean.print("verify success");
         } else {
