@@ -1,5 +1,5 @@
 {
-	"WeId": {
+	"weid": {
 		"type": "string",
 		"description": "user weId"
 	},
