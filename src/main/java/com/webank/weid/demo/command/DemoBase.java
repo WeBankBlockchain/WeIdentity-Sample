@@ -19,11 +19,6 @@
 
 package com.webank.weid.demo.command;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import com.webank.weid.demo.common.util.FileUtil;
 
 /**
@@ -33,8 +28,6 @@ import com.webank.weid.demo.common.util.FileUtil;
  *
  */
 public abstract class DemoBase {
-
-    private static final Logger logger = LoggerFactory.getLogger(DemoBase.class);
 
     /**
      * schema.

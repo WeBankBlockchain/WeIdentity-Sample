@@ -60,5 +60,6 @@
 			}
 		}
 	],
-	"did": 0
+	"did": 0,
+	"weid": "did:weid:101:0xa2c6ef0ea932fd3332da818a2608cb7665e55895"
 }
