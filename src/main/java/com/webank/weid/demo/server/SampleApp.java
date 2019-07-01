@@ -31,7 +31,9 @@ import org.springframework.context.annotation.ComponentScan;
  * @author v_wbgyang
  *
  */
-@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
+@SpringBootApplication(
+    exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class}
+)
 @ComponentScan({"com.webank.weid.demo", "com.webank.weid.service"})
 public class SampleApp {
 
