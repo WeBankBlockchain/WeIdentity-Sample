@@ -81,7 +81,7 @@ public class DemoService {
 
     private WeIdService weIdService = new WeIdServiceImpl();
     
-    private CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();;
+    private CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();
 
     /**
      * Create a WeIdentity DID with null input param.
