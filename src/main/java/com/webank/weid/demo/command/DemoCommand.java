@@ -299,7 +299,8 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin deserialize presentationJson...");
 
         // deserialize presentationJson.
-        final PresentationE presentationE = demoService.deserializePresentationJson(presentationJson);
+        final PresentationE presentationE = 
+            demoService.deserializePresentationJson(presentationJson);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin get the PolicyAndChallenge...");
@@ -313,7 +314,12 @@ public class DemoCommand extends DemoBase {
         String  userWeId = paramMap.get("userWeId");
         // verifyvPresentationE
         boolean result = 
-            demoService.verifyPresentationE(userWeId, presentationPolicyE, challenge, presentationE);
+            demoService.verifyPresentationE(
+                userWeId,
+                presentationPolicyE,
+                challenge,
+                presentationE
+            );
         if (result) {
             BaseBean.print("verify success");
         } else {
@@ -329,12 +335,19 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin deserialize presentationQrCode...");
 
         // deserialize presentationQrCode.
-        final PresentationE presentation = demoService.deserializePresentationQrCode(presentationQrCode);
+        final PresentationE presentation = 
+            demoService.deserializePresentationQrCode(presentationQrCode);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin verify presentationE for QRCode...");
         // verifyvPresentationE
-        result = demoService.verifyPresentationE(userWeId, presentationPolicyE, challenge, presentation);
+        result = 
+            demoService.verifyPresentationE(
+                userWeId,
+                presentationPolicyE,
+                challenge,
+                presentation
+            );
         if (result) {
             BaseBean.print("verify success");
         } else {

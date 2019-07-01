@@ -66,7 +66,7 @@ public class DemoServiceImpl implements DemoService {
 
     private AuthorityIssuerService authorityIssuerService = new AuthorityIssuerServiceImpl();
 
-    private CptService cptService = new CptServiceImpl();;
+    private CptService cptService = new CptServiceImpl();
 
     private CredentialService credentialService = new CredentialServiceImpl();
 
