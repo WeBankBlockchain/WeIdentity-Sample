@@ -20,9 +20,6 @@
 package com.webank.weid.demo.controller;
 
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.webank.weid.constant.ErrorCode;
-import com.webank.weid.demo.common.dto.PasswordKey;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.common.util.PropertiesUtils;
 import com.webank.weid.demo.service.DemoService;

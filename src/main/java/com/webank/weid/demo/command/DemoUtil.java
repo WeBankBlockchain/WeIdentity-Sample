@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.cpt.Cpt1000;
-import com.webank.weid.cpt.Cpt1001;
 import com.webank.weid.cpt.Cpt1002;
 import com.webank.weid.cpt.Data;
 import com.webank.weid.cpt.Meta;
