@@ -1,12 +1,7 @@
-
 buildscript {
-    repositories {
-        maven {
-            url "http://maven.aliyun.com/nexus/content/groups/public/"
-        }
-        mavenLocal()
-        mavenCentral()//依赖Maven仓库
-    }
+	repositories {
+	    maven { url "https://plugins.gradle.org/m2/" }
+	}
     dependencies {
         //使用1.5.4.RELEASE版本的Spring框架
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.4.RELEASE")
@@ -24,13 +19,23 @@ apply plugin: 'checkstyle'
 apply plugin: "com.github.spotbugs"
 
 version = "1.0.0"
+//设置jdk的版本
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenLocal()
+    mavenCentral()//依赖Maven仓库
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    maven { url "https://dl.bintray.com/ethereum/maven/" }
+}
 
 //添加编译时的依赖
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web"){
         exclude group:"ch.qos.logback"
     }
-    compile group: 'com.webank', name: 'weidentity-java-sdk', version: '1.2.0'
+    compile group: 'com.webank', name: 'weid-java-sdk', version: '1.3.0'
     compile fileTree(dir:'libs', include:'*.jar')
 }
 
@@ -64,20 +69,9 @@ build {
     }
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-//设置jdk的版本
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-
 clean {
     delete("dist")
 }
-
 
 checkstyle {
     ignoreFailures false

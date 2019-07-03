@@ -10,13 +10,15 @@
   "policy" : {
     "1000" : {
       "fieldsToBeDisclosed" : {
+        "weid" : 1,
         "gender" : 0,
         "name" : 1,
         "age" : 0
       }
     },
-    "1001" : {
+    "1002" : {
       "fieldsToBeDisclosed" : {
+        "weid" : 1,
         "data" : {
           "id" : 0,
           "sipTellAddress" : 1,
@@ -30,8 +32,9 @@
         "name" : 0
       }
     },
-    "1002" : {
+    "1001" : {
       "fieldsToBeDisclosed" : {
+        "weid" : 1,
         "courses" : [ {
           "code" : 1,
           "duration" : 0,

@@ -19,13 +19,10 @@
 
 package com.webank.weid.demo.service.impl;
 
-import java.io.IOException;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.weid.constant.ErrorCode;
@@ -69,7 +66,7 @@ public class DemoServiceImpl implements DemoService {
 
     private AuthorityIssuerService authorityIssuerService = new AuthorityIssuerServiceImpl();
 
-    private CptService cptService = new CptServiceImpl();;
+    private CptService cptService = new CptServiceImpl();
 
     private CredentialService credentialService = new CredentialServiceImpl();
 

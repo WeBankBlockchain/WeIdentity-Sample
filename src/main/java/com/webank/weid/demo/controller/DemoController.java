@@ -20,17 +20,12 @@
 package com.webank.weid.demo.controller;
 
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
 import org.apache.commons.lang3.StringUtils;
-import org.bcos.web3j.crypto.ECKeyPair;
-import org.bcos.web3j.crypto.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.webank.weid.constant.ErrorCode;
-import com.webank.weid.demo.common.dto.PasswordKey;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.common.util.PropertiesUtils;
 import com.webank.weid.demo.service.DemoService;
@@ -94,33 +88,6 @@ public class DemoController {
          */
         response.getResult().setUserWeIdPrivateKey(null);
         return response;
-    }
-
-    /**
-     * create public and private keys.
-     * note this method as a demonstration of how to create public and private
-     * keys by code itself. private keys do not allow network transmission.
-     * please keep the private keys you create properly.
-     * 
-     * @return returns public and private keys
-     */
-    public PasswordKey createKeys() {
-
-        PasswordKey passwordKey = new PasswordKey();
-        try {
-            ECKeyPair keyPair = Keys.createEcKeyPair();
-            String publicKey = String.valueOf(keyPair.getPublicKey());
-            String privateKey = String.valueOf(keyPair.getPrivateKey());
-            passwordKey.setPrivateKey(privateKey);
-            passwordKey.setPublicKey(publicKey);
-        } catch (InvalidAlgorithmParameterException e) {
-            logger.error("createKeys error.", e);
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("createKeys error.", e);
-        } catch (NoSuchProviderException e) {
-            logger.error("createKeys error.", e);
-        }
-        return passwordKey;
     }
 
     /**
