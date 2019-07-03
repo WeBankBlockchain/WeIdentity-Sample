@@ -4,6 +4,10 @@
 	"title": "cpt templet",
 	"type": "object",
 	"properties": {
+		"weid": {
+			"type": "string",
+			"description": "user weId"
+		},
 		"age": {
 			"description": "the age of certificate owner",
 			"type": "integer"
