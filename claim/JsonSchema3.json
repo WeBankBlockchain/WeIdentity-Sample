@@ -6,6 +6,7 @@
   "required": [ "did", "fullname", "cert", "issuers"],
   "properties": {
     "did": {"type": "string"},
+    "weid": {"type": "string"},
     "fullname": {
       "type": "object",
       "properties": {

@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.exception.BusinessException;
@@ -82,7 +81,7 @@ public class DemoService {
 
     private WeIdService weIdService = new WeIdServiceImpl();
     
-    private CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();;
+    private CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();
 
     /**
      * Create a WeIdentity DID with null input param.
