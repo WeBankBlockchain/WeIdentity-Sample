@@ -70,22 +70,27 @@ public class DemoCommand extends DemoBase {
         }
         
         // do different operations according to different roles.
-        switch (command) {
-            case "issuer":
-                issuer();
-                break;
-            case "user_agent":
-                userAgent();
-                break;
-            case "verifier":
-                verifier();
-                break;
-            case "daemon":
-                daemon();
-                break;
-            default:
-                issuer();
-                break;
+        try {
+            switch (command) {
+                case "issuer":
+                    issuer();
+                    break;
+                case "user_agent":
+                    userAgent();
+                    break;
+                case "verifier":
+                    verifier();
+                    break;
+                case "daemon":
+                    daemon();
+                    break;
+                default:
+                    issuer();
+                    break;
+            }
+        } catch (Exception e) { 
+            logger.error("execute {} failed.",command);
+            System.exit(0);
         }
         if (!command.equals("daemon")) {
             System.exit(0);
