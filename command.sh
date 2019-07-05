@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 if [[ $1 != 'issuer' ]];then
   if [[ $1 != 'user_agent' ]];then
@@ -14,6 +14,5 @@ fi
 #if [[ $1 = 'daemon' ]];then
 #    java -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1 >/dev/null 2>&1 &
 #else
-$(pwd)
-    java -cp dist/conf/:dist/lib/*:dist/app/*:lib/* com.webank.weid.demo.command.DemoCommand $1
+    java -cp "./dist/conf/:./dist/lib/*:./dist/app/*:./libs/*" com.webank.weid.demo.command.DemoCommand $1
 #fi
