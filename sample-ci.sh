@@ -1,4 +1,3 @@
-<<<<<<< Upstream, based on origin/develop
 #!/bin/bash
 
 daemon_pid=
@@ -226,4 +225,3 @@ function main(){
 
 main
 
->>>>>>> b20ca29 add sudo
