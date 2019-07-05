@@ -15,7 +15,7 @@ fi
 #    java -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1 >/dev/null 2>&1 &
 #else
 cd dist/lib/
-ll
+ls -ll
 cd ../..
     java -cp "./dist/conf/:./dist/lib/*:./dist/app/*:./libs/*" com.webank.weid.demo.command.DemoCommand $1
 #fi
