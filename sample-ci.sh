@@ -23,9 +23,9 @@ getVerifierPid(){
 function daemon(){
     getDaemonPid;
     if [ -n "$daemon_pid" ];then
-        kill -9 $daemon_pid
+        sudo kill -9 $daemon_pid
     fi
-    ./command.sh daemon
+    sudo ./command.sh daemon
     sleep 2
     getDaemonPid;
     if [ -z "$daemon_pid" ];then
@@ -40,13 +40,13 @@ function issuer(){
     echo "begin to start issuer"
     getIssuerPid;
     if [ -n "$issuer_pid" ];then
-        kill -9 $issuer_pid
+        sudo kill -9 $issuer_pid
     fi
     
     sed -i "/^blockchain.orgid/cblockchain.orgid=organizationB" $top_path/dist/conf/weidentity.properties
     sed -i "/^nodes/cnodes=WeIdentity@$NODE2_IP" $top_path/dist/conf/weidentity.properties
     
-    ./command.sh issuer
+    sudo ./command.sh issuer
     if [ $? -eq 0 ] && [ -e $top_path/tmp/credentials.json ];then
         echo "execute issuer success."       
     else
@@ -60,9 +60,9 @@ function user_agent(){
     echo "begin to start user_agent"
     getUserAgentPid;
     if [ -n "$user_agent_pid" ];then
-        kill -9 $user_agent_pid
+        sudo kill -9 $user_agent_pid
     fi
-    ./command.sh user_agent
+    sudo ./command.sh user_agent
     if [ $? -eq 0 ] && [ -e $top_path/tmp/temp.data ];then
         echo "execute user_agent success."       
     else
@@ -76,9 +76,9 @@ function verifier(){
     echo "begin to start verifier"
     getVerifierPid;
     if [ -n "$verifier_pid" ];then
-        kill -9 $verifier_pid
+        sudo kill -9 $verifier_pid
     fi
-    ./command.sh verifier
+    sudo ./command.sh verifier
     if [ $? -ne 0 ];then
         echo "execute verifier failed."
         exit $?
@@ -89,7 +89,7 @@ function verifier(){
 function kill_daemon(){
     getDaemonPid;
     if [ -n "$daemon_pid" ];then
-        kill -9 $daemon_pid
+        sudo kill -9 $daemon_pid
     fi
 }
 
