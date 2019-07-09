@@ -8,5 +8,5 @@ if [[ $? -ne 0 ]];then
 	exit 1
 fi
 echo "build weidentity-sample success."
-
-exit 1
+cp -fr libs/* dist/lib/
+exit 0
