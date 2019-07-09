@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 if [[ $1 != 'issuer' ]];then
   if [[ $1 != 'user_agent' ]];then
