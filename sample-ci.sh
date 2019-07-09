@@ -51,6 +51,7 @@ function issuer(){
         echo "execute issuer success."       
     else
         echo "execute issuer failed."
+        kill_daemon
         exit $?
     fi
     echo "execute issuer finished"
@@ -67,6 +68,7 @@ function user_agent(){
         echo "execute user_agent success."       
     else
         echo "execute user_agent failed."
+        kill_daemon
         exit $?
     fi
     echo "execute user_agent finished"
@@ -81,6 +83,7 @@ function verifier(){
     ./command.sh verifier
     if [ $? -ne 0 ];then
         echo "execute verifier failed."
+        kill_daemon
         exit $?
     fi
     echo "execute verifier finished"
