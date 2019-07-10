@@ -14,5 +14,6 @@ fi
 if [[ "$1" == daemon ]];then
     java -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1 >/dev/null 2>&1 &
 else
+    echo "--------- start $1 ----------"
     java -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1
 fi
