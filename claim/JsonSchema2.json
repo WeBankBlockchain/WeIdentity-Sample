@@ -1,0 +1,46 @@
+{
+	"properties": {
+		"weid": {
+			"type": "string",
+			"description": "the weid of certificate owner"
+		},
+		"name": {
+			"type": "string",
+			"description": "the name of certificate owner"
+		},
+		"meta": {
+			"type": "object",
+			"properties": {
+				"code": {
+					"type": "number",
+					"description": "code"
+				},
+				"error": {
+					"type": "string",
+					"description": "error"
+				},
+				"info": {
+					"type": "string",
+					"description": "info"
+				}
+			}
+		},
+		"data": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "info"
+				},
+				"sipTellAddress": {
+					"type": "string",
+					"description": "sipTellAddress"
+				},
+				"userlevel": {
+					"type": "integer",
+					"description": "userlevel"
+				}
+			}
+		}
+	}
+}
