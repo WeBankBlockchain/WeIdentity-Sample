@@ -1,12 +1,7 @@
-
 buildscript {
-    repositories {
-        maven {
-            url "http://maven.aliyun.com/nexus/content/groups/public/"
-        }
-        mavenLocal()
-        mavenCentral()//依赖Maven仓库
-    }
+	repositories {
+	    maven { url "https://plugins.gradle.org/m2/" }
+	}
     dependencies {
         //使用1.5.4.RELEASE版本的Spring框架
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.4.RELEASE")
@@ -24,20 +19,48 @@ apply plugin: 'checkstyle'
 apply plugin: "com.github.spotbugs"
 
 version = "1.0.0"
+//设置jdk的版本
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenLocal()
+    mavenCentral()//依赖Maven仓库
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    maven { url "https://dl.bintray.com/ethereum/maven/" }
+}
+
+List apache_commons = [
+        "org.apache.commons:commons-collections4:4.1",
+        "org.apache.commons:commons-lang3:3.5",
+        "commons-cli:commons-cli:1.3.1",
+        'com.github.fge:json-schema-validator:2.2.6',
+        "com.fasterxml.jackson.core:jackson-databind:2.8.8.1",
+        "com.github.reinert:jjschema:1.16",
+        "com.google.zxing:core:3.3.0"
+]
 
 //添加编译时的依赖
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web"){
         exclude group:"ch.qos.logback"
     }
-    compile group: 'com.webank', name: 'weidentity-java-sdk', version: '1.1.+'
-    compile files("libs/web3sdk.jar")
+    // Check SDK pipeline dependency
+    if (file("./dependencies/weid-java-sdk-pipeline.jar").exists()) {
+        println "Pipeline jar for WeIdentity Java SDK found."
+        compile files('./dependencies/weid-java-sdk-pipeline.jar')
+    } else {
+        println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
+        compile group: 'com.webank', name: 'weid-java-sdk', version: '1.3.0'
+    }
+    compile fileTree(dir:'libs', include:'*.jar')
+    compile apache_commons
 }
 
 //生成的jar包包名和版本
 jar {
     destinationDir file('dist/app')
-    archiveName project.name + '-' + version + '.jar'
+    archiveName project.name + '.jar'
     
     doFirst {
    		exclude '/*.*'
@@ -60,23 +83,13 @@ build {
     doLast {
         delete "dist/app/" + project.name + ".jar"
         file("dist/app/" + project.name + ".jar.original").renameTo("dist/app/" + project.name + ".jar")
+        print project.name
     }
 }
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-//设置jdk的版本
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 
 clean {
     delete("dist")
 }
-
 
 checkstyle {
     ignoreFailures false

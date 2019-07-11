@@ -1,0 +1,32 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"description": "five information requirements for users",
+	"title": "cpt templet",
+	"type": "object",
+	"properties": {
+		"weid": {
+			"type": "string",
+			"description": "user weId"
+		},
+		"age": {
+			"description": "the age of certificate owner",
+			"type": "integer"
+		},
+		"gender": {
+			"description": "the gender of certificate owner",
+			"enum": [
+				"F",
+				"M"
+			],
+			"type": "string"
+		},
+		"name": {
+			"description": "the name of certificate owner",
+			"type": "string"
+		}
+	},
+	"required": [
+		"name",
+		"age"
+	]
+}

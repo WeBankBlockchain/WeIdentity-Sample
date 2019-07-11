@@ -4,7 +4,7 @@
 	"description": "information requirements for users",
 	"type": "object",
 	"properties": {
-		"WeId": {
+		"weid": {
 			"type": "string",
 			"description": "user weId"
 		},
