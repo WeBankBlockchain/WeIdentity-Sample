@@ -47,32 +47,29 @@ public class DemoTest extends DemoBase {
      */
     public static void main(String[] args) throws RuntimeException, ParseException {
 
-        // get service instance
-        DemoService demo = context.getBean(DemoService.class);
-
         // create weId
-        CreateWeIdDataResult createWeId = demo.createWeId();
+        CreateWeIdDataResult createWeId = demoService.createWeId();
         BaseBean.print(createWeId);
 
         // set WeIdentity DID
-        demo.setPublicKey(createWeId, "secp256k1");
-        demo.setService(
+        demoService.setPublicKey(createWeId, "secp256k1");
+        demoService.setService(
             createWeId,
             "drivingCardService",
             "https://weidentity.webank.com/endpoint/8377464"
         );
-        demo.setAuthentication(createWeId, "RsaSignatureAuthentication2018");
+        demoService.setAuthentication(createWeId);
 
         // get WeId DOM.
-        WeIdDocument weIdDom = demo.getWeIdDom(createWeId.getWeId());
+        WeIdDocument weIdDom = demoService.getWeIdDom(createWeId.getWeId());
         BaseBean.print(weIdDom);
 
         // registered authority issuer.
-        demo.registerAuthorityIssuer(createWeId, "webank", "0");
+        demoService.registerAuthorityIssuer(createWeId, "webank", "0");
 
         // registered CPT.
         CptBaseInfo cptResult =
-            demo.registCpt(
+            demoService.registCpt(
                 createWeId,
                 DemoTest.buildCptJsonSchema()
             );
@@ -82,7 +79,7 @@ public class DemoTest extends DemoBase {
 
         // create Credential.
         Credential credential = 
-            demo.createCredential(
+            demoService.createCredential(
                 createWeId,
                 cptResult.getCptId(),
                 DemoTest.buildCptJsonSchemaData(),
@@ -91,7 +88,7 @@ public class DemoTest extends DemoBase {
         BaseBean.print(credential);
 
         // verify the credential.
-        boolean result = demo.verifyCredential(credential);
+        boolean result = demoService.verifyCredential(credential);
         if (result) {
             BaseBean.print("verify success");
         } else {
@@ -110,20 +107,20 @@ public class DemoTest extends DemoBase {
         cptJsonSchemaNew.put(JsonSchemaConstant.DESCRIPTION_KEY, "this is a cpt template");
 
         HashMap<String, Object> propertitesMap1 = new HashMap<String, Object>(2);
-        propertitesMap1.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATE_TYPE_STRING);
+        propertitesMap1.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATA_TYPE_STRING);
         propertitesMap1.put(JsonSchemaConstant.DESCRIPTION_KEY, "this is name");
 
         String[] genderEnum = {"F", "M"};
         HashMap<String, Object> propertitesMap2 = new HashMap<String, Object>(2);
-        propertitesMap2.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATE_TYPE_STRING);
-        propertitesMap2.put(JsonSchemaConstant.DATE_TYPE_ENUM, genderEnum);
+        propertitesMap2.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATA_TYPE_STRING);
+        propertitesMap2.put(JsonSchemaConstant.DATA_TYPE_ENUM, genderEnum);
 
         HashMap<String, Object> propertitesMap3 = new HashMap<String, Object>(2);
-        propertitesMap3.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATE_TYPE_NUMBER);
+        propertitesMap3.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATA_TYPE_NUMBER);
         propertitesMap3.put(JsonSchemaConstant.DESCRIPTION_KEY, "this is age");
 
         HashMap<String, Object> propertitesMap4 = new HashMap<String, Object>(2);
-        propertitesMap4.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATE_TYPE_STRING);
+        propertitesMap4.put(JsonSchemaConstant.TYPE_KEY, JsonSchemaConstant.DATA_TYPE_STRING);
         propertitesMap4.put(JsonSchemaConstant.DESCRIPTION_KEY, "this is weid");
 
         HashMap<String, Object> cptJsonSchema = new HashMap<String, Object>(3);

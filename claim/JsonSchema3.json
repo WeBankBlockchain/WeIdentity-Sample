@@ -1,0 +1,98 @@
+{
+  "$id": "certs/v1.0",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudentCert",
+  "type": "object",
+  "required": [ "did", "fullname", "cert", "issuers"],
+  "properties": {
+    "did": {"type": "string"},
+    "weid": {"type": "string"},
+    "fullname": {
+      "type": "object",
+      "properties": {
+        "cn": {"type": "string"},
+        "en": {"type": "string"}
+      }
+    },
+
+    "cert":{
+      "type": "object",
+      "required": ["code", "title", "category", "issueDate"],
+      "properties": {
+        "code": {"type": "string"},
+        "title": {
+          "type": "object",
+          "properties": {
+            "cn": {"type": "string"},
+            "en": {"type": "string"}
+          }
+        },
+        "category": {
+          "type": "object",
+          "properties": {
+            "cn": {"type": "string"},
+            "en": {"type": "string"}
+          }
+        },
+        "totalDuration": {
+          "type": "number"
+        },
+        "issueDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validBefore": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "permanent": {"type": "boolean"}
+      }
+    },
+
+    "issuers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "object",
+            "properties": {
+              "cn": {"type": "string"},
+              "en": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+
+    "courses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {"type": "string"},
+          "title": {
+            "type": "object",
+            "properties": {
+              "cn": {"type": "string"},
+              "en": {"type": "string"}
+            }
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "duration": {"type": "number"},
+          "grade": {"type": "string"},
+          "score": {"type": "string"},
+          "language": {"type": "string"}
+        }
+      }
+    }
+  }
+}

@@ -19,11 +19,6 @@
 
 package com.webank.weid.demo.command;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import com.webank.weid.demo.common.util.FileUtil;
 
 /**
@@ -34,32 +29,41 @@ import com.webank.weid.demo.common.util.FileUtil;
  */
 public abstract class DemoBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(DemoBase.class);
-
-    /**
-     * spring context.
-     */
-    protected static final  ApplicationContext context;
-
     /**
      * schema.
      */
-    protected static final String SCHEMA;
-
+    protected static final String SCHEMA1;
+    
+    /**
+     * schema.
+     */
+    protected static final String SCHEMA2;
+    
+    /**
+     * schema.
+     */
+    protected static final String SCHEMA3;
+    
     /**
      * claimData.
      */
     protected static final String CLAIMDATA;
 
+    /**
+     * the demo service.
+     */
+    protected static DemoService demoService = new DemoService();
+    
     static {
         
-        // initializing spring containers
-        context = new ClassPathXmlApplicationContext(new String[] {
-            "classpath:SpringApplicationContext-demo.xml"});
-        logger.info("initializing spring containers finish...");
- 
         //get jsonSchema data.
-        SCHEMA = FileUtil.getDataByPath("./claim/JsonSchema.json");
+        SCHEMA1 = FileUtil.getDataByPath("./claim/JsonSchema1.json");
+        
+        //get jsonSchema data.
+        SCHEMA2 = FileUtil.getDataByPath("./claim/JsonSchema2.json");
+        
+        //get jsonSchema data.
+        SCHEMA3 = FileUtil.getDataByPath("./claim/JsonSchema3.json");
         
         //get schemaData data.
         CLAIMDATA = FileUtil.getDataByPath("./claim/ClaimData.json");
