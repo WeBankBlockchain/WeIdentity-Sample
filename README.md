@@ -87,7 +87,7 @@ weid.keys.dir=./keys/
 
 * 如果 FISCO-BCOS 为 1.3.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`，`ca.crt`，`client.keystore` 文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
-* 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`文件拷贝到 `weid-sample/src/main/resources/` 目录下。将 `ca.crt`，`node.crt`，`node.key` 文件拷贝到 `weid-sample/src/main/resources/v2/` 目录下。
+* 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`文件拷贝到 `weid-sample/src/main/resources/` 目录下。将 `ca.crt`，`node.crt`，`node.key` 文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
 #### 5. 编译
 
@@ -158,7 +158,7 @@ ls src/main/resources/server.cer
 
 * 如果 FISCO-BCOS 为 1.3.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`，`ca.crt`，`client.keystore` 文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
-* 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`文件拷贝到 `weid-sample/src/main/resources/` 目录下。将 `ca.crt`，`node.crt`，`node.key` 文件拷贝到 `weid-sample/src/main/resources/v2/` 目录下。
+* 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`文件拷贝到 `weid-sample/src/main/resources/` 目录下。将 `ca.crt`，`node.crt`，`node.key` 文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
 #### 3. 修改配置项
 
@@ -249,7 +249,10 @@ jdbc.numTestsPerEvictionRun=5
 jdbc.minEvictableIdleTimeMillis=1800000
 salt.length=5
 amop.request.timeout=5000
-nodes=WeIdentity@IP:PORT
+#(如果 FISCO-BCOS 为 1.3.x 的版本，nodes配置如下)
+nodes=WeIdentity@IP:PORT 
+#(如果 FISCO-BCOS 为 2.x 的版本，nodes配置如下)
+nodes=IP:PORT
 ```
 
 注： Sample中为了演示AMOP服务，启动AMOP服务时的 `blockchain.orgid` 的配置值必须是organizationA，正式环境正常配置即可。
@@ -293,7 +296,10 @@ vim dist/conf/weidentity.properties
 
 ```properties
 blockchain.orgId=organizationB
-nodes=WeIdentity@IP:PORT
+#(如果 FISCO-BCOS 为 1.3.x 的版本，nodes配置如下)
+nodes=WeIdentity@IP:PORT 
+#(如果 FISCO-BCOS 为 2.x 的版本，nodes配置如下)
+nodes=IP:PORT
 ```
 
 注： 确保连接的节点跟AMOP服务端的配置节点不一致，如：Node2。
