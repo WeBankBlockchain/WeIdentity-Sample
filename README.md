@@ -87,7 +87,7 @@ weid.keys.dir=./keys/
 
 * 如果 FISCO-BCOS 为 1.3.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`，`ca.crt`，`client.keystore` 文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
-* 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`文件拷贝到 `weid-sample/src/main/resources/` 目录下。将 `ca.crt`，`node.crt`，`node.key` 文件拷贝到 `weid-sample/src/main/resources/` 目录下。
+* 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`，`ca.crt`，`node.crt`，`node.key`文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
 #### 5. 编译
 
@@ -158,7 +158,7 @@ ls src/main/resources/server.cer
 
 * 如果 FISCO-BCOS 为 1.3.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`，`ca.crt`，`client.keystore` 文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
-* 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`文件拷贝到 `weid-sample/src/main/resources/` 目录下。将 `ca.crt`，`node.crt`，`node.key` 文件拷贝到 `weid-sample/src/main/resources/` 目录下。
+* 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`，`ca.crt`，`node.crt`，`node.key`文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
 #### 3. 修改配置项
 
@@ -180,44 +180,52 @@ vim src/main/resources/weidentity.properties
   <td>机构编号，同一个联盟链中机构编号唯一  </td>
  </tr>
  <tr>
-  <td>jdbc.url</td>
+  <td>datasource.name</td>
+  <td>数据源名称配置，支持多个数据源名称配置，以英文逗号隔开  </td>
+ </tr>
+ <tr>
+  <td>xxx.jdbc.url</td>
   <td>MySql数据库配置URL </td>
  </tr>
  <tr>
-  <td>jdbc.username</td>
-  <td>MySql数据库配置数据库用户名 </td>
+  <td>xxx.jdbc.username</td>
+  <td>MySql数据库配置数据库用户名  </td>
  </tr>
  <tr>
-  <td>jdbc.password</td>
-  <td>MySql数据库配置用户名对应密码 </td>
+  <td>xxx.jdbc.password</td>
+  <td>MySql数据库配置用户名对应密码  </td>
  </tr>
  <tr>
-  <td>jdbc.maxActive</td>
-  <td>MySql数据库配置最大活跃连接 </td>
+  <td>xxx.jdbc.maxActive</td>
+  <td>MySql数据库配置最大活跃连接  </td>
  </tr>
  <tr>
-  <td>jdbc.minIdle</td>
-  <td>MySql数据库配置最小空闲连接 </td>
+  <td>xxx.jdbc.minIdle</td>
+  <td>MySql数据库配置最小空闲连接  </td>
  </tr>
  <tr>
-  <td>jdbc.maxIdle</td>
+  <td>xxx.jdbc.maxIdle</td>
   <td>MySql数据库配置最大空闲连接 </td>
  </tr>
  <tr>
-  <td>jdbc.maxWait</td>
+  <td>xxx.jdbc.maxWait</td>
   <td>MySql数据库配置获取连接最大等待时间，单位毫秒 </td>
  </tr>
  <tr>
-  <td>jdbc.timeBetweenEvictionRunsMillis</td>
+  <td>xxx.jdbc.timeBetweenEvictionRunsMillis</td>
   <td>MySql数据库配置间隔检查连接时间，单位毫秒 </td>
  </tr>
  <tr>
-  <td>jdbc.numTestsPerEvictionRun</td>
-  <td>MySql数据库配置单次检查连接个数 </td>
+  <td>xxx.jdbc.numTestsPerEvictionRun</td>
+  <td>MySql数据库配置单次检查连接个数  </td>
  </tr>
  <tr>
-  <td>jdbc.minEvictableIdleTimeMillis</td>
-  <td>MySql数据库配置连接保持空闲而不被驱逐的最长时间，单位毫秒 </td>
+  <td>xxx.jdbc.minEvictableIdleTimeMillis</td>
+  <td>MySql数据库配置连接保持空闲而不被驱逐的最长时间，单位毫秒  </td>
+ </tr>
+ <tr>
+  <td>default.domain</td>
+  <td>默认的存储域配置，默认配置为：xxx:sdk_all_data </td>
  </tr>
  <tr>
   <td>salt.length</td>
@@ -233,20 +241,30 @@ vim src/main/resources/weidentity.properties
  </tr>
 </table>
 
+注：xxx为数据源名称，具体参考配置示例
+
+注：domain的作用为数据的定向存储，可以将不同的数据存储到不同的库实例或表实例，配置方式为： 数据源名称:表名称，同时如果您有需要还可以支持不同数据的domain配置。
+   
 配置示例如下：
 
 ```properties
 blockchain.orgid=organizationA
-jdbc.url=jdbc:mysql://0.0.0.0:3306/mysql?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
-jdbc.username=username
-jdbc.password=password
-jdbc.maxActive=50
-jdbc.minIdle=5
-jdbc.maxIdle=5
-jdbc.maxWait=10000
-jdbc.timeBetweenEvictionRunsMillis=600000
-jdbc.numTestsPerEvictionRun=5
-jdbc.minEvictableIdleTimeMillis=1800000
+#(数据源配置)
+datasource.name=datasource1
+datasource1.jdbc.url=jdbc:mysql://0.0.0.0:3306/mysql?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+datasource1.jdbc.username=username
+datasource1.jdbc.password=password
+datasource1.jdbc.maxActive=50
+datasource1.jdbc.minIdle=5
+datasource1.jdbc.maxIdle=5
+datasource1.jdbc.maxWait=10000
+datasource1.jdbc.timeBetweenEvictionRunsMillis=600000
+datasource1.jdbc.numTestsPerEvictionRun=5
+datasource1.jdbc.minEvictableIdleTimeMillis=1800000
+#(domain配置)
+default.domain=datasource1:sdk_all_data
+#(不同数据的domain配置,调用persistence存取的时候自行通过PropertyUtils来读取配置使用即可)
+#weid.domain=datasource1:sdk_weid_data
 salt.length=5
 amop.request.timeout=5000
 #(如果 FISCO-BCOS 为 1.3.x 的版本，nodes配置如下)
