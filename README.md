@@ -270,7 +270,7 @@ amop.request.timeout=5000
 #(如果 FISCO-BCOS 为 1.3.x 的版本，nodes配置如下)
 nodes=WeIdentity@IP:PORT 
 #(如果 FISCO-BCOS 为 2.x 的版本，nodes配置如下)
-#nodes=IP:PORT
+nodes=IP:PORT
 ```
 
 注： Sample中为了演示AMOP服务，启动AMOP服务时的 `blockchain.orgid` 的配置值必须是organizationA，正式环境正常配置即可。
@@ -317,30 +317,30 @@ blockchain.orgId=organizationB
 #(如果 FISCO-BCOS 为 1.3.x 的版本，nodes配置如下)
 nodes=WeIdentity@IP:PORT 
 #(如果 FISCO-BCOS 为 2.x 的版本，nodes配置如下)
-#nodes=IP:PORT
+nodes=IP:PORT
 ```
 
 注： 确保连接的节点跟AMOP服务端的配置节点不一致，如：Node2。
 
-3. issuer操作流程演示
+2. issuer操作流程演示
 
 ```shell
 ./command.sh issuer
 ```
 
-4. user_agent操作流程演示
+3. user_agent操作流程演示
 
 ```shell
 ./command.sh user_agent
 ```
 
-5. verifier操作流程演示
+4. verifier操作流程演示
 
 ```shell
 ./command.sh verifier
 ```
 
-6. 三视觉代码执行过程，详见
+5. 三视觉代码执行过程，详见
 
 ```text
 src/main/java/com/webank/weid/demo/command/DemoCommand.java
