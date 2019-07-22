@@ -25,15 +25,19 @@
 
 完成后会生成配置文件 `fisco.properties`，`weidentity.properties` 以及相关证书文件。
 
+* 如果是安装部署为源码方式，生成的配置文件路径 `weid-java-sdk//dist/conf/` 。
+
+* 如果是安装部署为工具方式 ，生成的配置文件路径 `weid-build-tools/resources/` 。
+
 #### 2. 下载weid-sample源码：
 
 ```shell
 git clone https://github.com/WeBankFinTech/weid-sample.git
 ```
-注：注意对应的版本
+**注：注意对应的版本**
 
 #### 3. 配置 https 和 http 端口
-注： （默认配置的端口是20190和20191，如果不需要更改，可以跳过这一步）。
+**注： （默认配置的端口是20190和20191，如果不需要更改，可以跳过这一步）。**
 
 weid-sample 启动后，会以 https 和 http 的方式对外提供服务：
 
@@ -75,7 +79,7 @@ admin.privKeyPath=./keys/priv/ecdsa_key
 weid.keys.dir=./keys/
 ```
 
-#### 4. 配置文件
+#### 4. 配置证书及properties文件
 
 1. 将sdk私钥文件复制到 `weid-sample/keys/priv/` 中进行覆盖
 
@@ -89,31 +93,44 @@ weid.keys.dir=./keys/
 
 * 如果 FISCO-BCOS 为 2.x 的版本，将第1步得到的配置文件: `fisco.properties`，`weidentity.properties`，`ca.crt`，`node.crt`，`node.key`文件拷贝到 `weid-sample/src/main/resources/` 目录下。
 
-#### 5. 编译
+#### 5. 添加执行权限
 
-执行：
-
-```shell
-gradle clean
-gradle build
-```
-
-注：需要安装gradle。
-
-#### 6. 添加执行权限
-
-给```command.sh```，```start.sh```，```stop.sh``` 脚本添加执行权限:
+给```build.sh```，```command.sh```，```start.sh```，```stop.sh``` 脚本添加执行权限:
 
 ```shell
 chmod +x *.sh
 ```
 
+#### 6. 编译
+
+执行：
+
+```shell
+./build.sh
+```
+
+**注：需要安装gradle。**
 
 #### 7. 启动weid-sample服务:
 
 ```shell
 ./start.sh
 ```
+
+输出如下日志，则表示服务启动成功
+
+```text
+[main] INFO  AnnotationMBeanExporter() - Registering beans for JMX exposure on startup
+[main] INFO  Http11NioProtocol() - Initializing ProtocolHandler ["https-jsse-nio-20190"]
+[main] INFO  Http11NioProtocol() - Starting ProtocolHandler ["https-jsse-nio-20190"]
+[main] INFO  NioSelectorPool() - Using a shared selector for servlet write/read
+[main] INFO  Http11NioProtocol() - Initializing ProtocolHandler ["http-nio-20191"]
+[main] INFO  NioSelectorPool() - Using a shared selector for servlet write/read
+[main] INFO  Http11NioProtocol() - Starting ProtocolHandler ["http-nio-20191"]
+[main] INFO  TomcatEmbeddedServletContainer() - Tomcat started on port(s): 20190 (https) 20191 (http)
+[main] INFO  SampleApp() - Started SampleApp in 3.588 seconds (JVM running for 4.294)
+```
+
 
 ---
 
@@ -138,6 +155,13 @@ ls src/main/resources/server.cer
 ./stop.sh
 ```
 
+输出如下日志，则表示服务stop成功
+
+```text
+the server stop success.
+```
+
+
 ---
 
 ## Linux上体验
@@ -146,7 +170,7 @@ ls src/main/resources/server.cer
 
 此项体验过程中，将为您演示AMOP服务，所以在联盟链中至少需要有两个区块链节点，如：Node1、Node2。
 
-#### 2. 配置文件
+#### 2. 配置证书及properties文件
 
 1. 将sdk私钥文件复制到 `weid-sample/keys/priv/` 中进行覆盖
 
@@ -241,9 +265,9 @@ vim src/main/resources/weidentity.properties
  </tr>
 </table>
 
-注：xxx为数据源名称，具体参考配置示例
+**注：xxx 为数据源名称，具体参考配置示例**
 
-注：domain的作用为数据的定向存储，可以将不同的数据存储到不同的库实例或表实例，配置方式为： 数据源名称:表名称，同时如果您有需要还可以支持不同数据的domain配置。
+**注：domain的作用为数据的定向存储，可以将不同的数据存储到不同的库实例或表实例，配置方式为： 数据源名称:表名称，同时如果您有需要还可以支持不同数据的domain配置。**
    
 配置示例如下：
 
@@ -267,15 +291,27 @@ default.domain=datasource1:sdk_all_data
 #weid.domain=datasource1:sdk_weid_data
 salt.length=5
 amop.request.timeout=5000
-#(如果 FISCO-BCOS 为 1.3.x 的版本，nodes配置如下)
-nodes=WeIdentity@IP:PORT 
-#(如果 FISCO-BCOS 为 2.x 的版本，nodes配置如下)
 nodes=IP:PORT
 ```
 
-注： Sample中为了演示AMOP服务，启动AMOP服务时的 `blockchain.orgid` 的配置值必须是organizationA，正式环境正常配置即可。
+**注： Sample中为了演示AMOP服务，启动AMOP服务时的 `blockchain.orgid` 的配置值必须是organizationA，正式环境正常配置即可。**
 
-注：确保连接的节点是您两个节点中的一个，如：连接Node1。
+**注：确保连接的节点是您两个节点中的一个，如：连接Node1。**
+
+**注：节点配置目前针对 FISCO-BCOS 为 1.3.x 和  FISCO-BCOS 为 2.x 有如下差异**
+
+如果 FISCO-BCOS 为 1.3.x 的版本，配置如下:
+
+```properties
+nodes=WeIdentity@IP:PORT 
+```
+
+如果 FISCO-BCOS 为 2.x 的版本，配置如下:
+
+```properties
+nodes=IP:PORT
+```
+
 
 #### 4. 添加执行权限
 
@@ -299,6 +335,12 @@ chmod +x *.sh
 ./command.sh daemon
 ```
 
+输出如下日志，则表示AMOP服务启动成功
+
+```text
+the AMOP server start success
+```
+
 #### 7. 再次修改配置，完成issuer,user_agent,verifier三视觉的演示
 
 1. 修改`weid-sample/dist/conf/` 目录下的文件 `weidentity.properties`
@@ -307,20 +349,25 @@ chmod +x *.sh
 vim dist/conf/weidentity.properties
 ```
 
-修改 `blockchain.orgId` 为organizationB
-修改 `nodes` 为另外一个节点
-
 配置示例如下：
 
+如果 FISCO-BCOS 为 1.3.x 的版本，配置如下:
+
 ```properties
-blockchain.orgId=organizationB
-#(如果 FISCO-BCOS 为 1.3.x 的版本，nodes配置如下)
+blockchain.orgid=organizationB
 nodes=WeIdentity@IP:PORT 
-#(如果 FISCO-BCOS 为 2.x 的版本，nodes配置如下)
+```
+
+如果 FISCO-BCOS 为 2.x 的版本，配置如下:
+
+```properties
+blockchain.orgid=organizationB
 nodes=IP:PORT
 ```
 
-注： 确保连接的节点跟AMOP服务端的配置节点不一致，如：Node2。
+**注： 确保连接的节点跟AMOP服务端的配置节点不一致，如：Node2。**
+
+---
 
 2. issuer操作流程演示
 
@@ -328,17 +375,42 @@ nodes=IP:PORT
 ./command.sh issuer
 ```
 
+输出如下日志，则表示运行成功
+
+```text
+issuer() finish...
+```
+
+---
+
+
 3. user_agent操作流程演示
 
 ```shell
 ./command.sh user_agent
 ```
 
+输出如下日志，则表示运行成功
+
+```text
+userAgent() finish...
+```
+
+---
+
 4. verifier操作流程演示
 
 ```shell
 ./command.sh verifier
 ```
+
+输出如下日志，则表示运行成功
+
+```text
+verifier() finish...
+```
+
+---
 
 5. 三视觉代码执行过程，详见
 

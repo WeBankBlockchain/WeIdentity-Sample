@@ -9,4 +9,7 @@ if [[ $? -ne 0 ]];then
 fi
 echo "build weidentity-sample success."
 cp -fr libs/* dist/lib/
+
+touch dist/logs/all.log
+
 exit 0

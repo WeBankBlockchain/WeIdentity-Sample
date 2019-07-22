@@ -99,6 +99,8 @@ public class DemoCommand extends DemoBase {
 
     private static void daemon() {
         new PolicyServiceImpl();
+        BaseBean.print("------------------------------");
+        BaseBean.print("the amop server start success");
     }
     
     /**
