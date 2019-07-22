@@ -103,7 +103,7 @@ function main(){
         rm -rf $top_path/tmp
     fi
     #start daemon process 
-    daemon;
+    #daemon;
     #start issuer
     issuer;
     #start user_agent
