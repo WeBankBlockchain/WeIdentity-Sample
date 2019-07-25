@@ -4,11 +4,11 @@
 bcos.version=1
 
 # contract address
-weId.contractaddress=0x7a764864baee6ec8c77a0d135770b7cfa6eec2c4
-cpt.contractaddress=0xc70131b48fa633376adf3baa2d0a27f59c2571ef
-issuer.contractaddress=0x6af75b1193a058eb6fc9e22e36d85ddf210f135f
-evidence.contractaddress=0x5e8e51365796674d95082a05985fdde387b6f1a1
-specificissuer.contractaddress=0xd91e6fcf3f037a5619c57d83bf245e18c9054cd3
+weId.contractaddress=0x0
+cpt.contractaddress=0x0
+issuer.contractaddress=0x0
+evidence.contractaddress=0x0
+specificissuer.contractaddress=0x0
 
 # blockchain connection params
 chain.id=101
