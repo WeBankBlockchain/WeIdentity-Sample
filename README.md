@@ -1,3 +1,7 @@
+## 整体介绍
+
+weid-sample是基于 [WeIdentity](https://weidentity.readthedocs.io/zh_CN/latest/README.html)开发的样例程序，提供了一整套的流程演示，可以帮您快速理解WeIdentity的运行机制，您也可以参考该样例程序，开发您的WeIdentity应用。
+
 ## 环境准备
 
 <table style="width:100%;border-collapse:collapse">
@@ -23,17 +27,12 @@
  </tr>
 </table>
 
-<a name="install-weid-java-sdk"></a>
-## 安装部署weid-java-sdk
-
-完成[weid-java-sdk安装部署](https://weidentity.readthedocs.io/projects/javasdk/zh_CN/latest/docs/weidentity-installation.html)后会生成配置文件 `fisco.properties`，`weidentity.properties` 以及相关证书文件。
-
-* 如果是安装部署为[源码方式](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-installation-by-sourcecode.html)，生成的配置文件路径 `weid-java-sdk/dist/conf/` 。
-
-* 如果是安装部署为[工具方式](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-build-with-deploy.html) ，生成的配置文件路径 `weid-build-tools/resources/` 。
 
 ## 快速体验
 
-* [spring-boot服务体验](./docs/experience-by-springboot.md)
+我们提供了两种方式体验 weid-sample：
 
-* [shell命令体验](./docs/experience-by-command.md)
+* [shell命令行方式体验](./docs/experience-by-command.md) （推荐方式）
+
+* [spring-boot方式体验](./docs/experience-by-springboot.md)
+
