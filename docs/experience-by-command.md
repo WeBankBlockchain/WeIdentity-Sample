@@ -1,6 +1,8 @@
 ## shell命令体验
 
-此项体验过程中，因为涉及到 AMOP 服务，所以在联盟链中至少需要有两个区块链节点，如：Node1、 Node2 。
+### 整体介绍
+
+命令行方式比较完整的模拟了[WeIdentity各个角色](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-spec.html#id9)的工作流程，可以帮您快速体验WeIdentity也业务流程和运行机制。
 
 #### 1. 下载 weid-sample 源码：
 
@@ -11,21 +13,19 @@ cd weid-sample
 
 #### 2. 配置证书及properties文件
 
-1. 将weid-java-sdk部署合约的私钥文件复制到 `keys/priv/` 目录中
+* 安装部署weid-java-sdk
 
-* 如果是安装部署为[源码方式](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-installation-by-sourcecode.html)，weid-java-sdk部署合约的私钥文件路径 `weid-java-sdk/ecdsa_key` 。
+     weid-sample 需要依赖weid-java-sdk，您需要参考[WeIdentity JAVA SDK安装部署](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-installation.html)完成 weid-java-sdk 的安装部署，并参照[Java应用集成章节](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-build-with-deploy.html#weid-java-sdk)完成 weid-sample 的配置。
 
-* 如果是安装部署为[工具方式](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-build-with-deploy.html)，weid-java-sdk部署合约的私钥文件路径 `weid-build-tools/output/admin/ecdsa_key` 。
 
-2. 配置证书和properties文件
+* 配置weid-java-sdk部署合约的私钥
 
-* 如果 FISCO-BCOS 为 1.3.x 的版本，将<a href="../README.md#install-weid-java-sdk">安装部署weid-java-sdk</a>得到的配置文件: `fisco.properties` ，`weidentity.properties` ， `ca.crt` ， `client.keystore` 文件拷贝到 `src/main/resources/` 目录下。
+     您需要将您在[部署合约阶段](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-build-with-deploy.html#id7)生成的私钥文件拷贝至 `keys/priv/` 目录中，此私钥后续将用于注册 Authority Issuer。
 
-* 如果 FISCO-BCOS 为 2.x 的版本，将<a href="../README.md#install-weid-java-sdk">安装部署weid-java-sdk</a>得到的配置文件: `fisco.properties` ， `weidentity.properties` ， `ca.crt` ， `node.crt` ， `node.key` 文件拷贝到 `src/main/resources/` 目录下。
 
-3. 关键配置文件及说明，[详见](configuration-instructions.md)
+* 修改节点和机构配置
 
-* 修改 `weid-sample/src/main/resources/weidentity.properties` 
+     多个角色之间会使用AMOP进行通信，根据AMOP协议，每个机构需要配置为连接不同的区块链节点。
 
 ```shell
 vim src/main/resources/weidentity.properties
@@ -33,11 +33,14 @@ vim src/main/resources/weidentity.properties
 
 关键配置如下：
 
+`blockchain.orgid` ： 机构名称。样例以organizationA为例，请修改为organizationA。   
+`nodes` ： 区块链节点信息。你可以修改为您区块链网络中的任一节点即可。   
+
+配置样例：
 ```properties
 blockchain.orgid=organizationA
-nodes=IP:PORT 
+nodes=10.10.10.10:20200 
 ```
-**注： 此处修改的节点配置为您两个节点中的节点1，如：Node1。**
 
 #### 3. 编译 weid-sample
 
@@ -52,28 +55,29 @@ chmod +x *.sh
 ./command.sh daemon
 ```
 
-输出如下日志，则表示 AMOP 服务启动成功
+运行成功，会启动AMOP服务，输出如下日志：
 
 ```text
-the AMOP server start success
+the AMOP server start success.
 ```
 
-#### 5. 再次修改配置，完成 issuer , user_agent , verifier 三视觉的演示
+#### 5. 修改user-agent配置
 
 1. 修改 `weid-sample/dist/conf/` 目录下的文件 `weidentity.properties`
+
 
 ```shell
 vim dist/conf/weidentity.properties
 ```
 
-关键配置如下：
+user-agent和verifier需要使用区块链的AMOP进行通信，因此机构名和节点名需要和前面的verifier不一样。
+
+配置样例：
 
 ```properties
 blockchain.orgid=organizationB
-nodes=IP:PORT 
+nodes=10.10.10.11:20200  
 ```
-
-**注： 此处修改的节点配置为您两个节点中的节点2，如：Node2。**
 
 ---
 
