@@ -35,4 +35,4 @@ salt.length=5
 amop.request.timeout=5000
 
 # Blockchain node info.
-nodes=WeIdentity@$NODE_IP
+nodes=WeIdentity@NODE_IP
