@@ -1,31 +1,33 @@
 ## spring-boot服务体验
 
+## 整体介绍
+
+    使用 spring boot 方式，weid-sample 程序将作为一个后台进程运行，您可以使用 http 方式体验交互流程。
+
+
 #### 1. 下载 weid-sample 源码：
 
 ```shell
 git clone https://github.com/WeBankFinTech/weid-sample.git
-cd weid-sample
+
 ```
 
 #### 2. 配置证书及properties文件
 
-1. 将weid-java-sdk部署合约的私钥文件复制到 `keys/priv/` 目录中
+* 安装部署weid-java-sdk
 
-* 如果是安装部署为[源码方式](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-installation-by-sourcecode.html)，weid-java-sdk部署合约的私钥文件路径 `weid-java-sdk/ecdsa_key` 。
+ weid-sample 需要依赖weid-java-sdk，您需要参考[WeIdentity JAVA SDK安装部署](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-installation.html)完成 weid-java-sdk 的安装部署，并参照[Java应用集成章节](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-build-with-deploy.html#weid-java-sdk)完成 weid-sample 的配置。
 
-* 如果是安装部署为[工具方式](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-build-with-deploy.html)，weid-java-sdk部署合约的私钥文件路径 `weid-build-tools/output/admin/ecdsa_key` 。
 
-2. 配置证书和properties文件
+* 配置weid-java-sdk部署合约的私钥
 
-* 如果 FISCO-BCOS 为 1.3.x 的版本，将<a href="../README.md#install-weid-java-sdk">安装部署weid-java-sdk</a>得到的配置文件: `fisco.properties` ，`weidentity.properties` ， `ca.crt` ， `client.keystore` 文件拷贝到 `src/main/resources/` 目录下。
+ 您需要将您在[部署合约阶段](https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-build-with-deploy.html#id7)生成的私钥文件拷贝至 `keys/priv/` 目录中，此私钥后续将用于注册 Authority Issuer。
 
-* 如果 FISCO-BCOS 为 2.x 的版本，将<a href="../README.md#install-weid-java-sdk">安装部署weid-java-sdk</a>得到的配置文件: `fisco.properties`， `weidentity.properties` ， `ca.crt` ， `node.crt` ， `node.key` 文件拷贝到 `src/main/resources/` 目录下。
-
-3. 关键配置文件及说明，[详见](configuration-instructions.md)
 
 #### 3. 编译 weid-sample
 
 ```shell
+cd weid-sample
 chmod +x *.sh
 ./build.sh
 ```
@@ -37,7 +39,7 @@ chmod +x *.sh
 ./start.sh
 ```
 
-输出如下日志，则表示服务启动成功
+若启动成功，则会打印以下信息：
 
 ```text
 [main] INFO  AnnotationMBeanExporter() - Registering beans for JMX exposure on startup
@@ -51,16 +53,8 @@ chmod +x *.sh
 [main] INFO  SampleApp() - Started SampleApp in 3.588 seconds (JVM running for 4.294)
 ```
 
-2. 停止 weid-sample 服务
-```shell
-./stop.sh
-```
+2. 体验weid-sample服务（待补充）
 
-输出如下日志，则表示服务停止成功
-
-```text
-the server stop success.
-```
 
 ---
 
