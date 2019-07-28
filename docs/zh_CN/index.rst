@@ -11,4 +11,4 @@
    docs/experience-by-command.rst
    docs/experience-by-springboot.rst
    
-   返回首页 <https://weidentity.readthedocs.io/projects/buildtools/zh_CN/latest/>
+   返回首页 <https://weidentity.readthedocs.io/zh_CN/latest/>
