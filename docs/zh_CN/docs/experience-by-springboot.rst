@@ -38,7 +38,7 @@ spring-boot服务方式使用
    weid-sample 的配置。
 
 
--  配置weid-java-sdk部署合约的私钥
+-  配置 Committee Member 私钥
 
    将您在\ `部署WeIdentity智能合约阶段 <https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-build-with-deploy.html#id7>`__\ 生成的私钥文件拷贝至
    ``weid-sample/keys/priv/`` 目录中，此私钥后续将用于注册 Authority Issuer，weid-sample 会自动加载。
@@ -46,27 +46,6 @@ spring-boot服务方式使用
    此项配置并非必要，注册 Authority Issuer 需要委员会机构成员（ Committee Member ）权限，发布智能合约时生成的公私钥对会自动成为委员会机构成员，若您不是发布智能合约的机构，您无需关注此配置项。
    若您是智能合约发布的机构，您可以参考以下进行配置：
 
-
--  修改节点和机构配置
-
-   多个角色之间会使用 \ `AMOP <https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/amop_protocol.html>`__\ 进行通信，根据 AMOP 协议，每个机构需要配置为连接不同的区块链节点。
-
-.. code:: shell
-
-    cd weid-sample
-    vim src/main/resources/weidentity.properties
-
-关键配置如下：
-
- | ``blockchain.orgid`` ：机构名称。样例以 organizationA 为例，请修改为 organizationA。
- | ``nodes`` ：区块链节点信息。你可以修改为您区块链网络中的任一节点即可。
-
-配置样例：
-
-.. code:: properties
-
-    blockchain.orgid=organizationA
-    nodes=127.0.0.1:20200 
 
 2.3 基本流程的演示
 ''''''''''''''''''''''''
@@ -105,96 +84,162 @@ spring-boot服务方式使用
 2.3.2 流程演示
 >>>>>>>>>>>>>>>>>>>>>>>>
 
-- issuer 创建 WeID、注册成为 Authority Issuer、注册 CPT 和创建 credential：
+以下将为您演示
+假设您的服务部署在本地，地址是 ``127.0.0.1``，服务端口是 ``20191``。
+
+- 创建 WeID
 .. code:: shell
 
-    curl xxx
+    curl -l -H "Content-type: application/json" -X POST   http://127.0.0.1:20191/createWeId
 
 若调用成功，则会打印以下信息：
 ::
 
     
-    --------- start issuer ----------
-    issuer() init...
+    {
+        "result":{
+            "weId":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24",
+            "userWeIdPublicKey":{
+                "publicKey":"3170902924087212850995053706205512080445198963430287429721846825598988998466716040533782467342119206581749393570668868631792331397183368695050591746049552"
+            },
+            "userWeIdPrivateKey":null
+        },
+        "errorCode":0,
+        "errorMessage":"success",
+        "transactionInfo":{
+            "blockNumber":60643,
+            "transactionHash":"0xc73b7ba6af39614761423dc8fcbbbc7e5f24c82e8187bc467cf0398b4ce4330b",
+            "transactionIndex":0
+        }
+    }
 
-    begin to createWeId...
+表明创建的 WeID 是 did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24
 
-    createWeId result:
-
-    result:(com.webank.weid.protocol.response.CreateWeIdDataResult)
-    weId: did:weid:1:0x7a276b294ecf0eb7b917765f308f024af2c99a38
-    userWeIdPublicKey:(com.webank.weid.protocol.base.WeIdPublicKey)
-        publicKey: 1443108387689714733821851716463554592846955595194902087319775398382966796515741745
-        951182105547115313067791999154982272567881519406873966935891855085705784
-    userWeIdPrivateKey:(com.webank.weid.protocol.base.WeIdPrivateKey)
-        privateKey: 46686865859949148045125507514815998920467147178097685958028816903332430030079
-    errorCode: 0
-    errorMessage: success
-    transactionInfo:(com.webank.weid.protocol.response.TransactionInfo)
-    blockNumber: 2098
-    transactionHash: 0x20fc5c2730e4636248b121d31ffdbf7fa12e95185068fc1dea060d1afa9d554e
-    transactionIndex: 0
-
-    begin to setPublicKey...
-
-    setPublicKey result:
-
-    result: true
-    errorCode: 0
-    errorMessage: success
-    transactionInfo:(com.webank.weid.protocol.response.TransactionInfo)
-    blockNumber: 2099
-    transactionHash: 0x498d2bfd2d8ffa297af699c788e80de1bd51c255a7365307624637ae5a42f3a1
-    transactionIndex: 0
-
-
-- user_agent 操作流程演示
+- 注册 Authority Issuer
 
 .. code:: shell
 
-    curl xxx
+    curl -l -H "Content-type: application/json" -X POST -d '{"issuer":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","org-id":"webank"}'  
+    http://127.0.0.1:20191/registerAuthorityIssuer
 
-运行成功，则会打印包括创建 WeID、 通过 AMOP 获取 verifier 发布的 presentation policy、创建 presentation 以及打包 presentation 成 QRcode 或者 Json 串的流程。
-以下为截取的部分日志： 
+运行成功，则会打印以下信息：
 
 ::
 
     
-    --------- start user_agent ----------
-    userAgent() init...
+    {
+        "result":true,
+        "errorCode":0,
+        "errorMessage":"success",
+        "transactionInfo":{
+            "blockNumber":60668,
+            "transactionHash":"0xa0b84473705da2679cfec9119e2cdef03175df0f1af676e0579d5809e4e8d6cd",
+            "transactionIndex":0
+        }
+    }
 
-    begin to create weId for useragent...
-
-    createWeId result:
-
-    result:(com.webank.weid.protocol.response.CreateWeIdDataResult)
-    weId: did:weid:1:0x38198689923961e8ecd6d57d88d027b1a6d1daf2
-    userWeIdPublicKey:(com.webank.weid.protocol.base.WeIdPublicKey)
-        publicKey: 12409513077193959265896252693672990701614851618753940603742819290794422690048786166
-        777486244492302423653282585338774488347536362368216536452956852123869456
-    userWeIdPrivateKey:(com.webank.weid.protocol.base.WeIdPrivateKey)
-        privateKey: 11700070604387246310492373601720779844791990854359896181912833510050901695117
-    errorCode: 0
-    errorMessage: success
-    transactionInfo:(com.webank.weid.protocol.response.TransactionInfo)
-    blockNumber: 2107
-    transactionHash: 0x2474141b82c367d8d5770a7f4d124aeaf985e7fa3e3e2f7f98eeed3d38d862f5
-    transactionIndex: 0
-
-
-附录
-^^^^^^^^^^^^^^^
-
--  如何更改 weid-sample 启动的 https 服务的证书
-
-weid-sample 中提供了自签证书. ``tomcat.keystore`` 和 ``server.cer``
-文件存放于 ``src/main/resources``
-目录中。客户端浏览器安装 ``server.cer`` 证书，导入为受信任的根证书颁发机构即可。
-
-自签证书所需的配置文件:
+- 注册 CPT
 
 .. code:: shell
+    curl -l -H "Content-type: application/json" -X POST -d '{"publisher": "did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24",
+    "claim": {"properties": {"id":{"type":"string","description":"user weid"},"name":{"type":"string","description":"user name"},"gender":{"type":"string","description":"user gender"}}}}' 
+    http://127.0.0.1:20191/registCpt
 
-    ls src/main/resources/tomcat.keystore
-    ls src/main/resources/server.cer
 
+运行成功，则会打印以下信息：
+::
+
+
+    {
+        "result":{
+            "cptId":1189,
+            "cptVersion":1
+        },
+        "errorCode":0,
+        "errorMessage":"success",
+        "transactionInfo":{
+            "blockNumber":60676,
+            "transactionHash":"0x72d55eb1d020acd09b115177a46e230ffdb0177ab5dd74e16765d79338522093",
+            "transactionIndex":0
+        }
+    }
+
+表明注册 CPT 成功，CPT ID 为 1189。
+
+- 创建 credential
+
+创建 credential 依赖于具体的 CPT，参数里的 cptId 传入刚刚注册的 CPT 的 ID：
+
+.. code:: shell
+    curl -l -H "Content-type: application/json" -X POST -d 
+    '{"cptId": "1189","issuer": "did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24",
+    "claimData": {"id":"did:weid:101:0xf36fb2308d36bb94c579f568bdf670743d949deb","name":"zhangsan","gender":"F"}}' 
+    http://127.0.0.1:20191/createCredential
+
+若运行成功，则会打印以下信息：
+
+::
+
+
+    {
+        "result":{
+            "credential":{
+                "context":"https://github.com/WeBankFinTech/WeIdentity/blob/master/context/v1",
+                "id":"e4f4accd-6026-4fd0-9392-1379ddd4f778",
+                "cptId":1189,
+                "issuer":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24",
+                "issuanceDate":1564371227764,
+                "expirationDate":1595475227763,
+                "claim":{
+                    "gender":"F",
+                    "name":"zhangsan",
+                    "id":"did:weid:101:0xf36fb2308d36bb94c579f568bdf670743d949deb"
+                },
+                "proof":{
+                    "creator":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24",
+                    "signature":"G2kD4u4jrnmYbq/oVl9idmTEQzP3a0KEomHGJaVpWzhITIE+dDYSRMyF9TDy+jPANpYRJGg7pGnANM+QeJ9Ba00=",
+                    "created":"1564371227764",
+                    "type":"EcdsaSignature"
+                },
+                "signature":"G2kD4u4jrnmYbq/oVl9idmTEQzP3a0KEomHGJaVpWzhITIE+dDYSRMyF9TDy+jPANpYRJGg7pGnANM+QeJ9Ba00=",
+                "proofType":"EcdsaSignature"
+            },
+            "disclosure":{
+                "name":1,
+                "id":1,
+                "gender":1
+            }
+        },
+        "errorCode":0,
+        "errorMessage":"success",
+        "transactionInfo":null
+    }
+
+表明创建 credential 成功，credential 的具体信息为输出中的 credential 字段对应的内容。
+
+- 验证 credential
+
+
+.. code:: shell
+    curl -l -H "Content-type: application/json" -X POST -d 
+    '{"context":"https://github.com/WeBankFinTech/WeIdentity/blob/master/context/v1",
+    "id":"e4f4accd-6026-4fd0-9392-1379ddd4f778","cptId":1189,"issuer":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24",
+    "issuanceDate":1564371227764,"expirationDate":1595475227763,"claim":{"gender":"F","name":"zhangsan","id":"did:weid:101:0xf36fb2308d36bb94c579f568bdf670743d949deb"},
+    "proof":{"creator":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","signature":"G2kD4u4jrnmYbq/oVl9idmTEQzP3a0KEomHGJaVpWzhITIE+dDYSRMyF9TDy+jPANpYRJGg7pGnANM+QeJ9Ba00=",
+    "created":"1564371227764","type":"EcdsaSignature"},"signature":"G2kD4u4jrnmYbq/oVl9idmTEQzP3a0KEomHGJaVpWzhITIE+dDYSRMyF9TDy+jPANpYRJGg7pGnANM+QeJ9Ba00=","proofType":"EcdsaSignature"},
+    "disclosure":{"name":1,"id":1,"gender":1}'  
+    http://127.0.0.1:20191/verifyCredential
+
+
+若运行成功，则会打印以下信息：
+
+::
+
+    {
+        "result":true,
+        "errorCode":0,
+        "errorMessage":"success",
+        "transactionInfo":null
+    }
+
+表明 credential 验证成功。

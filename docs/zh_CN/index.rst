@@ -7,7 +7,7 @@
    :maxdepth: 1
    :caption: Contents:
 
-   README.rst
+   docs/README.rst
    docs/experience-by-command.rst
    docs/experience-by-springboot.rst
    
