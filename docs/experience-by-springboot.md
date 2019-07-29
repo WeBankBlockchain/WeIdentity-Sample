@@ -53,8 +53,84 @@ chmod +x *.sh
 [main] INFO  SampleApp() - Started SampleApp in 3.588 seconds (JVM running for 4.294)
 ```
 
-2. 体验weid-sample服务（待补充）
+#### 5. 体验weid-sample服务
 
+weid-sample 提供 http 和 https 两种协议的 POST 请求服务，以下为 http 请求为例
+
+1. 创建 weidentity DID
+
+命令：
+```shell
+curl -l -H "Content-type: application/json" -X POST   http://IP:20191/createWeId
+```
+
+若运行成功，则会打印以下信息：
+
+```text
+{"result":{"weId":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","userWeIdPublicKey":{"publicKey":"3170902924087212850995053706205512080445198963430287429721846825598988998466716040533782467342119206581749393570668868631792331397183368695050591746049552"},"userWeIdPrivateKey":null},"errorCode":0,"errorMessage":"success","transactionInfo":{"blockNumber":60643,"transactionHash":"0xc73b7ba6af39614761423dc8fcbbbc7e5f24c82e8187bc467cf0398b4ce4330b","transactionIndex":0}}
+```
+
+
+2. 注册 Authority Issuer
+
+issuer 参数请使用 createWeId 接口创建出来的 weId
+
+命令：
+```shell
+curl -l -H "Content-type: application/json" -X POST -d '{"issuer":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","authorityName":"webank"}'  http://IP:20191/registerAuthorityIssuer
+```
+
+若运行成功，则会打印以下信息：
+
+```text
+{"result":true,"errorCode":0,"errorMessage":"success","transactionInfo":{"blockNumber":60668,"transactionHash":"0xa0b84473705da2679cfec9119e2cdef03175df0f1af676e0579d5809e4e8d6cd","transactionIndex":0}}
+```
+
+3. 注册 CPT
+
+publisher 参数请使用 createWeId 接口创建出来的 weId
+
+命令：
+```shell
+curl -l -H "Content-type: application/json" -X POST -d '{"publisher": "did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","claim": {"properties": {"id":{"type":"string","description":"user weid"},"name":{"type":"string","description":"user name"},"gender":{"type":"string","description":"user gender"}}}}' http://IP:20191/registCpt
+```
+
+若运行成功，则会打印以下信息：
+
+```text
+{"result":{"cptId":1189,"cptVersion":1},"errorCode":0,"errorMessage":"success","transactionInfo":{"blockNumber":60676,"transactionHash":"0x72d55eb1d020acd09b115177a46e230ffdb0177ab5dd74e16765d79338522093","transactionIndex":0}}
+```
+
+4. 颁发 credential
+
+cptId 参数请使用 registCpt 接口注册出来的 cptId
+
+issuer 参数请使用 createWeId 接口创建出来的 weId
+
+命令：
+```shell
+curl -l -H "Content-type: application/json" -X POST -d '{"cptId": "1189","issuer": "did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","claimData": {"id":"did:weid:101:0xf36fb2308d36bb94c579f568bdf670743d949deb","name":"zhangsan","gender":"F"}}' http://IP:20191/createCredential
+```
+
+若运行成功，则会打印以下信息：
+
+```text
+{"result":{"credential":{"context":"https://github.com/WeBankFinTech/WeIdentity/blob/master/context/v1","id":"e4f4accd-6026-4fd0-9392-1379ddd4f778","cptId":1189,"issuer":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","issuanceDate":1564371227764,"expirationDate":1595475227763,"claim":{"gender":"F","name":"zhangsan","id":"did:weid:101:0xf36fb2308d36bb94c579f568bdf670743d949deb"},"proof":{"creator":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","signature":"G2kD4u4jrnmYbq/oVl9idmTEQzP3a0KEomHGJaVpWzhITIE+dDYSRMyF9TDy+jPANpYRJGg7pGnANM+QeJ9Ba00=","created":"1564371227764","type":"EcdsaSignature"},"signature":"G2kD4u4jrnmYbq/oVl9idmTEQzP3a0KEomHGJaVpWzhITIE+dDYSRMyF9TDy+jPANpYRJGg7pGnANM+QeJ9Ba00=","proofType":"EcdsaSignature"},"disclosure":{"name":1,"id":1,"gender":1}},"errorCode":0,"errorMessage":"success","transactionInfo":null}
+```
+
+5. 验证 credential
+
+JSON参数为 createCredential 接口创建出来的 credential 内容
+
+命令：
+```shell
+curl -l -H "Content-type: application/json" -X POST -d '{"context":"https://github.com/WeBankFinTech/WeIdentity/blob/master/context/v1","id":"e4f4accd-6026-4fd0-9392-1379ddd4f778","cptId":1189,"issuer":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","issuanceDate":1564371227764,"expirationDate":1595475227763,"claim":{"gender":"F","name":"zhangsan","id":"did:weid:101:0xf36fb2308d36bb94c579f568bdf670743d949deb"},"proof":{"creator":"did:weid:101:0xd613fbc0249f2ce5088ed484fa6b7b51ecb95e24","signature":"G2kD4u4jrnmYbq/oVl9idmTEQzP3a0KEomHGJaVpWzhITIE+dDYSRMyF9TDy+jPANpYRJGg7pGnANM+QeJ9Ba00=","created":"1564371227764","type":"EcdsaSignature"},"signature":"G2kD4u4jrnmYbq/oVl9idmTEQzP3a0KEomHGJaVpWzhITIE+dDYSRMyF9TDy+jPANpYRJGg7pGnANM+QeJ9Ba00=","proofType":"EcdsaSignature"},"disclosure":{"name":1,"id":1,"gender":1}'  http://IP:20191/verifyCredential
+```
+
+若运行成功，则会打印以下信息：
+
+```text
+{"result":true,"errorCode":0,"errorMessage":"success","transactionInfo":null}```
 
 ---
 
