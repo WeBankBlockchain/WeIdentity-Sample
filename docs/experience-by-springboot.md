@@ -130,7 +130,8 @@ curl -l -H "Content-type: application/json" -X POST -d '{"context":"https://gith
 若运行成功，则会打印以下信息：
 
 ```text
-{"result":true,"errorCode":0,"errorMessage":"success","transactionInfo":null}```
+{"result":true,"errorCode":0,"errorMessage":"success","transactionInfo":null}
+```
 
 ---
 
