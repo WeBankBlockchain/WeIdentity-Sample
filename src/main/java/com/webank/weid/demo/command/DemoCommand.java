@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.webank.weid.constant.ErrorCode;
+import com.webank.weid.demo.exception.BusinessException;
 import com.webank.weid.demo.service.impl.PolicyServiceImpl;
 import com.webank.weid.protocol.base.Challenge;
 import com.webank.weid.protocol.base.CredentialPojo;
@@ -90,7 +91,7 @@ public class DemoCommand extends DemoBase {
             }
         } catch (Exception e) { 
             logger.error("execute {} failed.",command);
-            System.exit(0);
+            System.exit(1);
         }
         if (!command.equals("daemon")) {
             System.exit(0);
@@ -331,6 +332,7 @@ public class DemoCommand extends DemoBase {
             BaseBean.print("verify success");
         } else {
             BaseBean.print("verify fail");
+            throw new BusinessException("verify fail");
         }
         
         BaseBean.print("------------------------------");
@@ -359,6 +361,7 @@ public class DemoCommand extends DemoBase {
             BaseBean.print("verify success");
         } else {
             BaseBean.print("verify fail");
+            throw new BusinessException("verify fail");
         }
         
         BaseBean.print("------------------------------");
