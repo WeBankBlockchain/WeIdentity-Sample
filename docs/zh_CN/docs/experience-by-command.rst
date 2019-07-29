@@ -4,10 +4,10 @@
 整体介绍
 ~~~~~~~~
 
-命令行方式比较完整的模拟了各个\ `WeIdentity角色 <https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-spec.html#id9>`__\ 的工作流程，可以帮您快速体验 WeIdentity 也业务流程和运行机制。
+命令行方式比较完整的模拟了各个 \ `WeIdentity 角色 <https://weidentity.readthedocs.io/zh_CN/latest/docs/weidentity-spec.html#id9>`__\ 的工作流程，可以帮您快速体验 WeIdentity 也业务流程和运行机制。
 各个角色的基本流程如下：
 
-- Authority issuer
+- Issuer
  | 创建 WeID
  | 注册成为 Authority issuer
  | 注册 CPT
@@ -57,17 +57,16 @@
 ``weid-sample/keys/priv/`` 目录中，此私钥后续将用于注册 Authority Issuer，weid-sample 会自动加载。
 
 
--  修改节点和机构配置
+- 修改节点和机构配置
 
-   多个角色之间会使用 \ `AMOP <https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/amop_protocol.html>`__\ 进行通信，根据 AMOP 协议，每个机构需要配置为连接不同的区块链节点。
+多个角色之间会使用 \ `AMOP <https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/amop_protocol.html>`__\ 进行通信，根据 AMOP 协议，每个机构需要配置为连接不同的区块链节点。
 
 .. code:: shell
 
-    cd weid-sample
-    vim src/main/resources/weidentity.properties
+   cd weid-sample
+   vim src/main/resources/weidentity.properties
 
 关键配置如下：
-
  | ``blockchain.orgid`` ：机构名称。样例以 organizationA 为例，请修改为 organizationA。
  | ``nodes`` ：区块链节点信息。你可以修改为您区块链网络中的任一节点即可。
 
@@ -93,7 +92,7 @@
 
 - 启动 AMOP 服务
 
-weid-sample 里的 AMOP 服务是模拟 veriyier 向 user-agent 发送获取秘钥的请求，因此 veriyier 和 user-agent 需要连接同一条链中的不同的区块链节点。
+weid-sample 里的 AMOP 服务是模拟 verifier 向 User Agent 发送获取秘钥的请求，因此 verifier 和 User Agent 需要连接同一条链中的不同的区块链节点。
 先启动verifier进程：
 
 .. code:: shell
@@ -106,9 +105,9 @@ weid-sample 里的 AMOP 服务是模拟 veriyier 向 user-agent 发送获取秘�
 
     the AMOP server start success.
 
-- 修改 user-agent 配置
+- 修改 User Agent 配置
 
-在启动完 verifier 进程之后，还需要修改 user-agent 的配置，确保 user-agent 连接的区块链节点和 verifier 连接的区块链节点在同一条链上，且连接的是不同的区块链节点：
+在启动完 verifier 进程之后，还需要修改 User Agent 的配置，确保 User Agent 连接的区块链节点和 verifier 连接的区块链节点在同一条链上，且连接的是不同的区块链节点：
 
 .. code:: shell
 
