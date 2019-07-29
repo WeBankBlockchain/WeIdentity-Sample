@@ -67,6 +67,7 @@
     vim src/main/resources/weidentity.properties
 
 关键配置如下：
+
  | ``blockchain.orgid`` ：机构名称。样例以 organizationA 为例，请修改为 organizationA。
  | ``nodes`` ：区块链节点信息。你可以修改为您区块链网络中的任一节点即可。
 
