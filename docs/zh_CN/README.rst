@@ -1,11 +1,11 @@
 整体介绍
-~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 weid-sample是基于
 `WeIdentity <https://weidentity.readthedocs.io/zh_CN/latest/README.html>`__\ 开发的Java应用样例程序，提供了一整套的流程演示，可以帮您快速理解WeIdentity的运行机制，您也可以参考该样例程序，开发您的WeIdentity应用。
 
 环境准备
-~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. list-table::
    :header-rows: 1
@@ -24,7 +24,7 @@ weid-sample是基于
      - 检查WeIdentity JAVA SDK部署环境是否能telnet通FISCO BCOS节点的channelPort端口，若telnet不通，需要检查网络连通性和安全策略。
 
 快速体验
-~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 我们提供了两种方式体验 weid-sample：
 
