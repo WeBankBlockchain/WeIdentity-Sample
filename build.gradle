@@ -133,7 +133,7 @@ jar {
     }
 }
 
-mainClassName = 'com.webank.weid.demo.server.SampleApp.Main'
+mainClassName = 'com.webank.weid.demo.server.SampleApp'
 
 build {
     doLast {
