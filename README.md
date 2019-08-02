@@ -32,7 +32,7 @@ weid-sample是基于 [WeIdentity](https://weidentity.readthedocs.io/zh_CN/latest
 
 我们提供了两种方式体验 weid-sample：
 
-* [shell命令行方式体验](./docs/experience-by-command.md) （推荐方式）
+* [shell命令行方式体验](./docs/zh_CN/docs/experience-by-command.md) （推荐方式）
 
-* [spring-boot方式体验](./docs/experience-by-springboot.md)
+* [spring-boot方式体验](./docs/zh_CN/docs/experience-by-springboot.md)
 
