@@ -123,9 +123,9 @@ public class DemoController {
         @RequestBody Map<String, String> paramMap) {
 
         String issuer = paramMap.get("issuer");
-        String authorityName = paramMap.get("authorityName");
+        String authorityName = paramMap.get("org-id");
 
-        logger.info("param,issuer:{},authorityName:{}", issuer, authorityName);
+        logger.info("param,issuer:{},org-id:{}", issuer, authorityName);
 
         // call method registered as authority.
         return demoService.registerAuthorityIssuer(issuer, authorityName);
