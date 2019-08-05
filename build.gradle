@@ -35,7 +35,7 @@ if (!gradle.startParameter.isOffline()) {
     apply plugin: 'signing'
 }
 
-version = "1.0.0"
+version = "1.0.2"
 //设置jdk的版本
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
