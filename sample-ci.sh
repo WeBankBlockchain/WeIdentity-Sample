@@ -103,14 +103,14 @@ function main(){
         rm -rf $top_path/tmp
     fi
     #start daemon process 
-    daemon;
+    #daemon;
     #start issuer
-    issuer;
+    #issuer;
     #start user_agent
-    user_agent;
+    #user_agent;
     #start verifier
-    verifier;  
-    kill_daemon;
+    #verifier;  
+    #kill_daemon;
 }
 
 main
