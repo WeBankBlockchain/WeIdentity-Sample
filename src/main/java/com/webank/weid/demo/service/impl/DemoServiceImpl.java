@@ -178,7 +178,6 @@ public class DemoServiceImpl implements DemoService {
         SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
         setPublicKeyArgs.setWeId(createWeIdDataResult.getWeId());
         setPublicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
-        setPublicKeyArgs.setType("secp256k1");
         setPublicKeyArgs.setUserWeIdPrivateKey(new WeIdPrivateKey());
         setPublicKeyArgs.getUserWeIdPrivateKey()
             .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());

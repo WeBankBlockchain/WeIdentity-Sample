@@ -110,16 +110,14 @@ public class DemoService {
      * Set Public Key For WeIdentity DID Document.
      *
      * @param createResult the Object of CreateWeIdDataResult
-     * @param keyType the data is key type
      */
-    public void setPublicKey(CreateWeIdDataResult createResult, String keyType)
+    public void setPublicKey(CreateWeIdDataResult createResult)
         throws BusinessException {
 
         // build SetPublicKeyArgs for setPublicKey.
         SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
         setPublicKeyArgs.setWeId(createResult.getWeId());
         setPublicKeyArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
-        setPublicKeyArgs.setType(keyType);
         setPublicKeyArgs.setUserWeIdPrivateKey(
             this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
         );
