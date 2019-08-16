@@ -52,7 +52,7 @@ public class DemoTest extends DemoBase {
         BaseBean.print(createWeId);
 
         // set WeIdentity DID
-        demoService.setPublicKey(createWeId, "secp256k1");
+        demoService.setPublicKey(createWeId);
         demoService.setService(
             createWeId,
             "drivingCardService",
