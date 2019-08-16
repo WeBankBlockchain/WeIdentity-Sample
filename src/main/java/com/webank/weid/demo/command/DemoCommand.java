@@ -122,8 +122,8 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("------------------------------");
         BaseBean.print("begin to setPublicKey...");
 
-        // call set public key, the type default "secp256k1".
-        demoService.setPublicKey(createWeId, "secp256k1");
+        // call set public key.
+        demoService.setPublicKey(createWeId);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to setAuthenticate...");
