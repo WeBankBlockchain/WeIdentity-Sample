@@ -14,6 +14,9 @@ public class PolicyServiceImpl extends PresentationPolicyService {
         //获取presentationPolicyE
         PresentationPolicyE presentationPolicyE = DbUtils.getPolicy(policyId);
         
+        //policyPublisherWeId为policy的所有者，此处为了演示暂时使用targetWeId
+        presentationPolicyE.setPolicyPublisherWeId(targetWeId);
+        
         //获取Challenge
         Challenge challenge = 
             Challenge.create(targetWeId, String.valueOf(System.currentTimeMillis()));
