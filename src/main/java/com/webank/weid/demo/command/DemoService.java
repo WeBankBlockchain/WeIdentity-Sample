@@ -554,15 +554,16 @@ public class DemoService {
     
     /**
      * serialize presentation to String by QrCodeTransportation.
-     * @param weId specifyWeIds to verifier
+     * @param weIds specifyWeIds to verifier
      * @param presentationE the presentationE
      * @return serialize string
      */
-    public String presentationEToQrCode(String weId, PresentationE presentationE) {
+    public String presentationEToQrCode(List<String> weIds, PresentationE presentationE) {
         
         ResponseData<String> response = 
             TransportationFactory
                 .newQrCodeTransportation()
+                .specify(weIds)
                 .serialize(presentationE,new ProtocolProperty(EncodeType.ORIGINAL));
         BaseBean.print(response);
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
@@ -578,14 +579,22 @@ public class DemoService {
     /**
      * deserialize transString by JsonTransportation.
      * @param presentationJson JSON String
+     * @param createWeId the weId information of verifier 
      * @return PresentationE
      */
-    public PresentationE deserializePresentationJson(String presentationJson) {
+    public PresentationE deserializePresentationJson(
+        String presentationJson, 
+        CreateWeIdDataResult createWeId) {
+        
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeId(createWeId.getWeId());
+        weIdAuthentication.setWeIdPublicKeyId(createWeId.getWeId() + "#keys-0");
+        weIdAuthentication.setWeIdPrivateKey(createWeId.getUserWeIdPrivateKey());
         
         ResponseData<PresentationE> response = 
             TransportationFactory
                 .newJsonTransportation()
-                .deserialize(presentationJson, PresentationE.class);
+                .deserialize(weIdAuthentication, presentationJson, PresentationE.class);
         BaseBean.print("JsonTransportation.deserialize result:");
         BaseBean.print(response);
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
@@ -599,14 +608,22 @@ public class DemoService {
     /**
      * deserialize transString by QrCodeTransportation.
      * @param presentationJson QrCode String
+     * @param createWeId the weId information of verifier
      * @return PresentationE
      */
-    public PresentationE deserializePresentationQrCode(String presentationJson) {
+    public PresentationE deserializePresentationQrCode(
+        String presentationJson, 
+        CreateWeIdDataResult createWeId) {
+        
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeId(createWeId.getWeId());
+        weIdAuthentication.setWeIdPublicKeyId(createWeId.getWeId() + "#keys-0");
+        weIdAuthentication.setWeIdPrivateKey(createWeId.getUserWeIdPrivateKey());
         
         ResponseData<PresentationE> response = 
             TransportationFactory
                 .newQrCodeTransportation()
-                .deserialize(presentationJson, PresentationE.class);
+                .deserialize(weIdAuthentication, presentationJson, PresentationE.class);
         BaseBean.print("QrCodeTransportation.deserialize result:");
         BaseBean.print(response);
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
