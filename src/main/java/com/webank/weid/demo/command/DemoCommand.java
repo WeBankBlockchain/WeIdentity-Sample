@@ -293,7 +293,7 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("------------------------------");
         BaseBean.print("begin create weid for verifier...");
         
-        CreateWeIdDataResult verifierWeid = demoService.createWeId();
+        final CreateWeIdDataResult verifierWeId = demoService.createWeId();
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin get the presentation json...");
@@ -313,7 +313,7 @@ public class DemoCommand extends DemoBase {
 
         // deserialize presentationJson.
         final PresentationE presentationE = 
-            demoService.deserializePresentationJson(presentationJson, verifierWeid);
+            demoService.deserializePresentationJson(presentationJson, verifierWeId);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin get the PolicyAndChallenge...");
@@ -350,7 +350,7 @@ public class DemoCommand extends DemoBase {
 
         // deserialize presentationQrCode.
         final PresentationE presentation = 
-            demoService.deserializePresentationQrCode(presentationQrCode, verifierWeid);
+            demoService.deserializePresentationQrCode(presentationQrCode, verifierWeId);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin verify presentationE for QRCode...");
