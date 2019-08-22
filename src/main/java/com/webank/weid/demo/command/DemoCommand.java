@@ -243,7 +243,7 @@ public class DemoCommand extends DemoBase {
         // serialize presentationE
         // build same verfier for get the key if use CIPHER to serialize
         List<String> verfierWeIds = new ArrayList<>();
-        String verfierWeId = ""; //this is the verfier weId
+        String verfierWeId = createWeId.getWeId(); //this is the verfier weId
         verfierWeIds.add(verfierWeId);
         
         String presentationJson = demoService.presentationEToJson(verfierWeIds, presentationE);
@@ -252,7 +252,7 @@ public class DemoCommand extends DemoBase {
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to transfom presentation to QRCode ...");
-        String presentationQrCode = demoService.presentationEToQrCode(verfierWeId, presentationE);
+        String presentationQrCode = demoService.presentationEToQrCode(verfierWeIds, presentationE);
         map.put("presentationQrCode", presentationQrCode);
         
         BaseBean.print("------------------------------");
@@ -289,7 +289,12 @@ public class DemoCommand extends DemoBase {
     private static void verifier() {
 
         BaseBean.print("verifier() init...");
-
+        
+        BaseBean.print("------------------------------");
+        BaseBean.print("begin create weid for verifier...");
+        
+        final CreateWeIdDataResult verifierWeId = demoService.createWeId();
+        
         BaseBean.print("------------------------------");
         BaseBean.print("begin get the presentation json...");
 
@@ -308,7 +313,7 @@ public class DemoCommand extends DemoBase {
 
         // deserialize presentationJson.
         final PresentationE presentationE = 
-            demoService.deserializePresentationJson(presentationJson);
+            demoService.deserializePresentationJson(presentationJson, verifierWeId);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin get the PolicyAndChallenge...");
@@ -345,7 +350,7 @@ public class DemoCommand extends DemoBase {
 
         // deserialize presentationQrCode.
         final PresentationE presentation = 
-            demoService.deserializePresentationQrCode(presentationQrCode);
+            demoService.deserializePresentationQrCode(presentationQrCode, verifierWeId);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin verify presentationE for QRCode...");
