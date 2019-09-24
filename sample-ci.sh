@@ -45,7 +45,7 @@ function issuer(){
     fi
 
     sed -i "/^blockchain.orgid/cblockchain.orgid=organizationB" $top_path/dist/conf/weidentity.properties
-    sed -i "/^nodes/cnodes=WeIdentity@$NODE2_IP" $top_path/dist/conf/weidentity.properties
+    sed -i "/^nodes/cnodes=$NODE2_IP" $top_path/dist/conf/weidentity.properties
     
     ./command.sh issuer
     if [ $? -eq 0 ] && [ -e $top_path/tmp/credentials.json ];then
