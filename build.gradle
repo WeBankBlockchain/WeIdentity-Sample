@@ -69,14 +69,14 @@ configurations {
 
 //添加编译时的依赖
 dependencies {
-    localDeps 'org.projectlombok:lombok:1.16.14'
+    localDeps 'org.projectlombok:lombok:1.18.10'
     // Check SDK pipeline dependency
     if (file("./dependencies/weid-java-sdk-pipeline.jar").exists()) {
         println "Pipeline jar for WeIdentity Java SDK found."
         compile files('./dependencies/weid-java-sdk-pipeline.jar')
     } else {
         println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
-        compile("com.webank:weid-java-sdk:1.3.2") {
+        compile("com.webank:weid-java-sdk:1.4.0") {
             exclude group:"org.slf4j", module: "slf4j-log4j12"
         }
     }
@@ -93,16 +93,16 @@ dependencies {
     }
  	if (gradleVer.startsWith("5")) {
         if (!gradle.startParameter.isOffline()) {
-            compileOnly 'org.projectlombok:lombok:1.16.14'
-            annotationProcessor 'org.projectlombok:lombok:1.16.14'
+            compileOnly 'org.projectlombok:lombok:1.18.10'
+            annotationProcessor 'org.projectlombok:lombok:1.18.10'
             compile("org.springframework.boot:spring-boot-starter-web"){
 				exclude group:"ch.qos.logback"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
 			compile apache_commons
         } else {
-            compileOnly files('dist/lib/lombok-1.16.14.jar')
-            annotationProcessor files('dist/lib/lombok-1.16.14.jar')
+            compileOnly files('dist/lib/lombok-1.18.10.jar')
+            annotationProcessor files('dist/lib/lombok-1.18.10.jar')
             compile fileTree(dir: 'dist/lib', include: '*.jar')
         }
     }
