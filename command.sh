@@ -1,5 +1,6 @@
 #!/bin/bash -x
 daemon_pid=
+JAVA_OPTS='-Djdk.tls.namedGroups="secp256r1,secp256k1"'
 if [[ "$1" != "issuer" ]];then
   if [[ "$1" != "user_agent" ]];then
      if [[ "$1" != "verifier" ]];then
@@ -22,7 +23,7 @@ if [[ "$1" == daemon ]];then
        exit 1
     fi
     
-    java -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1 >/dev/null 2>&1 &
+    java ${JAVA_OPTS} -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1 >/dev/null 2>&1 &
     
     sleep 2
     
@@ -35,6 +36,6 @@ if [[ "$1" == daemon ]];then
    
 else
     echo "--------- start $1 ----------"
-    java -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1
+    java ${JAVA_OPTS} -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1
 fi
 
