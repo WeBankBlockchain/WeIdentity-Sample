@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info">
     <Properties>
-        <Property name="logPath">dist/logs/</Property>
+        <Property name="logPath">./logs/</Property>
     </Properties>
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
@@ -95,6 +95,7 @@
             <AppenderRef ref="asyncINFO"/>
             <AppenderRef ref="asyncWARN"/>
             <AppenderRef ref="asyncERROR"/>
+            <AppenderRef ref="console"/>
         </Root>
     </Loggers>
 </Configuration>
