@@ -17,7 +17,7 @@ buildscript {
 	}
     dependencies {
         //使用1.5.4.RELEASE版本的Spring框架
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.4.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.12.RELEASE")
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.5"
     }
 }
@@ -53,6 +53,10 @@ repositories {
     }
 }
 
+List swagger = [
+        "io.springfox:springfox-swagger2:2.9.2",
+        "io.springfox:springfox-swagger-ui:2.9.2"
+]
 List apache_commons = [
         "org.apache.commons:commons-collections4:4.1",
         "org.apache.commons:commons-lang3:3.5",
@@ -62,8 +66,10 @@ List apache_commons = [
         "com.fasterxml.jackson.core:jackson-core:2.10.0",
         "com.fasterxml.jackson.core:jackson-annotations:2.10.0",
         "com.github.reinert:jjschema:1.16",
-        "com.google.zxing:core:3.3.0"
+        "com.google.zxing:core:3.3.0",
+        "javassist:javassist:3.12.1.GA"
 ]
+
 
 configurations {
     localDeps
@@ -78,7 +84,7 @@ dependencies {
         compile files('./dependencies/weid-java-sdk-pipeline.jar')
     } else {
         println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
-        compile("com.webank:weid-java-sdk:1.4.0") {
+        compile("com.webank:weid-java-sdk:1.5.0") {
             exclude group:"org.slf4j", module: "slf4j-log4j12"
         }
     }
@@ -90,7 +96,7 @@ dependencies {
 				exclude group:"ch.qos.logback"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
-			compile apache_commons
+			compile apache_commons, swagger
         }
     }
  	if (gradleVer.startsWith("5")) {
@@ -101,7 +107,7 @@ dependencies {
 				exclude group:"ch.qos.logback"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
-			compile apache_commons
+			compile apache_commons, swagger
         } else {
             compileOnly files('dist/lib/lombok-1.18.10.jar')
             annotationProcessor files('dist/lib/lombok-1.18.10.jar')
@@ -125,8 +131,16 @@ jar {
             into 'dist/conf'
         }
         copy {
+            from file('keys')
+            into 'dist/keys'
+        }
+        copy {
             from configurations.compile
             into 'dist/lib'
+        }
+        copy {
+            from file('.').listFiles().findAll { File f -> (f.name.endsWith('.bat') || f.name.endsWith('.sh') || f.name.endsWith('.env')) }
+            into 'dist'
         }
         mkdir 'dist/logs'
     }

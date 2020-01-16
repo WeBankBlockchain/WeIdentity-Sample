@@ -41,14 +41,14 @@ public interface DemoService {
      * @param privateKey private key
      * @return returns the create weId
      */
-    public ResponseData<String> createWeIdAndSetAttr(String publicKey, String privateKey);
+    ResponseData<String> createWeIdAndSetAttr(String publicKey, String privateKey);
 
     /**
      * create weId and set related properties.
      * 
      * @return returns the create weId  and public private keys
      */
-    public ResponseData<CreateWeIdDataResult> createWeIdWithSetAttr();
+    ResponseData<CreateWeIdDataResult> createWeId();
 
     /**
      * register on the chain as an authoritative body.
@@ -56,7 +56,7 @@ public interface DemoService {
      * @param authorityName the name of the issue
      * @return true is success, false is failure
      */
-    public ResponseData<Boolean> registerAuthorityIssuer(String issuer, String authorityName);
+    ResponseData<Boolean> registerAuthorityIssuer(String issuer, String authorityName);
 
     /**
      * registered CPT.
@@ -66,33 +66,33 @@ public interface DemoService {
      * @param claim claim is CPT
      * @return returns cptBaseInfo
      */
-    public ResponseData<CptBaseInfo> registCpt(
-        String publisher, 
-        String privateKey, 
+    ResponseData<CptBaseInfo> registCpt(
+        String publisher,
+        String privateKey,
         Map<String, Object> claim
     );
 
     /**
      * create credential.
-     * 
-     * @param cptId the cptId of CPT 
+     *
+     * @param cptId the cptId of CPT
      * @param issuer the weId of issue
      * @param privateKey the private key of issuer
      * @param claimDate the data of claim
      * @return returns credential
      */
-    public ResponseData<CredentialWrapper> createCredential(
-        Integer cptId, 
+    ResponseData<CredentialWrapper> createCredential(
+        Integer cptId,
         String issuer,
-        String privateKey, 
+        String privateKey,
         Map<String, Object> claimDate
     );
 
     /**
-     * verify credential.
+     * verifyEvidence credential.
      * 
      * @param credentialJson credentials in JSON format
-     * @return returns the result of verify
+     * @return returns the result of verifyEvidence
      */
-    public ResponseData<Boolean> verifyCredential(String credentialJson);
+    ResponseData<Boolean> verifyCredential(String credentialJson);
 }
