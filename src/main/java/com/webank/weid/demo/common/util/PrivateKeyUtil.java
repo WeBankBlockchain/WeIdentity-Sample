@@ -32,6 +32,7 @@ public class PrivateKeyUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(PrivateKeyUtil.class);
 
+    public static final String KEY_DIR = PropertiesUtils.getProperty("weid.keys.dir");
     /**
      * SDK private key storage path.
      */
