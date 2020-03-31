@@ -35,7 +35,6 @@ import com.webank.weid.protocol.base.Credential;
 import com.webank.weid.protocol.base.CredentialWrapper;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
-import com.webank.weid.protocol.base.WeIdPublicKey;
 import com.webank.weid.protocol.request.CptMapArgs;
 import com.webank.weid.protocol.request.CreateCredentialArgs;
 import com.webank.weid.protocol.request.CreateWeIdArgs;
@@ -75,7 +74,8 @@ public class DemoServiceImpl implements DemoService {
     /**
      * set validity period to 360 days by default.
      */
-    private static final long EXPIRATION_DATE  = 1000L * 60 * 60 * 24 * 360;
+    private static final long EXPIRATION_DATE  = 1000L * 60 * 60 * 24 * 365 * 100;
+
 
     /**
      * create weId with public and private keys and set related properties.
@@ -94,11 +94,18 @@ public class DemoServiceImpl implements DemoService {
         createWeIdArgs.setWeIdPrivateKey(new WeIdPrivateKey());
         createWeIdArgs.getWeIdPrivateKey().setPrivateKey(privateKey);
         ResponseData<String> createResult = weIdService.createWeId(createWeIdArgs);
+        logger.info("createWeIdAndSetAttr response:{}", createResult);
         if (createResult.getErrorCode().intValue() != ErrorCode.SUCCESS.getCode()) {
             return createResult;
         }
 
-        CreateWeIdDataResult weIdData = new CreateWeIdDataResult();
+        PrivateKeyUtil.savePrivateKey(
+            PrivateKeyUtil.KEY_DIR,
+            createResult.getResult(),
+            privateKey
+        );
+
+        /*CreateWeIdDataResult weIdData = new CreateWeIdDataResult();
         weIdData.setWeId(createResult.getResult());
         weIdData.setUserWeIdPrivateKey(new WeIdPrivateKey());
         weIdData.getUserWeIdPrivateKey().setPrivateKey(privateKey);
@@ -121,8 +128,33 @@ public class DemoServiceImpl implements DemoService {
                 ErrorCode.getTypeByErrorCode(setAuthenticateRes.getErrorCode())
             );
             return createResult;
-        }
+        }*/
         return createResult;
+    }
+
+
+    /**
+     * 创建weid.
+     * @return
+     */
+    public ResponseData<CreateWeIdDataResult> createWeId() {
+
+        ResponseData<CreateWeIdDataResult> response = createWeIdWithSetAttr();
+        // if weId is created successfully, save its private key.
+        if (response.getErrorCode().intValue() == ErrorCode.SUCCESS.getCode()) {
+            PrivateKeyUtil.savePrivateKey(
+                PrivateKeyUtil.KEY_DIR,
+                response.getResult().getWeId(),
+                response.getResult().getUserWeIdPrivateKey().getPrivateKey()
+            );
+        }
+
+        /*
+         *  private keys are not allowed to be transmitted over http, so this place
+         *  annotates the return of private keys to avoid misuse.
+         */
+        response.getResult().setUserWeIdPrivateKey(null);
+        return response;
     }
 
     /**
@@ -130,8 +162,7 @@ public class DemoServiceImpl implements DemoService {
      * 
      * @return returns the create weId and public private keys
      */
-    @Override
-    public ResponseData<CreateWeIdDataResult> createWeIdWithSetAttr() {
+    private ResponseData<CreateWeIdDataResult> createWeIdWithSetAttr() {
 
         logger.info("begin create weId and set attribute");
 
@@ -327,10 +358,10 @@ public class DemoServiceImpl implements DemoService {
     }
 
     /**
-     * verify credential.
+     * verifyEvidence credential.
      * 
      * @param credentialJson credentials in JSON format
-     * @return returns the result of verify
+     * @return returns the result of verifyEvidence
      */
     @Override
     public ResponseData<Boolean> verifyCredential(String credentialJson) {
@@ -338,7 +369,7 @@ public class DemoServiceImpl implements DemoService {
         ResponseData<Boolean> verifyResponse = null;
         
         Credential credential = DataToolUtils.deserialize(credentialJson, Credential.class);
-        // verify credential on chain.
+        // verifyEvidence credential on chain.
         verifyResponse = credentialService.verify(credential);
         logger.info(
             "verifyCredential is result,errorCode:{},errorMessage:{}",
