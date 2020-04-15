@@ -39,6 +39,7 @@ import com.webank.weid.protocol.base.PresentationE;
 import com.webank.weid.protocol.base.PresentationPolicyE;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.util.DataToolUtils;
+import com.webank.weid.util.ScanCodeUtils;
 
 /**
  * command operation.
@@ -266,7 +267,7 @@ public class DemoCommand extends DemoBase {
         String imageName = System.currentTimeMillis() + ".jpg";
         String fileName =  DemoUtil.TEMP_DIR + imageName;
         Integer integer = 
-            DataToolUtils.generateQrCode(
+            ScanCodeUtils.generateQrCode(
                 url,
                 ErrorCorrectionLevel.H, 
                 fileName
