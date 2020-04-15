@@ -129,37 +129,6 @@ public interface DemoOtherService {
      */
     ResponseData<EvidenceInfo> getEvidence(String evidenceAddress);
 
-
-    /**
-     * 对传入的Object及链上地址，加一个签名存入链上的存证.
-     * 要求：传入的签名方必须隶属于在创建存证时传入多个签名方的WeID之一.
-     *
-     * @param addSignatureModel 加签模板
-     * @return
-     */
-    ResponseData<Boolean> addSignature(AddSignatureModel addSignatureModel);
-
-
-    /**
-     * 根据传入的Object计算存证Hash值和链上值对比，验证其是否遭到篡改.
-     * 当存证包含多个签名时，将会依次验证每个签名，必须确实由签名者列表中的某个WeID所签发才算验证成功.
-     *
-     * @param verifyEvidenceModel 验签模板
-     * @return
-     */
-    ResponseData<Boolean> verifyEvidence(VerifyEvidenceModel verifyEvidenceModel);
-
-
-    /**
-     * 对指定的空存证地址，将其链上的Hash值设定为所传入的Hash值。传入的私钥必须是创建存证时所声明的签名者之一.
-     * 注意：当存证非空时，接口将返回失败.
-     *
-     * @param setHashValueModel 设置hash
-     * @return
-     */
-    ResponseData<Boolean> setHashValue(SetHashValueModel setHashValueModel);
-
-
     /**
      * 指定transportation的认证者,用于权限控制.
      * @param jsonTransportationSpecifyModel 参数模板
