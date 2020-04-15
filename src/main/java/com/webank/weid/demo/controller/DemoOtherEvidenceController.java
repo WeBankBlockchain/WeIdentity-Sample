@@ -60,39 +60,13 @@ public class DemoOtherEvidenceController {
     }
 
 
-    @ApiOperation(value = "根据传入的凭证存证地址，在链上查找凭证存证信息。")
+    @ApiOperation(value = "根据传入的凭证存证Hash，在链上查找凭证存证信息。")
     @PostMapping("/step2/getEvidence")
     public ResponseData<EvidenceInfo> getEvidence(
         @ApiParam(name = "evidenceAddress",
-            value = "凭证存证地址", example = "0x788bfde9ad99376673ed46847294e9b858728045")
+            value = "凭证存证Hash", example = "0x788bfde9ad99376673ed46847294e9b85872804573ed46847294e9b858728045")
         @RequestParam(value = "evidenceAddress") String evidenceAddress) {
 
         return demoOtherService.getEvidence(evidenceAddress);
-    }
-
-    @ApiOperation(value = "对传入的Object及链上地址，加一个签名存入链上的存证。要求：传入的签名方必须隶属于在创建存证时传入多个签名方的WeID之一。")
-    @PostMapping("/step3/addSignatureCredentialPojo")
-    public ResponseData<Boolean> addSignature(
-        @ApiParam(name = "addSignatureCredentialPojo", value = "加签模板")
-        @RequestBody AddSignatureModel addSignatureModel) {
-        return demoOtherService.addSignature(addSignatureModel);
-    }
-
-    @ApiOperation(value = "根据传入的Object计算存证Hash值和链上值对比，验证其是否遭到篡改。"
-        + "当存证包含多个签名时，将会依次验证每个签名，必须确实由签名者列表中的某个WeID所签发才算验证成功。")
-    @PostMapping("/step4/verifyEvidence")
-    public ResponseData<Boolean> verifyEvidence(
-        @ApiParam(name = "verifyEvidenceModel", value = "存证验签模板")
-        @RequestBody VerifyEvidenceModel verifyEvidenceModel) {
-        return demoOtherService.verifyEvidence(verifyEvidenceModel);
-    }
-
-    @ApiOperation(value = "对指定的空存证地址，将其链上的Hash值设定为所传入的Hash值。"
-        + "传入的私钥必须是创建存证时所声明的签名者之一。注意：当存证非空时，接口将返回失败。")
-    @PostMapping("/step5/setHashValue")
-    public ResponseData<Boolean> setHashValue(
-        @ApiParam(name = "setHashValueModel", value = "对指定的空存证地址设值模板")
-        @RequestBody SetHashValueModel setHashValueModel) {
-        return demoOtherService.setHashValue(setHashValueModel);
     }
 }
