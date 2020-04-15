@@ -47,8 +47,10 @@ import com.webank.weid.service.impl.CredentialServiceImpl;
 import com.webank.weid.service.impl.EvidenceServiceImpl;
 import com.webank.weid.suite.api.transportation.TransportationFactory;
 import com.webank.weid.suite.api.transportation.inf.JsonTransportation;
+import com.webank.weid.suite.api.transportation.inf.Transportation;
 import com.webank.weid.suite.api.transportation.params.EncodeType;
 import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
+import com.webank.weid.suite.api.transportation.params.TransportationType;
 import com.webank.weid.util.DataToolUtils;
 
 /**
@@ -380,13 +382,12 @@ public class DemoOtherServiceImpl implements DemoOtherService {
             return new ResponseData<>(null, ErrorCode.ILLEGAL_INPUT);
         }
 
-        JsonTransportation jsonTransportation = TransportationFactory
-            .newJsonTransportation()
+        Transportation transportation = TransportationFactory.build(TransportationType.JSON)
             .specify(jsonTransportationSpecifyModel.getVerifierWeIdList());
         logger.info("{} jsonTransportation: {}", methodName,
-            DataToolUtils.objToJsonStrWithNoPretty(jsonTransportation));
+            DataToolUtils.objToJsonStrWithNoPretty(transportation));
         ResponseData<String> responseData = new ResponseData<>();
-        responseData.setResult(DataToolUtils.objToJsonStrWithNoPretty(jsonTransportation));
+        responseData.setResult(DataToolUtils.objToJsonStrWithNoPretty(transportation));
         return responseData;
     }
 
