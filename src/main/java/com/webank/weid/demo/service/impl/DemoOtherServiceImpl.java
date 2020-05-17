@@ -422,8 +422,8 @@ public class DemoOtherServiceImpl implements DemoOtherService {
                     .serialize(
                         presentation,
                         new ProtocolProperty(
-                            EncodeType.getObject(
-                                jsonTransportationSerializeModel.getEncodeType())));
+                            EncodeType.getEncodeType(
+                                Integer.valueOf(jsonTransportationSerializeModel.getEncodeType()))));
             logger.info("{} responseData: {}", methodName,
                 DataToolUtils.objToJsonStrWithNoPretty(responseData));
             return responseData;
