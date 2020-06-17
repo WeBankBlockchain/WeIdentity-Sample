@@ -47,8 +47,10 @@ import com.webank.weid.service.impl.CredentialServiceImpl;
 import com.webank.weid.service.impl.EvidenceServiceImpl;
 import com.webank.weid.suite.api.transportation.TransportationFactory;
 import com.webank.weid.suite.api.transportation.inf.JsonTransportation;
+import com.webank.weid.suite.api.transportation.inf.Transportation;
 import com.webank.weid.suite.api.transportation.params.EncodeType;
 import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
+import com.webank.weid.suite.api.transportation.params.TransportationType;
 import com.webank.weid.util.DataToolUtils;
 
 /**
@@ -368,70 +370,6 @@ public class DemoOtherServiceImpl implements DemoOtherService {
     }
 
     @Override
-    public ResponseData<Boolean> addSignature(AddSignatureModel addSignatureModel) {
-
-        logger.info("addSignatureModel:{}",
-            DataToolUtils.objToJsonStrWithNoPretty(addSignatureModel));
-        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        if (null == addSignatureModel
-            || StringUtils.isBlank(addSignatureModel.getEvidenceAddress())
-            || StringUtils.isBlank(addSignatureModel.getHashable())
-            || StringUtils.isBlank(addSignatureModel.getWeid())) {
-            return new ResponseData<>(null, ErrorCode.ILLEGAL_INPUT);
-        }
-        // Hashable为接口，创建Hashable可以new实现类，例如：credentail
-        Hashable hashable = new HashString(addSignatureModel.getHashable());
-        ResponseData<Boolean> responseData = evidenceService.addSignature(
-            hashable,
-            addSignatureModel.getEvidenceAddress(),
-            getWeIdPrivateKey(addSignatureModel.getWeid()));
-        logger.info("{} responseData: {}", methodName,
-            DataToolUtils.objToJsonStrWithNoPretty(responseData));
-        return responseData;
-    }
-
-    @Override
-    public ResponseData<Boolean> verifyEvidence(VerifyEvidenceModel verifyEvidenceModel) {
-
-        logger.info("verifyEvidenceModel:{}",
-            DataToolUtils.objToJsonStrWithNoPretty(verifyEvidenceModel));
-        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        if (null == verifyEvidenceModel
-            || StringUtils.isBlank(verifyEvidenceModel.getHashable())
-            || StringUtils.isBlank(verifyEvidenceModel.getEvidenceAddress())) {
-            return new ResponseData<>(null, ErrorCode.ILLEGAL_INPUT);
-        }
-        Hashable hashable = new HashString(verifyEvidenceModel.getHashable());
-        ResponseData<Boolean> responseData = evidenceService.verify(
-            hashable,
-            verifyEvidenceModel.getEvidenceAddress());
-        logger.info("{} responseData: {}", methodName,
-            DataToolUtils.objToJsonStrWithNoPretty(responseData));
-        return responseData;
-    }
-
-    @Override
-    public ResponseData<Boolean> setHashValue(SetHashValueModel setHashValueModel) {
-
-        logger.info("setHashValueModel:{}", setHashValueModel);
-        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        if (null == setHashValueModel
-            || StringUtils.isBlank(setHashValueModel.getHashValue())
-            || StringUtils.isBlank(setHashValueModel.getEvidenceAddress())
-            || StringUtils.isBlank(setHashValueModel.getWeid())) {
-            return new ResponseData<>(null, ErrorCode.ILLEGAL_INPUT);
-        }
-
-        ResponseData<Boolean> responseData = evidenceService.setHashValue(
-            setHashValueModel.getHashValue(),
-            setHashValueModel.getEvidenceAddress(),
-            getWeIdPrivateKey(setHashValueModel.getWeid()));
-        logger.info("{} responseData: {}", methodName,
-            DataToolUtils.objToJsonStrWithNoPretty(responseData));
-        return responseData;
-    }
-
-    @Override
     public ResponseData<String> specify(
         JsonTransportationSpecifyModel jsonTransportationSpecifyModel) {
 
@@ -444,13 +382,12 @@ public class DemoOtherServiceImpl implements DemoOtherService {
             return new ResponseData<>(null, ErrorCode.ILLEGAL_INPUT);
         }
 
-        JsonTransportation jsonTransportation = TransportationFactory
-            .newJsonTransportation()
+        Transportation transportation = TransportationFactory.build(TransportationType.JSON)
             .specify(jsonTransportationSpecifyModel.getVerifierWeIdList());
         logger.info("{} jsonTransportation: {}", methodName,
-            DataToolUtils.objToJsonStrWithNoPretty(jsonTransportation));
+            DataToolUtils.objToJsonStrWithNoPretty(transportation));
         ResponseData<String> responseData = new ResponseData<>();
-        responseData.setResult(DataToolUtils.objToJsonStrWithNoPretty(jsonTransportation));
+        responseData.setResult(DataToolUtils.objToJsonStrWithNoPretty(transportation));
         return responseData;
     }
 
@@ -485,8 +422,8 @@ public class DemoOtherServiceImpl implements DemoOtherService {
                     .serialize(
                         presentation,
                         new ProtocolProperty(
-                            EncodeType.getObject(
-                                jsonTransportationSerializeModel.getEncodeType())));
+                            EncodeType.getEncodeType(
+                                Integer.valueOf(jsonTransportationSerializeModel.getEncodeType()))));
             logger.info("{} responseData: {}", methodName,
                 DataToolUtils.objToJsonStrWithNoPretty(responseData));
             return responseData;

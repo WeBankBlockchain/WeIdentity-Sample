@@ -37,7 +37,7 @@ public class EndpointSample {
     private static class DuplicateFunctor implements EndpointFunctor {
 
         @Override
-        public String execute(String arg) {
+        public String callback(String arg) {
             return arg + arg + arg;
         }
 
@@ -55,7 +55,7 @@ public class EndpointSample {
         ConcurrentHashMap<String, String> resourceMap = new ConcurrentHashMap<>();
 
         @Override
-        public String execute(String resourceId) {
+        public String callback(String resourceId) {
             if (!resourceMap.containsKey(resourceId)) {
                 return "Cannot find this resource: " + resourceId;
             }
@@ -81,7 +81,7 @@ public class EndpointSample {
         // Register a duplicate endpoint
         EndpointFunctor functor1 = new DuplicateFunctor();
         String requestName1 = "duplicate-input";
-        RpcServer.registerEndpoint(requestName1, functor1);
+        RpcServer.registerEndpoint(requestName1, functor1, null);
 
         // Register a data-authorization fetch endpoint
         EndpointFunctor functor2 = new DataAuthorizationFunctor();
@@ -142,10 +142,10 @@ public class EndpointSample {
              resourceId也捎带到SDK侧过去。
           9) SDK侧会收到这RPC请求，并触发0)步中注册的functor的execute()，解析resourceId并返回授权数据。
         */
-        RpcServer.registerEndpoint("fetch-data", functor2);
+        RpcServer.registerEndpoint("fetch-data", functor2, null);
 
         // Start the RPC server instance
-        RpcServer.main(null);
+        RpcServer.run();
         // You can also try to add endpoint here too after it is booted and running.
         //RpcServer.registerEndpoint("fetch-data-backup", functor2, null);
     }

@@ -8,6 +8,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.webank.weid.demo.filter.XssFilter;
+
 /**
  * web mvc support.
  * @author darwindu
@@ -30,6 +32,24 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
         FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
         bean.setOrder(0);
+
+        return bean;
+    }
+    
+    /**
+     * XSS过滤器.
+     * @return
+     */
+    @Bean
+    public FilterRegistrationBean xssFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        CorsConfiguration config = new CorsConfiguration().applyPermitDefaultValues();
+        config.setAllowCredentials(false);
+        source.registerCorsConfiguration("/**", config);
+
+        FilterRegistrationBean bean = new FilterRegistrationBean(new XssFilter());
+        bean.setOrder(1);
 
         return bean;
     }
