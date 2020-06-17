@@ -35,7 +35,7 @@ if (!gradle.startParameter.isOffline()) {
     apply plugin: 'signing'
 }
 
-version = "1.0.2"
+version = "1.0.3"
 //设置jdk的版本
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -53,23 +53,57 @@ repositories {
     }
 }
 
+def spring_version = "4.3.27.RELEASE"
+def log4j_version = "2.13.3";
+def slf4j_version = "1.7.30";
+def jackson_version = "2.11.0";
+def mysql_version = "8.0.20";
+def swagger_version = "2.9.2";
+
 List swagger = [
-        "io.springfox:springfox-swagger2:2.9.2",
-        "io.springfox:springfox-swagger-ui:2.9.2"
-]
-List apache_commons = [
-        "org.apache.commons:commons-collections4:4.1",
-        "org.apache.commons:commons-lang3:3.5",
-        "commons-cli:commons-cli:1.3.1",
-        'com.github.fge:json-schema-validator:2.2.6',
-        "com.fasterxml.jackson.core:jackson-databind:2.10.0",
-        "com.fasterxml.jackson.core:jackson-core:2.10.0",
-        "com.fasterxml.jackson.core:jackson-annotations:2.10.0",
-        "com.github.reinert:jjschema:1.16",
-        "com.google.zxing:core:3.3.0",
-        "javassist:javassist:3.12.1.GA"
+    "io.springfox:springfox-swagger2:$swagger_version",
+    "io.springfox:springfox-swagger-ui:$swagger_version"
 ]
 
+List apache_commons = [
+    "org.apache.logging.log4j:log4j-api:$log4j_version",
+    "org.apache.logging.log4j:log4j-web:$log4j_version",
+    "org.apache.logging.log4j:log4j-core:$log4j_version",
+    "org.apache.logging.log4j:log4j-jcl:$log4j_version",
+    "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
+    "org.slf4j:jul-to-slf4j:$slf4j_version",
+    "org.slf4j:slf4j-api:$slf4j_version"
+]
+
+List json = [
+    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson_version",
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version",
+    "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson_version",
+    "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
+    "com.fasterxml.jackson.core:jackson-annotations:$jackson_version",
+    "com.fasterxml.jackson.core:jackson-core:$jackson_version",
+    "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jackson_version"
+]
+
+List mysql_driver = [
+    "mysql:mysql-connector-java:$mysql_version"
+]
+
+List spring = [
+    "org.springframework:spring-core:$spring_version",
+    "org.springframework:spring-beans:$spring_version",
+    "org.springframework:spring-context:$spring_version",
+    "org.springframework:spring-tx:$spring_version",
+    "org.springframework:spring-jdbc:$spring_version",
+    "org.springframework:spring-test:$spring_version",
+    "org.springframework:spring-context-support:$spring_version",
+    "org.springframework:spring-web:$spring_version",
+    "org.springframework:spring-webmvc:$spring_version"
+]
+
+List other = [
+    "javassist:javassist:3.12.1.GA"
+]
 
 configurations {
     localDeps
@@ -77,14 +111,14 @@ configurations {
 
 //添加编译时的依赖
 dependencies {
-    localDeps 'org.projectlombok:lombok:1.18.10'
+    localDeps 'org.projectlombok:lombok:1.18.12'
     // Check SDK pipeline dependency
     if (file("./dependencies/weid-java-sdk-pipeline.jar").exists()) {
         println "Pipeline jar for WeIdentity Java SDK found."
         compile files('./dependencies/weid-java-sdk-pipeline.jar')
     } else {
         println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
-        compile("com.webank:weid-java-sdk:1.6.2") {
+        compile("com.webank:weid-java-sdk:1.6.4") {
             exclude group:"org.slf4j", module: "slf4j-log4j12"
         }
     }
@@ -96,21 +130,21 @@ dependencies {
 				exclude group:"ch.qos.logback"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
-			compile apache_commons, swagger
+			compile apache_commons, swagger, json, mysql_driver, spring, other
         }
     }
  	if (gradleVer.startsWith("5")) {
         if (!gradle.startParameter.isOffline()) {
-            compileOnly 'org.projectlombok:lombok:1.18.10'
-            annotationProcessor 'org.projectlombok:lombok:1.18.10'
+            compileOnly 'org.projectlombok:lombok:1.18.12'
+            annotationProcessor 'org.projectlombok:lombok:1.18.12'
             compile("org.springframework.boot:spring-boot-starter-web"){
 				exclude group:"ch.qos.logback"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
-			compile apache_commons, swagger
+			compile apache_commons, swagger, json, mysql_driver, spring, other
         } else {
-            compileOnly files('dist/lib/lombok-1.18.10.jar')
-            annotationProcessor files('dist/lib/lombok-1.18.10.jar')
+            compileOnly files('dist/lib/lombok-1.18.12.jar')
+            annotationProcessor files('dist/lib/lombok-1.18.12.jar')
             compile fileTree(dir: 'dist/lib', include: '*.jar')
         }
     }
@@ -158,6 +192,12 @@ build {
 
 clean {
     delete("dist")
+}
+
+eclipse {
+    classpath {
+        downloadSources = false
+    }
 }
 
 checkstyle {
