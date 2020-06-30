@@ -33,10 +33,10 @@ public class XssHttpServletRequestWraper extends HttpServletRequestWrapper {
     @Override
     public String[] getParameterValues(String name) {
         String[] values = super.getParameterValues(name);
-        if(values != null) {
+        if (values != null) {
             int length = values.length;
             String[] escapseValues = new String[length];
-            for(int i = 0; i < length; i++){
+            for (int i = 0; i < length; i++) {
                 escapseValues[i] = StringEscapeUtils.escapeHtml(values[i]);
             }
             return escapseValues;
