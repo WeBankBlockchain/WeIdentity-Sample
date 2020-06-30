@@ -1,3 +1,9 @@
+plugins {
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
+}
+
 def gradleVer = "4"
 if (gradle.gradleVersion.startsWith("6")
         || gradle.gradleVersion.startsWith("5")
@@ -11,40 +17,33 @@ if (gradle.gradleVersion.startsWith("6")
     println "Gradle with version < 4.7 detected"
 }
 
-buildscript {
-	repositories {
-	    maven { url "https://plugins.gradle.org/m2/" }
-	}
-    dependencies {
-        //使用1.5.4.RELEASE版本的Spring框架
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.12.RELEASE")
-        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.5"
-    }
-}
-
 apply plugin: 'maven'
 apply plugin: 'java'
-apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 if (!gradle.startParameter.isOffline()) {
     apply plugin: 'checkstyle'
     apply plugin: 'jacoco'
-    apply plugin: "com.github.spotbugs"
     apply plugin: 'signing'
 }
 
 version = "1.0.3"
+def repo ="${repoType}"
 //设置jdk的版本
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
 	if (!gradle.startParameter.isOffline()) {
-        mavenLocal()
-   	 	mavenCentral()//依赖Maven仓库
-    	maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+         mavenLocal()
+        if ("cn" == repo) {
+            println "use cn repo"
+            maven {url "http://maven.aliyun.com/nexus/content/groups/public/"}
+        } else {
+            println "use default repo"
+            mavenCentral()
+        }
     	maven { url "https://dl.bintray.com/ethereum/maven/" }
     } else {
         maven {
@@ -53,7 +52,7 @@ repositories {
     }
 }
 
-def spring_version = "4.3.27.RELEASE"
+def spring_version = "5.2.2.RELEASE"
 def log4j_version = "2.13.3";
 def slf4j_version = "1.7.30";
 def jackson_version = "2.11.0";
@@ -128,6 +127,7 @@ dependencies {
         } else {
             compile("org.springframework.boot:spring-boot-starter-web"){
 				exclude group:"ch.qos.logback"
+				exclude group:"org.apache.logging.log4j"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
 			compile apache_commons, swagger, json, mysql_driver, spring, other
@@ -139,6 +139,7 @@ dependencies {
             annotationProcessor 'org.projectlombok:lombok:1.18.12'
             compile("org.springframework.boot:spring-boot-starter-web"){
 				exclude group:"ch.qos.logback"
+				exclude group:"org.apache.logging.log4j"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
 			compile apache_commons, swagger, json, mysql_driver, spring, other
@@ -152,13 +153,12 @@ dependencies {
 
 //生成的jar包包名和版本
 jar {
+    enabled = true
+    baseName = 'weIdentity-sample'
     destinationDir file('dist/app')
-    archiveName project.name + '.jar'
-    
-    doFirst {
-   		exclude '/*.*'
-    }
-    
+    archiveName baseName+ '-' + version + '.jar'
+	exclude '/*.*'
+	
     doLast {
         copy {
             from file('src/main/resources/')
@@ -172,21 +172,6 @@ jar {
             from configurations.compile
             into 'dist/lib'
         }
-        copy {
-            from file('.').listFiles().findAll { File f -> (f.name.endsWith('.bat') || f.name.endsWith('.sh') || f.name.endsWith('.env')) }
-            into 'dist'
-        }
-        mkdir 'dist/logs'
-    }
-}
-
-mainClassName = 'com.webank.weid.demo.server.SampleApp'
-
-build {
-    doLast {
-        delete "dist/app/" + project.name + ".jar"
-        file("dist/app/" + project.name + ".jar.original").renameTo("dist/app/" + project.name + ".jar")
-        print project.name
     }
 }
 
@@ -213,22 +198,5 @@ tasks.withType(Checkstyle) {
     reports {
         xml.enabled false
         html.enabled true
-    }
-}
-
-spotbugs {
-    ignoreFailures = true
-    showProgress = true
-    toolVersion = "3.1.8"
-    effort = "max"
-    reportLevel = "low"
-    excludeFilter = file("${project.rootDir}/config/spotbugs/spotbugs_filter.xml")
-}
-
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
-    reports {
-        xml.enabled false
-        html.enabled true
-        html.stylesheet resources.text.fromFile('config/spotbugs.xsl')
     }
 }

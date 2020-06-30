@@ -34,6 +34,10 @@ import com.webank.weid.suite.api.transportation.params.TransportationType;
 
 public class TransportationVerifier {
 
+    /**
+     * verifier程序入口.
+     * @param args 参数
+     */
     public static void main(String[] args) {
         System.out.println(System.currentTimeMillis());
         // TODO Auto-generated method stub
@@ -47,7 +51,7 @@ public class TransportationVerifier {
         privateKey.setPrivateKey(
             "89119831904759961853601218812211426488644695651785968136169259389312366556150");
         
-         // 构造verifier的身份信息
+        // 构造verifier的身份信息
         WeIdAuthentication weIdAuthentication = 
             new WeIdAuthentication(weId, privateKey.getPrivateKey());
 

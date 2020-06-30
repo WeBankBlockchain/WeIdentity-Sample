@@ -28,10 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.webank.weid.demo.common.model.AddSignatureModel;
 import com.webank.weid.demo.common.model.CreateEvidenceModel;
-import com.webank.weid.demo.common.model.SetHashValueModel;
-import com.webank.weid.demo.common.model.VerifyEvidenceModel;
 import com.webank.weid.demo.service.DemoOtherService;
 import com.webank.weid.protocol.base.EvidenceInfo;
 import com.webank.weid.protocol.response.ResponseData;
@@ -63,8 +60,11 @@ public class DemoOtherEvidenceController {
     @ApiOperation(value = "根据传入的凭证存证Hash，在链上查找凭证存证信息。")
     @PostMapping("/step2/getEvidence")
     public ResponseData<EvidenceInfo> getEvidence(
-        @ApiParam(name = "evidenceAddress",
-            value = "凭证存证Hash", example = "0x788bfde9ad99376673ed46847294e9b85872804573ed46847294e9b858728045")
+        @ApiParam(
+            name = "evidenceAddress",
+            value = "凭证存证Hash", 
+            example = "0x788bfde9ad99376673ed46847294e9b85872804573ed46847294e9b858728045"
+        )
         @RequestParam(value = "evidenceAddress") String evidenceAddress) {
 
         return demoOtherService.getEvidence(evidenceAddress);
