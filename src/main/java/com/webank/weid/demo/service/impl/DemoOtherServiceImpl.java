@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.webank.weid.constant.ErrorCode;
-import com.webank.weid.demo.common.model.AddSignatureModel;
 import com.webank.weid.demo.common.model.CreateCredentialPojoModel;
 import com.webank.weid.demo.common.model.CreateEvidenceModel;
 import com.webank.weid.demo.common.model.CreatePresentationModel;
@@ -20,10 +19,8 @@ import com.webank.weid.demo.common.model.CredentialPoJoAddSignature;
 import com.webank.weid.demo.common.model.GetCredentialHashModel;
 import com.webank.weid.demo.common.model.JsonTransportationSerializeModel;
 import com.webank.weid.demo.common.model.JsonTransportationSpecifyModel;
-import com.webank.weid.demo.common.model.SetHashValueModel;
 import com.webank.weid.demo.common.model.VerifyCredentialModel;
 import com.webank.weid.demo.common.model.VerifyCredentialPoJoModel;
-import com.webank.weid.demo.common.model.VerifyEvidenceModel;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.service.DemoOtherService;
 import com.webank.weid.protocol.base.Challenge;
@@ -46,7 +43,6 @@ import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.CredentialServiceImpl;
 import com.webank.weid.service.impl.EvidenceServiceImpl;
 import com.webank.weid.suite.api.transportation.TransportationFactory;
-import com.webank.weid.suite.api.transportation.inf.JsonTransportation;
 import com.webank.weid.suite.api.transportation.inf.Transportation;
 import com.webank.weid.suite.api.transportation.params.EncodeType;
 import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
@@ -423,7 +419,8 @@ public class DemoOtherServiceImpl implements DemoOtherService {
                         presentation,
                         new ProtocolProperty(
                             EncodeType.getEncodeType(
-                                Integer.valueOf(jsonTransportationSerializeModel.getEncodeType()))));
+                                Integer.valueOf(
+                                    jsonTransportationSerializeModel.getEncodeType()))));
             logger.info("{} responseData: {}", methodName,
                 DataToolUtils.objToJsonStrWithNoPretty(responseData));
             return responseData;
