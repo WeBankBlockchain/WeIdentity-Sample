@@ -61,6 +61,10 @@ import com.webank.weid.util.DataToolUtils;
 @Service
 public class DemoServiceImpl implements DemoService {
 
+    static {
+        FileUtil.loadConfigFromEnv();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);
 
     private AuthorityIssuerService authorityIssuerService = new AuthorityIssuerServiceImpl();

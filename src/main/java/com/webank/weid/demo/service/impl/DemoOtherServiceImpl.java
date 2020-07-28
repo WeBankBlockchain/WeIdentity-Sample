@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.webank.weid.demo.common.util.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,10 @@ import com.webank.weid.util.DataToolUtils;
  **/
 @Service
 public class DemoOtherServiceImpl implements DemoOtherService {
+
+    static {
+        FileUtil.loadConfigFromEnv();
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(DemoOtherServiceImpl.class);
 
