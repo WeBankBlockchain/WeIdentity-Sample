@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.webank.weid.demo.common.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +71,6 @@ import com.webank.weid.util.DataToolUtils;
  *
  */
 public class DemoService {
-
     private static final Logger logger = LoggerFactory.getLogger(DemoService.class);
 
     private AuthorityIssuerService authorityIssuerService = new AuthorityIssuerServiceImpl();
