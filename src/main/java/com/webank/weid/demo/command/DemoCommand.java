@@ -219,22 +219,27 @@ public class DemoCommand extends DemoBase {
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to get the PolicyAndChallenge...");
-        
+
         // mock AMOP request data from other org (1002:verifier orgId, 123456:policyId)
-        PolicyAndChallenge policyAndChallenge = 
-            DemoUtil.queryPolicyAndChallenge("organizationA", 123456, createWeId.getWeId());
-        
+        // PolicyAndChallenge policyAndChallenge = DemoUtil.queryPolicyAndChallenge("organizationA", 123456, createWeId.getWeId());
+        final PresentationPolicyE presentationPolicyE = DbUtils.getPolicy("123456");
+        presentationPolicyE.setPolicyPublisherWeId(createWeId.getWeId());
+        Challenge challenge = Challenge.create(createWeId.getWeId(), String.valueOf(System.currentTimeMillis()));
+        PolicyAndChallenge policyAndChallenge = new PolicyAndChallenge();
+        policyAndChallenge.setPresentationPolicyE(presentationPolicyE);
+        policyAndChallenge.setChallenge(challenge);
+
         System.out.println(DataToolUtils.serialize(policyAndChallenge));
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to createPresentation...");
-        
+
         // create presentationE
-        final PresentationE presentationE = 
+        final PresentationE presentationE =
             demoService.createPresentation(
-                credentialList, 
-                policyAndChallenge.getPresentationPolicyE(), 
-                policyAndChallenge.getChallenge(), 
+                credentialList,
+                presentationPolicyE,
+                challenge,
                 createWeId
             );
         
@@ -260,6 +265,8 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin to save the presentation json...");
         // save the presentation JSON
         DemoUtil.saveTemData(map);
+
+        DbUtils.save(challenge.getNonce(),challenge);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to generateQrCode ...");
@@ -320,6 +327,7 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin get the PolicyAndChallenge...");
         
         // get the data from cache.
+        BaseBean.print(presentationE);
         final PresentationPolicyE presentationPolicyE = DbUtils.getPolicy("123456");
         Challenge challenge = DbUtils.queryChallenge(presentationE.getNonce());
         
