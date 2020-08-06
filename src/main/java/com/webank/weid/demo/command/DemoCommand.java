@@ -120,11 +120,11 @@ public class DemoCommand extends DemoBase {
         // registered weId, authority need to keep their own weId and private keys.
         CreateWeIdDataResult createWeId = demoService.createWeId();
 
-        BaseBean.print("------------------------------");
-        BaseBean.print("begin to setPublicKey...");
-
-        // call set public key.
-        demoService.setPublicKey(createWeId);
+//        BaseBean.print("------------------------------");
+//        BaseBean.print("begin to setPublicKey...");
+//
+//        // call set public key.
+//        demoService.setPublicKey(createWeId);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to setAuthenticate...");
