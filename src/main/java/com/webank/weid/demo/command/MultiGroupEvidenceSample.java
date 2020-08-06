@@ -138,8 +138,10 @@ public class MultiGroupEvidenceSample {
             // 省略返回code判断
             
             // 11. 验证存证
-            ResponseData<Boolean> verifySigner = 
-                evidenceService.verifySigner(evidenceRes.getResult(), createWeId.getWeId());
+//            ResponseData<Boolean> verifySigner =
+//                evidenceService.verifySigner(evidenceRes.getResult(), createWeId.getWeId());
+            ResponseData<Boolean> verifySigner =
+                    evidenceService.verifySigner(credentialPojo, evidenceRes.getResult(), createWeId.getWeId());
             System.out.println("存证验证结果:" + verifySigner);
             // 省略返回code判断
         }
