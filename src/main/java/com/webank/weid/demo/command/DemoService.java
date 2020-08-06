@@ -104,7 +104,7 @@ public class DemoService {
      *
      * @param createResult the Object of CreateWeIdDataResult
      */
-    public void setPublicKey(CreateWeIdDataResult createResult)
+    public void addPublicKey(CreateWeIdDataResult createResult)
         throws BusinessException {
 
         // build SetPublicKeyArgs for setPublicKey.
