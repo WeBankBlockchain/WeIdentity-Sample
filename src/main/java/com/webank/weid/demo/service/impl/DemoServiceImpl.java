@@ -176,14 +176,14 @@ public class DemoServiceImpl implements DemoService {
             return createResult;
         }
 
-        // 2, call set public key
-        ResponseData<Integer> setPublicKeyRes = this.setPublicKey(createResult.getResult());
-        if (setPublicKeyRes.getResult() != ErrorCode.SUCCESS.getCode()) {
-            createResult.setErrorCode(
-                ErrorCode.getTypeByErrorCode(setPublicKeyRes.getErrorCode())
-            );
-            return createResult;
-        }
+//        // 2, call set public key
+//        ResponseData<Integer> setPublicKeyRes = this.setPublicKey(createResult.getResult());
+//        if (setPublicKeyRes.getResult() != ErrorCode.SUCCESS.getCode()) {
+//            createResult.setErrorCode(
+//                ErrorCode.getTypeByErrorCode(setPublicKeyRes.getErrorCode())
+//            );
+//            return createResult;
+//        }
 
         // 3, call set authentication
         ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
@@ -202,7 +202,7 @@ public class DemoServiceImpl implements DemoService {
      * @param createWeIdDataResult the object of CreateWeIdDataResult
      * @return the response data
      */
-    private ResponseData<Integer> setPublicKey(CreateWeIdDataResult createWeIdDataResult) {
+    private ResponseData<Integer> addPublicKey(CreateWeIdDataResult createWeIdDataResult) {
 
 //        // build setPublicKey parameters.
 //        SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
