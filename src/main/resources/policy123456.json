@@ -4,7 +4,7 @@
   "orgId" : "organizationA",
   "policyPublisherWeId" : "did:weid:0x0231765e19955fc65133ec8591d73e9136306cd0",
   "policy" : {
-    "1000" : {
+    "4000000" : {
       "fieldsToBeDisclosed" : {
         "weid" : 1,
         "gender" : 0,
@@ -12,7 +12,7 @@
         "age" : 0
       }
     },
-    "1002" : {
+    "4000002" : {
       "fieldsToBeDisclosed" : {
         "weid" : 1,
         "data" : {
@@ -28,7 +28,7 @@
         "name" : 0
       }
     },
-    "1001" : {
+    "4000001" : {
       "fieldsToBeDisclosed" : {
         "weid" : 1,
         "courses" : [ {

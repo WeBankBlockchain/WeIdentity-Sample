@@ -138,19 +138,19 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin to regist the first Cpt...");
         
         // registered the first CPT, authority need to keep their own cptId.
-        demoService.registCpt(createWeId, SCHEMA1, 2000000);
+        demoService.registCpt(createWeId, SCHEMA1, 4000000);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to regist the second Cpt...");  
         
         // registered the second CPT, authority need to keep their own cptId.
-        demoService.registCpt(createWeId, SCHEMA2, 2000001);
+        demoService.registCpt(createWeId, SCHEMA2, 4000001);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to regist the third Cpt...");  
         
         // registered the second CPT, authority need to keep their own cptId.
-        demoService.registCpt(createWeId, SCHEMA3, 2000002);
+        demoService.registCpt(createWeId, SCHEMA3, 4000002);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to create the first credential with Map...");
