@@ -162,14 +162,6 @@ jar {
 	
     doLast {
         copy {
-            from file('src/main/resources/')
-            into 'dist/conf'
-        }
-        copy {
-            from file('keys')
-            into 'dist/keys'
-        }
-        copy {
             from configurations.compile
             into 'dist/lib'
         }

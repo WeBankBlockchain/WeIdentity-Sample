@@ -23,7 +23,7 @@ if [[ "$1" == daemon ]];then
        exit 1
     fi
     
-    java ${JAVA_OPTS} -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1 >/dev/null 2>&1 &
+    java ${JAVA_OPTS} -cp dist/app/*:resources/:dist/lib/* com.webank.weid.demo.command.DemoCommand $1 >/dev/null 2>&1 &
     
     sleep 2
     
@@ -36,6 +36,6 @@ if [[ "$1" == daemon ]];then
    
 else
     echo "--------- start $1 ----------"
-    java ${JAVA_OPTS} -cp dist/conf/:dist/lib/*:dist/app/* com.webank.weid.demo.command.DemoCommand $1
+    java ${JAVA_OPTS} -cp dist/app/*:resources/:dist/lib/* com.webank.weid.demo.command.DemoCommand $1
 fi
 
