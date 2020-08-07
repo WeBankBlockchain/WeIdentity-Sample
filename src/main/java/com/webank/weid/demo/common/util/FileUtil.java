@@ -41,6 +41,14 @@ public class FileUtil {
      */
     private static final String SLASH_CHARACTER = "/";
 
+    private static final String RESOURCE_DIR = "./conf/";
+
+    private static final String KEY_DIR = "./keys/priv/";
+
+    private static final String BUILD_TOOL_RESOURCE_DIR = "resources/";
+
+    private static final String BUILD_TOOL_ADMIN_KEY = "output/admin/";
+
     /**
      * check the path is exists, create and return the path if it does not exist.
      *
@@ -198,14 +206,32 @@ public class FileUtil {
     public static void loadConfigFromEnv() throws BusinessException {
         String build_tool_home = System.getenv("BUILD_TOOL_HOME");
 
-        loadConfig(build_tool_home + "/resources/fisco.properties", "resources/", "fisco.properties");
-        loadConfig(build_tool_home + "/resources/node.key", "resources/", "node.key");
-        loadConfig(build_tool_home + "/resources/node.crt", "resources/", "node.crt");
-        loadConfig(build_tool_home + "/resources/ca.crt", "resources/", "ca.crt");
+        loadConfig(
+                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "fisco.properties",
+                RESOURCE_DIR,
+                "fisco.properties");
+        loadConfig(
+                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.key",
+                RESOURCE_DIR,
+                "node.key");
+        loadConfig(
+                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.crt",
+                RESOURCE_DIR,
+                "node.crt");
+        loadConfig(
+                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "ca.crt",
+                RESOURCE_DIR,
+                "ca.crt");
+        loadConfig(
+                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "weidentity.properties",
+                RESOURCE_DIR,
+                "weidentity.properties");
 
-        loadConfig(build_tool_home + "/resources/weidentity.properties", "resources/", "weidentity.properties");
+        loadConfig(
+                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_ADMIN_KEY + "ecdsa_key",
+                KEY_DIR,
+                "ecdsa_key");
 
-        loadConfig(build_tool_home + "/output/admin/ecdsa_key", "keys/priv/", "ecdsa_key");
     }
 
     /**
@@ -218,7 +244,7 @@ public class FileUtil {
      * @param name the name of file
      * @throws BusinessException
      */
-    public static void loadConfig(String src, String dest, String name) throws BusinessException {
+    private static void loadConfig(String src, String dest, String name) throws BusinessException {
         File buildToolConfig = new File(src);
         File sampleConfig = new File(dest + name);
         if (buildToolConfig.exists()) {
