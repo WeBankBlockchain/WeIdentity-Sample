@@ -173,15 +173,6 @@ jar {
             from configurations.compile
             into 'dist/lib'
         }
-        copy {
-//            from file('.').listFiles().findAll { File f -> (f.name.endsWith('.bat') || f.name.endsWith('.sh') || f.name.endsWith('.env')) }
-            from file('script')
-            into 'dist'
-        }
-        copy {
-            from file('claim')
-            into 'dist/claim'
-        }
         mkdir 'dist/logs'
     }
 }
