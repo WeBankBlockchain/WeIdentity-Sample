@@ -26,17 +26,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.webank.weid.protocol.base.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.exception.BusinessException;
 import com.webank.weid.demo.service.impl.PolicyServiceImpl;
-import com.webank.weid.protocol.base.Challenge;
-import com.webank.weid.protocol.base.CredentialPojo;
-import com.webank.weid.protocol.base.PolicyAndChallenge;
-import com.webank.weid.protocol.base.PresentationE;
-import com.webank.weid.protocol.base.PresentationPolicyE;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.util.DataToolUtils;
 import com.webank.weid.util.ScanCodeUtils;
@@ -142,19 +138,19 @@ public class DemoCommand extends DemoBase {
         BaseBean.print("begin to regist the first Cpt...");
         
         // registered the first CPT, authority need to keep their own cptId.
-        demoService.registCpt(createWeId, SCHEMA1);
+        demoService.registCpt(createWeId, SCHEMA1, 2000000);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to regist the second Cpt...");  
         
         // registered the second CPT, authority need to keep their own cptId.
-        demoService.registCpt(createWeId, SCHEMA2);
+        demoService.registCpt(createWeId, SCHEMA2, 2000001);
         
         BaseBean.print("------------------------------");
         BaseBean.print("begin to regist the third Cpt...");  
         
         // registered the second CPT, authority need to keep their own cptId.
-        demoService.registCpt(createWeId, SCHEMA3);
+        demoService.registCpt(createWeId, SCHEMA3, 2000002);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to create the first credential with Map...");
