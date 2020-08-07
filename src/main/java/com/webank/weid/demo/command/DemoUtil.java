@@ -207,7 +207,7 @@ public class DemoUtil {
         CreateCredentialPojoArgs<Map<String, Object>> createCredentialPojoArgs =
             new CreateCredentialPojoArgs<Map<String, Object>>();
         createCredentialPojoArgs.setClaim(cpt1000);
-        createCredentialPojoArgs.setCptId(1000);
+        createCredentialPojoArgs.setCptId(4000000);
         createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + (3600 * 24 * 1000));
         createCredentialPojoArgs.setIssuer(createResult.getWeId());
         createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
@@ -243,7 +243,7 @@ public class DemoUtil {
         CreateCredentialPojoArgs<Cpt1002> createCredentialPojoArgs =
             new CreateCredentialPojoArgs<Cpt1002>();
         createCredentialPojoArgs.setClaim(cpt1002);
-        createCredentialPojoArgs.setCptId(1002);
+        createCredentialPojoArgs.setCptId(4000002);
         createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + (3600 * 24 * 1000));
         createCredentialPojoArgs.setIssuer(createResult.getWeId());
         createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
@@ -262,7 +262,7 @@ public class DemoUtil {
         CreateCredentialPojoArgs<String> createCredentialPojoArgs =
                 new CreateCredentialPojoArgs<String>();
         createCredentialPojoArgs.setClaim(DemoBase.CLAIMDATA);
-        createCredentialPojoArgs.setCptId(1001);
+        createCredentialPojoArgs.setCptId(4000001);
         createCredentialPojoArgs.setExpirationDate(System.currentTimeMillis() + (3600 * 24 * 1000));
         createCredentialPojoArgs.setIssuer(createResult.getWeId());
         createCredentialPojoArgs.setWeIdAuthentication(buildWeIdAuthentication(createResult));
