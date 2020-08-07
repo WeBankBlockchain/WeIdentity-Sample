@@ -41,9 +41,9 @@ public class FileUtil {
      */
     private static final String SLASH_CHARACTER = "/";
 
-    private static final String RESOURCE_DIR = "./conf/";
+    private static final String RESOURCE_DIR = PropertiesUtils.getProperty("resources.dir");
 
-    private static final String KEY_DIR = "./keys/priv/";
+    private static final String KEY_DIR = PropertiesUtils.getProperty("admin.privKey.dir");
 
     private static final String BUILD_TOOL_RESOURCE_DIR = "resources/";
 
