@@ -64,7 +64,7 @@ public class MultiGroupEvidenceSample {
      * 10. 获取存证数据
      * 11. 验证存在数据
      * 
-     * @param args
+     * @param args 入参
      */
     public static void main(String[] args) {
         // 1. 创建weid
@@ -147,6 +147,11 @@ public class MultiGroupEvidenceSample {
         }
     }
     
+    /**
+     * 构建凭证创建参数.
+     * @param weIdAuthentication weId身份信息
+     * @return 返回凭证创建参数
+     */
     public static CreateCredentialPojoArgs<Map<String, Object>> buildCreateCredentialPojoArgs(
         WeIdAuthentication weIdAuthentication
     ) {
