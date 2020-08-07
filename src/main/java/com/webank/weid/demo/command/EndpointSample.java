@@ -19,10 +19,11 @@
 
 package com.webank.weid.demo.command;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.webank.weid.suite.endpoint.EndpointDataUtil;
 import com.webank.weid.suite.endpoint.EndpointFunctor;
 import com.webank.weid.suite.endpoint.RpcServer;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A sample class showing how to register a EndpointFunctor and register a handler with it.
