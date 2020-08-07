@@ -275,7 +275,7 @@ public class DemoService {
      * @return the data of CPT Base Information
      * @throws BusinessException throw a exception when register fail
      */
-    public CptBaseInfo registCpt(CreateWeIdDataResult weIdResult, String cptJsonSchema)
+    public CptBaseInfo registCpt(CreateWeIdDataResult weIdResult, String cptJsonSchema, Integer cptId)
         throws BusinessException {
 
         logger.info("regist CPT with CptStringArgs");
@@ -286,18 +286,24 @@ public class DemoService {
         cptStringArgs.setCptJsonSchema(cptJsonSchema);
 
         // call the registerCpt on chain.
-        ResponseData<CptBaseInfo> response = cptService.registerCpt(cptStringArgs);
+        ResponseData<CptBaseInfo> response = cptService.registerCpt(cptStringArgs, cptId);
         BaseBean.print("registerCpt result:");
         BaseBean.print(response);
 
         // throw an exception if it does not succeed.
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || null == response.getResult()) {
-            logger.error("failed to call registerCpt method, code={}, message={}",
-                response.getErrorCode(),
-                response.getErrorMessage()
-            );
-            throw new BusinessException(response.getErrorMessage());
+
+            if (response.getErrorCode() == ErrorCode.CPT_ALREADY_EXIST.getCode()){
+                logger.info("The cpt is already register");
+            }
+            else {
+                logger.error("failed to call registerCpt method, code={}, message={}",
+                        response.getErrorCode(),
+                        response.getErrorMessage()
+                );
+                throw new BusinessException(response.getErrorMessage());
+            }
         }
         return response.getResult();
     }
