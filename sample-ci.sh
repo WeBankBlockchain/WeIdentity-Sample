@@ -25,7 +25,7 @@ function daemon(){
     if [ -n "$daemon_pid" ];then
         kill -9 $daemon_pid
     fi
-    sed -i "/^blockchain.orgid/cblockchain.orgid=organizationA" $top_path/dist/conf/weidentity.properties
+    sed -i "/^blockchain.orgid/cblockchain.orgid=organizationA" $top_path/resources/weidentity.properties
     ./command.sh daemon
     sleep 2
     getDaemonPid;
@@ -44,8 +44,8 @@ function issuer(){
         kill -9 $issuer_pid
     fi
 
-    sed -i "/^blockchain.orgid/cblockchain.orgid=organizationB" $top_path/dist/conf/weidentity.properties
-    sed -i "/^nodes/cnodes=$NODE2_IP" $top_path/dist/conf/weidentity.properties
+    sed -i "/^blockchain.orgid/cblockchain.orgid=organizationB" $top_path/resources/weidentity.properties
+    sed -i "/^nodes/cnodes=$NODE2_IP" $top_path/resources/weidentity.properties
     
     ./command.sh issuer
     if [ $? -eq 0 ] && [ -e $top_path/tmp/credentials.json ];then
@@ -103,14 +103,14 @@ function main(){
         rm -rf $top_path/tmp
     fi
     #start daemon process 
-    daemon;
+    #daemon;
     #start issuer
     issuer;
     #start user_agent
     user_agent;
     #start verifier
     verifier;  
-    kill_daemon;
+    #kill_daemon;
 }
 
 main
