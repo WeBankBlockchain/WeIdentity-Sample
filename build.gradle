@@ -118,7 +118,7 @@ dependencies {
         compile files('./dependencies/weid-java-sdk-pipeline.jar')
     } else {
         println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
-        compile("com.webank:weid-java-sdk:1.6.5-rc.6-SNAPSHOT") {
+        compile("com.webank:weid-java-sdk:1.6.5") {
             exclude group:"org.slf4j", module: "slf4j-log4j12"
         }
     }
