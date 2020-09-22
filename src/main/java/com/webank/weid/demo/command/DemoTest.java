@@ -52,12 +52,12 @@ public class DemoTest extends DemoBase {
         BaseBean.print(createWeId);
 
         // set WeIdentity DID
-        demoService.setPublicKey(createWeId);
-        demoService.setService(
-            createWeId,
-            "drivingCardService",
-            "https://weidentity.webank.com/endpoint/8377464"
-        );
+//        demoService.addPublicKey(createWeId);
+//        demoService.setService(
+//            createWeId,
+//            "drivingCardService",
+//            "https://weidentity.webank.com/endpoint/8377464"
+//        );
         demoService.setAuthentication(createWeId);
 
         // get WeId DOM.

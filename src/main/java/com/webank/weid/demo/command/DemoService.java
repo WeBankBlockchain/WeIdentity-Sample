@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.webank.weid.demo.common.util.FileUtil;
+import com.webank.weid.protocol.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,14 +41,6 @@ import com.webank.weid.protocol.base.PresentationPolicyE;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
-import com.webank.weid.protocol.request.CptMapArgs;
-import com.webank.weid.protocol.request.CptStringArgs;
-import com.webank.weid.protocol.request.CreateCredentialArgs;
-import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
-import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
-import com.webank.weid.protocol.request.SetAuthenticationArgs;
-import com.webank.weid.protocol.request.SetPublicKeyArgs;
-import com.webank.weid.protocol.request.SetServiceArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.rpc.AuthorityIssuerService;
@@ -70,7 +64,6 @@ import com.webank.weid.util.DataToolUtils;
  *
  */
 public class DemoService {
-
     private static final Logger logger = LoggerFactory.getLogger(DemoService.class);
 
     private AuthorityIssuerService authorityIssuerService = new AuthorityIssuerServiceImpl();
@@ -111,28 +104,37 @@ public class DemoService {
      *
      * @param createResult the Object of CreateWeIdDataResult
      */
-    public void setPublicKey(CreateWeIdDataResult createResult)
+    public void addPublicKey(CreateWeIdDataResult createResult)
         throws BusinessException {
 
         // build SetPublicKeyArgs for setPublicKey.
-        SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
-        setPublicKeyArgs.setWeId(createResult.getWeId());
-        setPublicKeyArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
-        setPublicKeyArgs.setUserWeIdPrivateKey(
-            this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
-        );
+//        SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
+//        setPublicKeyArgs.setWeId(createResult.getWeId());
+//        setPublicKeyArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
+//        setPublicKeyArgs.setUserWeIdPrivateKey(
+//            this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
+//        );
 
         // call the setPublicKey on chain.
-        ResponseData<Boolean> responseSetPub = weIdService.setPublicKey(setPublicKeyArgs);
+//        ResponseData<Boolean> responseSetPub = weIdService.setPublicKey(setPublicKeyArgs);
+
+        PublicKeyArgs publicKeyArgs = new PublicKeyArgs();
+        publicKeyArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
+        ResponseData<Integer> responseSetPub = weIdService.addPublicKey(
+                createResult.getWeId(), publicKeyArgs, createResult.getUserWeIdPrivateKey());
+
         BaseBean.print("setPublicKey result:");
         BaseBean.print(responseSetPub);
 
-        // throw an exception if it does not succeed.
         if (responseSetPub.getErrorCode() != ErrorCode.SUCCESS.getCode()
-            || !responseSetPub.getResult()) {
+                && responseSetPub.getErrorCode() == ErrorCode.WEID_PUBLIC_KEY_ALREADY_EXISTS.getCode()){
+            logger.info("the publicKey already exist!");
+        }
+        else if(responseSetPub.getErrorCode() != ErrorCode.SUCCESS.getCode()
+                || responseSetPub.getResult() == -1) {
             logger.error("failed to call setPublicKey method, code={}, message={}",
-                responseSetPub.getErrorCode(),
-                responseSetPub.getErrorMessage()
+                    responseSetPub.getErrorCode(),
+                    responseSetPub.getErrorMessage()
             );
             throw new BusinessException(responseSetPub.getErrorMessage());
         }
@@ -151,17 +153,27 @@ public class DemoService {
         String serviceEnpoint)
         throws BusinessException {
 
-        // build SetServiceArgs for setService.
-        SetServiceArgs setServiceArgs = new SetServiceArgs();
-        setServiceArgs.setWeId(createResult.getWeId());
-        setServiceArgs.setType(serviceType);
-        setServiceArgs.setServiceEndpoint(serviceEnpoint);
-        setServiceArgs.setUserWeIdPrivateKey(
-            this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
-        );
+//        // build SetServiceArgs for setService.
+//        SetServiceArgs setServiceArgs = new SetServiceArgs();
+//        setServiceArgs.setWeId(createResult.getWeId());
+//        setServiceArgs.setType(serviceType);
+//        setServiceArgs.setServiceEndpoint(serviceEnpoint);
+//        setServiceArgs.setUserWeIdPrivateKey(
+//            this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
+//        );
+//
+//        // call the setService on chain.
+//        ResponseData<Boolean> responseSetSer = weIdService.setService(setServiceArgs);
 
-        // call the setService on chain.
-        ResponseData<Boolean> responseSetSer = weIdService.setService(setServiceArgs);
+        ServiceArgs serviceArgs = new ServiceArgs();
+        serviceArgs.setType(serviceType);
+        serviceArgs.setServiceEndpoint(serviceEnpoint);
+
+        ResponseData<Boolean> responseSetSer = weIdService.setService(
+                createResult.getWeId(),
+                serviceArgs,
+                createResult.getUserWeIdPrivateKey());
+
         BaseBean.print("setService result:");
         BaseBean.print(responseSetSer);
 
@@ -184,17 +196,26 @@ public class DemoService {
     public void setAuthentication(CreateWeIdDataResult createResult)
         throws BusinessException {
 
-        // build SetAuthenticationArgs for setAuthentication.
-        SetAuthenticationArgs setAuthenticationArgs = new SetAuthenticationArgs();
-        setAuthenticationArgs.setWeId(createResult.getWeId());
-        setAuthenticationArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
-        setAuthenticationArgs.setUserWeIdPrivateKey(
-            this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
-        );
+//        // build SetAuthenticationArgs for setAuthentication.
+//        SetAuthenticationArgs setAuthenticationArgs = new SetAuthenticationArgs();
+//        setAuthenticationArgs.setWeId(createResult.getWeId());
+//        setAuthenticationArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
+//        setAuthenticationArgs.setUserWeIdPrivateKey(
+//            this.buildWeIdPrivateKey(createResult.getUserWeIdPrivateKey().getPrivateKey())
+//        );
+//
+//        // call the setAuthentication on chain.
+//        ResponseData<Boolean> responseSetAuth =
+//            weIdService.setAuthentication(setAuthenticationArgs);
 
-        // call the setAuthentication on chain.
-        ResponseData<Boolean> responseSetAuth =
-            weIdService.setAuthentication(setAuthenticationArgs);
+        AuthenticationArgs authenticationArgs = new AuthenticationArgs();
+        authenticationArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
+
+        ResponseData<Boolean> responseSetAuth = weIdService.setAuthentication(
+                createResult.getWeId(),
+                authenticationArgs,
+                createResult.getUserWeIdPrivateKey());
+
         BaseBean.print("setAuthentication result:");
         BaseBean.print(responseSetAuth);
 
@@ -254,7 +275,7 @@ public class DemoService {
      * @return the data of CPT Base Information
      * @throws BusinessException throw a exception when register fail
      */
-    public CptBaseInfo registCpt(CreateWeIdDataResult weIdResult, String cptJsonSchema)
+    public CptBaseInfo registCpt(CreateWeIdDataResult weIdResult, String cptJsonSchema, Integer cptId)
         throws BusinessException {
 
         logger.info("regist CPT with CptStringArgs");
@@ -265,18 +286,24 @@ public class DemoService {
         cptStringArgs.setCptJsonSchema(cptJsonSchema);
 
         // call the registerCpt on chain.
-        ResponseData<CptBaseInfo> response = cptService.registerCpt(cptStringArgs);
+        ResponseData<CptBaseInfo> response = cptService.registerCpt(cptStringArgs, cptId);
         BaseBean.print("registerCpt result:");
         BaseBean.print(response);
 
         // throw an exception if it does not succeed.
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()
             || null == response.getResult()) {
-            logger.error("failed to call registerCpt method, code={}, message={}",
-                response.getErrorCode(),
-                response.getErrorMessage()
-            );
-            throw new BusinessException(response.getErrorMessage());
+
+            if (response.getErrorCode() == ErrorCode.CPT_ALREADY_EXIST.getCode()){
+                logger.info("The cpt is already register");
+            }
+            else {
+                logger.error("failed to call registerCpt method, code={}, message={}",
+                        response.getErrorCode(),
+                        response.getErrorMessage()
+                );
+                throw new BusinessException(response.getErrorMessage());
+            }
         }
         return response.getResult();
     }

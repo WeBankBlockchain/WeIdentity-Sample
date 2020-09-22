@@ -21,6 +21,7 @@ package com.webank.weid.demo.service.impl;
 
 import java.util.Map;
 
+import com.webank.weid.protocol.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,12 +36,6 @@ import com.webank.weid.protocol.base.Credential;
 import com.webank.weid.protocol.base.CredentialWrapper;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
-import com.webank.weid.protocol.request.CptMapArgs;
-import com.webank.weid.protocol.request.CreateCredentialArgs;
-import com.webank.weid.protocol.request.CreateWeIdArgs;
-import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
-import com.webank.weid.protocol.request.SetAuthenticationArgs;
-import com.webank.weid.protocol.request.SetPublicKeyArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.rpc.AuthorityIssuerService;
@@ -60,6 +55,10 @@ import com.webank.weid.util.DataToolUtils;
  */
 @Service
 public class DemoServiceImpl implements DemoService {
+
+    static {
+        FileUtil.loadConfigFromEnv();
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);
 
@@ -177,14 +176,14 @@ public class DemoServiceImpl implements DemoService {
             return createResult;
         }
 
-        // 2, call set public key
-        ResponseData<Boolean> setPublicKeyRes = this.setPublicKey(createResult.getResult());
-        if (!setPublicKeyRes.getResult()) {
-            createResult.setErrorCode(
-                ErrorCode.getTypeByErrorCode(setPublicKeyRes.getErrorCode())
-            );
-            return createResult;
-        }
+//        // 2, call set public key
+//        ResponseData<Integer> setPublicKeyRes = this.setPublicKey(createResult.getResult());
+//        if (setPublicKeyRes.getResult() != ErrorCode.SUCCESS.getCode()) {
+//            createResult.setErrorCode(
+//                ErrorCode.getTypeByErrorCode(setPublicKeyRes.getErrorCode())
+//            );
+//            return createResult;
+//        }
 
         // 3, call set authentication
         ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
@@ -203,18 +202,27 @@ public class DemoServiceImpl implements DemoService {
      * @param createWeIdDataResult the object of CreateWeIdDataResult
      * @return the response data
      */
-    private ResponseData<Boolean> setPublicKey(CreateWeIdDataResult createWeIdDataResult) {
+    private ResponseData<Integer> addPublicKey(CreateWeIdDataResult createWeIdDataResult) {
 
-        // build setPublicKey parameters.
-        SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
-        setPublicKeyArgs.setWeId(createWeIdDataResult.getWeId());
-        setPublicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
-        setPublicKeyArgs.setUserWeIdPrivateKey(new WeIdPrivateKey());
-        setPublicKeyArgs.getUserWeIdPrivateKey()
-            .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
+//        // build setPublicKey parameters.
+//        SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
+//        setPublicKeyArgs.setWeId(createWeIdDataResult.getWeId());
+//        setPublicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
+//        setPublicKeyArgs.setUserWeIdPrivateKey(new WeIdPrivateKey());
+//        setPublicKeyArgs.getUserWeIdPrivateKey()
+//            .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
+//
+//        // call SDK method to chain set attribute.
+//        ResponseData<Boolean> setResponse = weIdService.setPublicKey(setPublicKeyArgs);
 
-        // call SDK method to chain set attribute.
-        ResponseData<Boolean> setResponse = weIdService.setPublicKey(setPublicKeyArgs);
+        PublicKeyArgs publicKeyArgs = new PublicKeyArgs();
+        publicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
+
+        ResponseData<Integer> setResponse = weIdService.addPublicKey(
+                createWeIdDataResult.getWeId(),
+                publicKeyArgs,
+                createWeIdDataResult.getUserWeIdPrivateKey());
+
         logger.info(
             "setPublicKey is result,errorCode:{},errorMessage:{}",
             setResponse.getErrorCode(), 
@@ -231,17 +239,26 @@ public class DemoServiceImpl implements DemoService {
      */
     private ResponseData<Boolean> setAuthentication(CreateWeIdDataResult createWeIdDataResult) {
 
-        // build setAuthentication parameters.
-        SetAuthenticationArgs setAuthenticationArgs = new SetAuthenticationArgs();
-        setAuthenticationArgs.setWeId(createWeIdDataResult.getWeId());
-        setAuthenticationArgs
-            .setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
-        setAuthenticationArgs.setUserWeIdPrivateKey(new WeIdPrivateKey());
-        setAuthenticationArgs.getUserWeIdPrivateKey()
-            .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
+//        // build setAuthentication parameters.
+//        SetAuthenticationArgs setAuthenticationArgs = new SetAuthenticationArgs();
+//        setAuthenticationArgs.setWeId(createWeIdDataResult.getWeId());
+//        setAuthenticationArgs
+//            .setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
+//        setAuthenticationArgs.setUserWeIdPrivateKey(new WeIdPrivateKey());
+//        setAuthenticationArgs.getUserWeIdPrivateKey()
+//            .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
+//
+//        // call SDK method to chain set attribute.
+//        ResponseData<Boolean> setResponse = weIdService.setAuthentication(setAuthenticationArgs);
 
-        // call SDK method to chain set attribute.
-        ResponseData<Boolean> setResponse = weIdService.setAuthentication(setAuthenticationArgs);
+        AuthenticationArgs authenticationArgs = new AuthenticationArgs();
+        authenticationArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
+
+        ResponseData<Boolean> setResponse = weIdService.setAuthentication(
+                createWeIdDataResult.getWeId(),
+                authenticationArgs,
+                createWeIdDataResult.getUserWeIdPrivateKey());
+
         logger.info(
             "setAuthentication is result,errorCode:{},errorMessage:{}",
             setResponse.getErrorCode(), 

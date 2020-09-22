@@ -64,7 +64,7 @@ public class MultiGroupEvidenceSample {
      * 10. 获取存证数据
      * 11. 验证存在数据
      * 
-     * @param args
+     * @param args 入参
      */
     public static void main(String[] args) {
         // 1. 创建weid
@@ -138,13 +138,20 @@ public class MultiGroupEvidenceSample {
             // 省略返回code判断
             
             // 11. 验证存证
-            ResponseData<Boolean> verifySigner = 
-                evidenceService.verifySigner(evidenceRes.getResult(), createWeId.getWeId());
+//            ResponseData<Boolean> verifySigner =
+//                evidenceService.verifySigner(evidenceRes.getResult(), createWeId.getWeId());
+            ResponseData<Boolean> verifySigner =
+                    evidenceService.verifySigner(credentialPojo, evidenceRes.getResult(), createWeId.getWeId());
             System.out.println("存证验证结果:" + verifySigner);
             // 省略返回code判断
         }
     }
     
+    /**
+     * 构建凭证创建参数.
+     * @param weIdAuthentication weId身份信息
+     * @return 返回凭证创建参数
+     */
     public static CreateCredentialPojoArgs<Map<String, Object>> buildCreateCredentialPojoArgs(
         WeIdAuthentication weIdAuthentication
     ) {

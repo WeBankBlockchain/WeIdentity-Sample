@@ -1,12 +1,14 @@
 package com.webank.weid.demo.config;
 
+import javax.servlet.Filter;
+
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.webank.weid.demo.filter.XssFilter;
 
@@ -16,21 +18,21 @@ import com.webank.weid.demo.filter.XssFilter;
  * @date 2020/1/16
  **/
 @Configuration
-public class WebConfig extends WebMvcConfigurerAdapter {
+public class WebConfig implements WebMvcConfigurer {
 
     /**
      * 跨域过滤器.
      * @return
      */
     @Bean
-    public FilterRegistrationBean corsFilter() {
+    public FilterRegistrationBean<Filter> corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration config = new CorsConfiguration().applyPermitDefaultValues();
         config.setAllowCredentials(false);
         source.registerCorsConfiguration("/**", config);
 
-        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<Filter>(new CorsFilter(source));
         bean.setOrder(0);
 
         return bean;
@@ -41,14 +43,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
      * @return
      */
     @Bean
-    public FilterRegistrationBean xssFilter() {
+    public FilterRegistrationBean<Filter> xssFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration config = new CorsConfiguration().applyPermitDefaultValues();
         config.setAllowCredentials(false);
         source.registerCorsConfiguration("/**", config);
 
-        FilterRegistrationBean bean = new FilterRegistrationBean(new XssFilter());
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<Filter>(new XssFilter());
         bean.setOrder(1);
 
         return bean;

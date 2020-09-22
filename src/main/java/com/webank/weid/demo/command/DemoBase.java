@@ -50,6 +50,13 @@ public abstract class DemoBase {
     protected static final String CLAIMDATA;
 
     /**
+     * load the Configure from Environment variable
+     */
+    static {
+        FileUtil.loadConfigFromEnv();
+    }
+
+    /**
      * the demo service.
      */
     protected static DemoService demoService = new DemoService();

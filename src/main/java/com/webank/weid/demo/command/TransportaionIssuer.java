@@ -55,11 +55,16 @@ public class TransportaionIssuer {
     static CptService cptService = new CptServiceImpl();
     static CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();
     
+    /**
+     * issuer main.
+     * @param args 入参
+     * @throws IOException IO异常
+     */
     public static void main(String[] args) throws IOException {
         
         // 创建weid
         CreateWeIdDataResult result = weidService.createWeId().getResult();
-        ResponseData<WeIdDocument> weIdDocumentRes =weidService.getWeIdDocument(result.getWeId());
+        ResponseData<WeIdDocument> weIdDocumentRes = weidService.getWeIdDocument(result.getWeId());
         String publicKeyId = null;
         for (PublicKeyProperty publicKey : weIdDocumentRes.getResult().getPublicKey()) {
             if (publicKey.getOwner().equals(result.getWeId())) {
@@ -78,21 +83,21 @@ public class TransportaionIssuer {
         CreateCredentialPojoArgs<Map<String, Object>> createCredentialPojoArgs =
             buildCreateCredentialPojoArgs(weIdAuthentication);
         createCredentialPojoArgs.setCptId(cptBaseInfo.getCptId());
-        ResponseData<CredentialPojo> CredentialPojoRes =
+        ResponseData<CredentialPojo> credentialPojoRes =
              credentialPojoService.createCredential(createCredentialPojoArgs);
         System.out.println("创建凭证结果:");
-        System.out.println(CredentialPojoRes);
+        System.out.println(credentialPojoRes);
         
         WeIdPublicKey weidPublicKey = new WeIdPublicKey();
         weidPublicKey.setPublicKey(result.getUserWeIdPublicKey().getPublicKey());
         ResponseData<Boolean> verify2 = credentialPojoService.verify(
-            weidPublicKey, CredentialPojoRes.getResult());
+            weidPublicKey, credentialPojoRes.getResult());
         System.out.println("根据公钥验证结果：" + verify2);
         
         
         // 凭证放入CredentialPojoList中
         CredentialPojoList list = new CredentialPojoList();
-        list.add(CredentialPojoRes.getResult());
+        list.add(credentialPojoRes.getResult());
         
         // 指定可以解析二维码的机构白名单
         List<String> verifierWeIdList = new ArrayList<String>();
@@ -107,7 +112,7 @@ public class TransportaionIssuer {
                 .serialize(
                     weIdAuthentication, 
                     list, 
-                    new ProtocolProperty(EncodeType.CIPHER, TransMode.DOWNLOAD_MODE )
+                    new ProtocolProperty(EncodeType.CIPHER, TransMode.DOWNLOAD_MODE)
                 );
         System.out.println("将凭证序列化成条码编码:");
         System.out.println(serialize);
@@ -127,6 +132,11 @@ public class TransportaionIssuer {
         System.out.println(verify);
     }
 
+    /**
+     * 构建创建凭证参数.
+     * @param weIdAuthentication weId身份信息
+     * @return 返回创建凭证参数
+     */
     public static CreateCredentialPojoArgs<Map<String, Object>> buildCreateCredentialPojoArgs(
         WeIdAuthentication weIdAuthentication
     ) {
@@ -150,7 +160,7 @@ public class TransportaionIssuer {
     /**
      * build default CptMapArgs.
      *
-     * @param createWeId WeId
+     * @param weIdAuthentication weid身份信息
      * @return CptMapArgs
      */
     public static CptMapArgs buildCptArgs(WeIdAuthentication weIdAuthentication) {
