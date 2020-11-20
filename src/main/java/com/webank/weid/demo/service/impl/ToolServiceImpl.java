@@ -2,7 +2,7 @@ package com.webank.weid.demo.service.impl;
 
 import java.math.BigInteger;
 
-import org.bcos.web3j.crypto.ECKeyPair;
+import org.fisco.bcos.web3j.crypto.ECKeyPair;
 import org.springframework.stereotype.Service;
 
 import com.webank.weid.constant.ErrorCode;
