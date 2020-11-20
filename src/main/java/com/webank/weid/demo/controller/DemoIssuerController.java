@@ -39,7 +39,7 @@ import com.webank.weid.demo.common.model.CreateCredentialModel;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.service.DemoService;
 import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.CredentialWrapper;
+import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.util.DataToolUtils;
@@ -121,11 +121,11 @@ public class DemoIssuerController {
      */
     @ApiOperation(value = "创建电子凭证")
     @PostMapping("/step3/createCredential")
-    public ResponseData<CredentialWrapper> createCredential(
+    public ResponseData<CredentialPojo> createCredential(
         @ApiParam(name = "createCredentialModel", value = "创建电子凭证模板")
         @RequestBody CreateCredentialModel createCredentialModel) {
 
-        ResponseData<CredentialWrapper> response;
+        ResponseData<CredentialPojo> response;
         try {
 
             if (null == createCredentialModel) {
@@ -163,7 +163,7 @@ public class DemoIssuerController {
             return response;
         } catch (Exception e) {
             logger.error("createCredential error", e);
-            return new ResponseData<CredentialWrapper>(null, ErrorCode.CREDENTIAL_ERROR);
+            return new ResponseData<CredentialPojo>(null, ErrorCode.CREDENTIAL_ERROR);
         }
     }
 

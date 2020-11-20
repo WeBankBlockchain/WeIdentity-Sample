@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.common.model.AuthorityIssuerModel;
+import com.webank.weid.demo.common.model.RecognizeAuthorityIssuerModel;
 import com.webank.weid.demo.service.DemoService;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
@@ -87,4 +88,25 @@ public class DemoMemberController {
         return demoService.registerAuthorityIssuer(issuer, authorityName);
     }
 
+    /**
+     * recognize the issuer on chain
+     *
+     * @return true is success, false is failure.
+     */
+    @ApiOperation(value = "认证权威机构")
+    @PostMapping("/step3/recognizeAuthorityIssuer")
+    public ResponseData<Boolean> recognizeAuthorityIssuer(
+        @ApiParam(name = "recognizeAuthorityIssuerModel", value = "认证权威机构模板")
+        @RequestBody RecognizeAuthorityIssuerModel recognizeAuthorityIssuerModel) {
+        
+        if (null == recognizeAuthorityIssuerModel) {
+            return new ResponseData<>(null, ErrorCode.ILLEGAL_INPUT);
+        }
+        String issuer = recognizeAuthorityIssuerModel.getIssuer();
+
+        logger.info("param,issuer:{}", issuer);
+
+        // call method recognize.
+        return demoService.recognizeAuthorityIssuer(issuer);
+    }
 }

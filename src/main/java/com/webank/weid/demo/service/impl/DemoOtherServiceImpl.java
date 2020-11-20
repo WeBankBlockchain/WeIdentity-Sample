@@ -26,7 +26,6 @@ import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.service.DemoOtherService;
 import com.webank.weid.protocol.base.Challenge;
 import com.webank.weid.protocol.base.ClaimPolicy;
-import com.webank.weid.protocol.base.Credential;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.EvidenceInfo;
 import com.webank.weid.protocol.base.HashString;
@@ -38,10 +37,8 @@ import com.webank.weid.protocol.inf.Hashable;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.CredentialService;
 import com.webank.weid.rpc.EvidenceService;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
-import com.webank.weid.service.impl.CredentialServiceImpl;
 import com.webank.weid.service.impl.EvidenceServiceImpl;
 import com.webank.weid.suite.api.transportation.TransportationFactory;
 import com.webank.weid.suite.api.transportation.inf.Transportation;
@@ -65,8 +62,6 @@ public class DemoOtherServiceImpl implements DemoOtherService {
 
     private static final Logger logger = LoggerFactory.getLogger(DemoOtherServiceImpl.class);
 
-    private CredentialService credentialService = new CredentialServiceImpl();
-
     private CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();
 
     private EvidenceService evidenceService = new EvidenceServiceImpl();
@@ -83,8 +78,10 @@ public class DemoOtherServiceImpl implements DemoOtherService {
             }
             String credentialJson
                 = DataToolUtils.mapToCompactJson(verifyCredentialModel.getCredential());
-            Credential credential = DataToolUtils.deserialize(credentialJson, Credential.class);
-            ResponseData<String> responseData = credentialService.getCredentialHash(credential);
+            CredentialPojo credential = DataToolUtils.deserialize(credentialJson, 
+                CredentialPojo.class);
+            ResponseData<String> responseData = credentialPojoService.getCredentialPojoHash(
+                credential);
             logger.info("{} responseData: {}",
                 methodName, DataToolUtils.objToJsonStrWithNoPretty(responseData));
             return responseData;

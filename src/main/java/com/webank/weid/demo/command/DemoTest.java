@@ -21,11 +21,15 @@ package com.webank.weid.demo.command;
 
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Map;
 
+import com.webank.weid.constant.CredentialType;
 import com.webank.weid.constant.JsonSchemaConstant;
 import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.Credential;
+import com.webank.weid.protocol.base.CredentialPojo;
+import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
+import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 
 /**
@@ -34,11 +38,6 @@ import com.webank.weid.protocol.response.CreateWeIdDataResult;
  * @author v_wbgyang
  */
 public class DemoTest extends DemoBase {
-
-    /**
-     * set validity period to 360 days by default.
-     */
-    private static final long EXPIRATION_DATE  = 1000L * 60 * 60 * 24 * 360;
 
     /**
      * main of demo.
@@ -65,8 +64,11 @@ public class DemoTest extends DemoBase {
         BaseBean.print(weIdDom);
 
         // registered authority issuer.
-        demoService.registerAuthorityIssuer(createWeId, "webank", "0");
-
+        demoService.registerAuthorityIssuer(
+            createWeId, String.valueOf(System.currentTimeMillis()), "0");
+        // recognize AuthorityIssuer
+        demoService.recognizeAuthorityIssuer(createWeId);
+        
         // registered CPT.
         CptBaseInfo cptResult =
             demoService.registCpt(
@@ -75,20 +77,17 @@ public class DemoTest extends DemoBase {
             );
         BaseBean.print(cptResult);
 
-        long expirationDate = System.currentTimeMillis() + EXPIRATION_DATE;
-
         // create Credential.
-        Credential credential = 
-            demoService.createCredential(
-                createWeId,
-                cptResult.getCptId(),
-                DemoTest.buildCptJsonSchemaData(),
-                expirationDate
-            );
+        String publicKeyId = demoService.getPublicKeyId(createWeId.getWeId());
+        WeIdAuthentication weIdAuthentication = buildWeIdAuthority(createWeId, publicKeyId);
+        CreateCredentialPojoArgs<Map<String, Object>>  createCredentialPojoArgs = 
+            buildCreateCredentialPojoArgs(cptResult.getCptId(), weIdAuthentication);
+        CredentialPojo credential = 
+            demoService.createCredential(createCredentialPojoArgs);
         BaseBean.print(credential);
 
         // verify the credential.
-        boolean result = demoService.verifyCredential(credential);
+        boolean result = demoService.verifyCredentialPojo(credential);
         if (result) {
             BaseBean.print("verify success");
         } else {
@@ -149,5 +148,47 @@ public class DemoTest extends DemoBase {
         cptJsonSchemaData.put("age", 18);
         cptJsonSchemaData.put("weid", "did:weid:0x566a07b553804266133f130c8c0bf6fede406984");
         return cptJsonSchemaData;
+    }
+    
+    /**
+     * 构建创建凭证参数.
+     * @param weIdAuthentication weId身份信息
+     * @return 返回创建凭证参数
+     */
+    public static CreateCredentialPojoArgs<Map<String, Object>> buildCreateCredentialPojoArgs(
+        Integer cptId,
+        WeIdAuthentication weIdAuthentication
+    ) {
+
+        CreateCredentialPojoArgs<Map<String, Object>> createCredentialPojoArgs =
+            new CreateCredentialPojoArgs<Map<String, Object>>();
+
+        createCredentialPojoArgs.setIssuer(weIdAuthentication.getWeId());
+        createCredentialPojoArgs.setExpirationDate(
+            System.currentTimeMillis() + (1000 * 60 * 60 * 24));
+        createCredentialPojoArgs.setWeIdAuthentication(weIdAuthentication);
+        Map<String, Object> claimMap = new HashMap<String, Object>();
+        claimMap.put("name", "zhang san");
+        claimMap.put("gender", "F");
+        claimMap.put("age", 23);
+        claimMap.put("id", weIdAuthentication.getWeId());
+        createCredentialPojoArgs.setClaim(claimMap);
+        createCredentialPojoArgs.setType(CredentialType.ORIGINAL);
+        createCredentialPojoArgs.setCptId(cptId);
+        return createCredentialPojoArgs;
+    }
+    
+    /**
+     * build weId authority.
+     */
+    public static WeIdAuthentication buildWeIdAuthority(
+        CreateWeIdDataResult createWeId, 
+        String publicKeyId
+    ) {
+        return new WeIdAuthentication(
+            createWeId.getWeId(), 
+            createWeId.getUserWeIdPrivateKey().getPrivateKey(),
+            publicKeyId
+        );
     }
 }
