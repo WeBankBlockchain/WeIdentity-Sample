@@ -8,6 +8,7 @@ weid-sample 是基于 [WeIdentity](https://weidentity.readthedocs.io/zh_CN/lates
 
 | WeIdentity-Sample 版本 | WeIdentity 版本 | Contract 版本 |
 | :---- | :---- | :---- |
+| v1.0.6 | v1.6.7 | v1.2.26 |
 | v1.0.5 | v1.6.6 | v1.2.24 |
 | v1.0.4 | v1.6.5 | v1.2.23 |
 | v1.0.3 | v1.6.4 | v1.2.21 |
