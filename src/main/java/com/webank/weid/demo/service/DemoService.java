@@ -22,7 +22,7 @@ package com.webank.weid.demo.service;
 import java.util.Map;
 
 import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.CredentialWrapper;
+import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 
@@ -57,6 +57,14 @@ public interface DemoService {
      * @return true is success, false is failure
      */
     ResponseData<Boolean> registerAuthorityIssuer(String issuer, String authorityName);
+    
+    /**
+     * recognize the issuer on chain.
+     * 
+     * @param issuer the issue
+     * @return true is success, false is failure
+     */
+    ResponseData<Boolean> recognizeAuthorityIssuer(String issuer);
 
     /**
      * registered CPT.
@@ -81,7 +89,7 @@ public interface DemoService {
      * @param claimDate the data of claim
      * @return returns credential
      */
-    ResponseData<CredentialWrapper> createCredential(
+    ResponseData<CredentialPojo> createCredential(
         Integer cptId,
         String issuer,
         String privateKey,
