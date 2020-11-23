@@ -133,6 +133,11 @@ public class DemoCommand extends DemoBase {
 
         // registered authority, "webank" is the authority Name, "0" is default.
         demoService.registerAuthorityIssuer(createWeId, "webank" + System.currentTimeMillis(), "0");
+        
+        
+        BaseBean.print("------------------------------");
+        BaseBean.print("begin to recognizeAuthorityIssuer...");
+        demoService.recognizeAuthorityIssuer(createWeId);
 
         BaseBean.print("------------------------------");
         BaseBean.print("begin to regist the first Cpt...");

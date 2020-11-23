@@ -19,11 +19,9 @@
 
 package com.webank.weid.demo.command;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.protocol.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +31,10 @@ import com.webank.weid.demo.exception.BusinessException;
 import com.webank.weid.protocol.base.AuthorityIssuer;
 import com.webank.weid.protocol.base.Challenge;
 import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.Credential;
 import com.webank.weid.protocol.base.CredentialPojo;
-import com.webank.weid.protocol.base.CredentialWrapper;
 import com.webank.weid.protocol.base.PresentationE;
 import com.webank.weid.protocol.base.PresentationPolicyE;
+import com.webank.weid.protocol.base.PublicKeyProperty;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
@@ -46,17 +43,14 @@ import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.rpc.AuthorityIssuerService;
 import com.webank.weid.rpc.CptService;
 import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.CredentialService;
 import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.AuthorityIssuerServiceImpl;
 import com.webank.weid.service.impl.CptServiceImpl;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
-import com.webank.weid.service.impl.CredentialServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
 import com.webank.weid.suite.api.transportation.TransportationFactory;
 import com.webank.weid.suite.api.transportation.params.EncodeType;
 import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
-import com.webank.weid.util.DataToolUtils;
 
 /**
  * the service for command.
@@ -69,8 +63,6 @@ public class DemoService {
     private AuthorityIssuerService authorityIssuerService = new AuthorityIssuerServiceImpl();
 
     private CptService cptService = new CptServiceImpl();
-
-    private CredentialService credentialService = new CredentialServiceImpl();
 
     private WeIdService weIdService = new WeIdServiceImpl();
     
@@ -403,83 +395,34 @@ public class DemoService {
             throw new BusinessException(response.getErrorMessage());
         }
     }
-
+    
     /**
-     * create a credential for user.
+     * Register a new Authority Issuer on Chain.
      * 
-     * @param weIdResult the data of organization's weId information
-     * @param cptId CPT number issued by organization
-     * @param claim the claim data for create credential
-     * @param expirationDate the validity period of the credential
-     * @return return the credential
-     * @throws BusinessException throw a exception when create fail
+     * @param weIdResult the object of CreateWeIdDataResult
+     * @param name this is Authority name
+     * @param accValue this is accValue
+     * @throws BusinessException throw a exception when register fail
      */
-    public Credential createCredential(
-        CreateWeIdDataResult weIdResult,
-        Integer cptId,
-        String claim,
-        long expirationDate)
-        throws BusinessException {
-
-        logger.info(
-            "create credential using string-type claim and convert claim from string to map"
-        );
-        // converting claim of strings to map.
-        Map<String, Object> claimDataMap = new HashMap<String, Object>();
-        claimDataMap = 
-            (Map<String, Object>) DataToolUtils.deserialize(
-                claim,
-                claimDataMap.getClass()
-            );
-
-        return this.createCredential(weIdResult, cptId, claimDataMap, expirationDate);
-    }
-
-    /**
-     * create a credential for user.
-     * 
-     * @param weIdResult the data of organization's weId information
-     * @param cptId CPT number issued by organization
-     * @param claimDataMap the claim data for create credential
-     * @param expirationDate the validity period of the credential
-     * @return return the credential
-     * @throws BusinessException throw a exception when create fail
-     */
-    public Credential createCredential(
-        CreateWeIdDataResult weIdResult,
-        Integer cptId,
-        Map<String, Object> claimDataMap,
-        long expirationDate)
-        throws BusinessException {
-
-        logger.info("create credential using map-type claim");
-
-        // build CreateCredentialArgs for createCredential
-        CreateCredentialArgs args = new CreateCredentialArgs();
-        args.setClaim(claimDataMap);
-        args.setCptId(cptId);
-        args.setExpirationDate(expirationDate);
-        args.setIssuer(weIdResult.getWeId());
-        args.setWeIdPrivateKey(
-            this.buildWeIdPrivateKey(weIdResult.getUserWeIdPrivateKey().getPrivateKey())
-        );
-
-        ResponseData<CredentialWrapper> response = credentialService.createCredential(args);
-        BaseBean.print("createCredential result:");
+    public void recognizeAuthorityIssuer(CreateWeIdDataResult weIdResult) throws BusinessException {
+        WeIdPrivateKey weIdPrivateKey = this.buildWeIdPrivateKey(DemoUtil.SDK_PRIVATE_KEY);
+        // call the registerAuthorityIssuer on chain.
+        ResponseData<Boolean> response =
+            authorityIssuerService.recognizeAuthorityIssuer(weIdResult.getWeId(), weIdPrivateKey);
+        BaseBean.print("recognizeAuthorityIssuer result:");
         BaseBean.print(response);
 
         // throw an exception if it does not succeed.
-        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()
-            || null == response.getResult()) {
-            logger.error("failed to call createCredential method, code={}, message={}",
+        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode() 
+            || !response.getResult()) {
+            logger.error("failed to call recognizeAuthorityIssuer method, code={}, message={}",
                 response.getErrorCode(),
                 response.getErrorMessage()
             );
             throw new BusinessException(response.getErrorMessage());
         }
-        return response.getResult().getCredential();
     }
-    
+
     /**
      * create a credential for user.
      * @param arg the CreateCredentialPojoArgs
@@ -492,30 +435,6 @@ public class DemoService {
         BaseBean.print(response);
         if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
             logger.error("credentialPojoService.createCredential failed,error:{}",response);
-            throw new BusinessException(response.getErrorMessage());
-        }
-        return response.getResult();
-    }
-    
-    /**
-     * verify the credential on chain.
-     * 
-     * @param credential user-provided credentials
-     * @return return the result of verify, true is success, false is fail
-     * @throws BusinessException throw a exception when the result code is not success
-     */
-    public boolean verifyCredential(Credential credential) throws BusinessException {
-
-        ResponseData<Boolean> response = credentialService.verify(credential);
-        BaseBean.print("verifyCredential result:");
-        BaseBean.print(response);
-
-        // throw an exception if it does not succeed.
-        if (response.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
-            logger.error("failed to call verify method, code={}, message={}",
-                response.getErrorCode(),
-                response.getErrorMessage()
-            );
             throw new BusinessException(response.getErrorMessage());
         }
         return response.getResult();
@@ -685,5 +604,38 @@ public class DemoService {
             throw new BusinessException(response.getErrorMessage());
         }
         return response.getResult();
-    } 
+    }
+    
+    /**
+     *  verify CredentialPojo. 
+     * @param credentialPojo the CredentialPojo
+     * @return success if true, others fail
+     */
+    public boolean verifyCredentialPojo(CredentialPojo credentialPojo) {
+        ResponseData<Boolean> verify = 
+            credentialPojoService.verify(credentialPojo.getIssuer(), credentialPojo);
+        if (verify.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
+            logger.error("credentialPojoService.verify failed,responseData:{}",
+                    verify);
+            throw new BusinessException(verify.getErrorMessage());
+        }
+        return verify.getResult();
+    }
+    
+    /**
+     * get the public key ID.
+     * @param weId the weId
+     * @return the publicKeyId
+     */
+    public String getPublicKeyId(String weId) {
+        ResponseData<WeIdDocument> weIdDocumentRes = weIdService.getWeIdDocument(weId);
+        String publicKeyId = null;
+        for (PublicKeyProperty publicKey : weIdDocumentRes.getResult().getPublicKey()) {
+            if (publicKey.getOwner().equals(weId)) {
+                publicKeyId = publicKey.getId();
+                break;
+            }
+        }
+        return publicKeyId;
+    }
 }

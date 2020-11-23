@@ -101,7 +101,6 @@ public class TransportaionIssuer {
         
         // 指定可以解析二维码的机构白名单
         List<String> verifierWeIdList = new ArrayList<String>();
-        verifierWeIdList.add("did:weid:101:0xa7af4461084b76aecfd9361a49e21cc34e6c4074");
         verifierWeIdList.add(result.getWeId());
         
         // 调用序列化接口，生成条码编码
@@ -119,17 +118,19 @@ public class TransportaionIssuer {
         
         // 调用反序列化接口，根据条码编码获取对应数据，自己机构间走本地模式
         // 如果想获取的是PresentationE 将CredentialPojoList修改成PresentationE
-        ResponseData<CredentialPojo> deserialize = 
+        ResponseData<CredentialPojoList> deserialize = 
             TransportationFactory.build(TransportationType.QR_CODE)
-                .deserialize(weIdAuthentication, serialize.getResult(), CredentialPojo.class);
+                .deserialize(weIdAuthentication, serialize.getResult(), CredentialPojoList.class);
         System.out.println("根据条码编号获取凭证:");
         System.out.println(deserialize);
         
         // 验证获取到凭证
-        ResponseData<Boolean> verify = 
-            credentialPojoService.verify(result.getWeId(), deserialize.getResult());
-        System.out.println("凭证验证结果:");
-        System.out.println(verify);
+        for (CredentialPojo credentialPojo2 : deserialize.getResult()) {
+            ResponseData<Boolean> verify = 
+                credentialPojoService.verify(credentialPojo2.getIssuer(), credentialPojo2);
+            System.out.println("凭证验证结果:");
+            System.out.println(verify);
+        }
     }
 
     /**
