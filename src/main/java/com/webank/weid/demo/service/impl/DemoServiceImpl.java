@@ -26,25 +26,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.webank.weid.constant.CredentialType;
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.service.DemoService;
 import com.webank.weid.protocol.base.AuthorityIssuer;
 import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.Credential;
-import com.webank.weid.protocol.base.CredentialWrapper;
+import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.rpc.AuthorityIssuerService;
 import com.webank.weid.rpc.CptService;
-import com.webank.weid.rpc.CredentialService;
+import com.webank.weid.rpc.CredentialPojoService;
 import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.AuthorityIssuerServiceImpl;
 import com.webank.weid.service.impl.CptServiceImpl;
-import com.webank.weid.service.impl.CredentialServiceImpl;
+import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
 import com.webank.weid.util.DataToolUtils;
 
@@ -66,7 +66,7 @@ public class DemoServiceImpl implements DemoService {
 
     private CptService cptService = new CptServiceImpl();
 
-    private CredentialService credentialService = new CredentialServiceImpl();
+    private CredentialPojoService credentialService = new CredentialPojoServiceImpl();
 
     private WeIdService weIdService = new WeIdServiceImpl();
 
@@ -345,27 +345,32 @@ public class DemoServiceImpl implements DemoService {
      * @return returns credential
      */
     @Override
-    public ResponseData<CredentialWrapper> createCredential(
+    public ResponseData<CredentialPojo> createCredential(
         Integer cptId, 
         String issuer,
         String privateKey,
         Map<String, Object> claimDate) {
 
         // build createCredential parameters.
-        CreateCredentialArgs registerCptArgs = new CreateCredentialArgs();
-        registerCptArgs.setCptId(cptId);
-        registerCptArgs.setIssuer(issuer);
-        registerCptArgs.setWeIdPrivateKey(new WeIdPrivateKey());
-        registerCptArgs.getWeIdPrivateKey().setPrivateKey(privateKey);
-        registerCptArgs.setClaim(claimDate);
-
+        CreateCredentialPojoArgs<Map<String, Object>> args = new CreateCredentialPojoArgs<>();
+        args.setCptId(cptId);
+        args.setIssuer(issuer);
+        args.setType(CredentialType.ORIGINAL);
+        args.setClaim(claimDate);
         // the validity period is 360 days
-        registerCptArgs
+        args
             .setExpirationDate(System.currentTimeMillis() + EXPIRATION_DATE);
+        
+        WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
+        weIdAuthentication.setWeIdPrivateKey(new WeIdPrivateKey());
+        weIdAuthentication.getWeIdPrivateKey().setPrivateKey(privateKey);
+        weIdAuthentication.setWeId(issuer);
+        weIdAuthentication.setWeIdPublicKeyId(issuer);
+        args.setWeIdAuthentication(weIdAuthentication);
 
         // create credentials by SDK.
-        ResponseData<CredentialWrapper> response = 
-            credentialService.createCredential(registerCptArgs);
+        ResponseData<CredentialPojo> response = 
+            credentialService.createCredential(args);
         logger.info(
             "createCredential is result,errorCode:{},errorMessage:{}",
             response.getErrorCode(), 
@@ -385,14 +390,30 @@ public class DemoServiceImpl implements DemoService {
 
         ResponseData<Boolean> verifyResponse = null;
         
-        Credential credential = DataToolUtils.deserialize(credentialJson, Credential.class);
+        CredentialPojo credential = DataToolUtils.deserialize(credentialJson, CredentialPojo.class);
         // verifyEvidence credential on chain.
-        verifyResponse = credentialService.verify(credential);
+        verifyResponse = credentialService.verify(credential.getIssuer(), credential);
         logger.info(
             "verifyCredential is result,errorCode:{},errorMessage:{}",
             verifyResponse.getErrorCode(), 
             verifyResponse.getErrorMessage()
         );
         return verifyResponse;
+    }
+
+    @Override
+    public ResponseData<Boolean> recognizeAuthorityIssuer(String issuer) {
+        // getting SDK private key from file.
+        String privKey = FileUtil.getDataByPath(PrivateKeyUtil.SDK_PRIVKEY_PATH);
+        WeIdPrivateKey weIdPrivateKey = new WeIdPrivateKey();
+        weIdPrivateKey.setPrivateKey(privKey);
+        ResponseData<Boolean> registResponse =
+            authorityIssuerService.recognizeAuthorityIssuer(issuer, weIdPrivateKey);
+        logger.info(
+            "recognizeAuthorityIssuer is result,errorCode:{},errorMessage:{}",
+            registResponse.getErrorCode(), 
+            registResponse.getErrorMessage()
+        );
+        return registResponse;
     }
 }
