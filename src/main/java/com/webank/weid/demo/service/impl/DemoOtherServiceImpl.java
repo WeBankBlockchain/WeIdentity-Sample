@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.webank.weid.demo.common.util.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,7 @@ import com.webank.weid.demo.common.model.JsonTransportationSerializeModel;
 import com.webank.weid.demo.common.model.JsonTransportationSpecifyModel;
 import com.webank.weid.demo.common.model.VerifyCredentialModel;
 import com.webank.weid.demo.common.model.VerifyCredentialPoJoModel;
+import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.service.DemoOtherService;
 import com.webank.weid.protocol.base.Challenge;
