@@ -32,7 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
         config.setAllowCredentials(false);
         source.registerCorsConfiguration("/**", config);
 
-        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<Filter>(new CorsFilter(source));
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<Filter>(
+            new CorsFilter(source));
         bean.setOrder(0);
 
         return bean;
