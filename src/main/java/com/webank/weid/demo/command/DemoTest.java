@@ -50,13 +50,6 @@ public class DemoTest extends DemoBase {
         CreateWeIdDataResult createWeId = demoService.createWeId();
         BaseBean.print(createWeId);
 
-        // set WeIdentity DID
-//        demoService.addPublicKey(createWeId);
-//        demoService.setService(
-//            createWeId,
-//            "drivingCardService",
-//            "https://weidentity.webank.com/endpoint/8377464"
-//        );
         demoService.setAuthentication(createWeId);
 
         // get WeId DOM.

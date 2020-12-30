@@ -19,13 +19,21 @@
 
 package com.webank.weid.demo.common.util;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
-import com.webank.weid.demo.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.webank.weid.demo.exception.BusinessException;
 
 /**
  * file tool.
@@ -140,7 +148,7 @@ public class FileUtil {
     }
 
     /**
-     * close the input stream
+     * close the input stream.
      *
      * @param is input stream
      */
@@ -155,7 +163,7 @@ public class FileUtil {
     }
 
     /**
-     * close the output stream
+     * close the output stream.
      *
      * @param os output stream
      */
@@ -170,7 +178,7 @@ public class FileUtil {
     }
 
     /**
-     * copy the source file to target file, if the
+     * copy the source file to target file, if the.
      *
      * @param srcFile    soruce file
      * @param targetFile target file
@@ -199,38 +207,38 @@ public class FileUtil {
     }
 
     /**
-     * Load the configure file from environment path setted by Build Tool
+     * Load the configure file from environment path setted by Build Tool.
      *
-     * @throws BusinessException
+     * @throws BusinessException the BusinessException
      */
     public static void loadConfigFromEnv() throws BusinessException {
-        String build_tool_home = System.getenv("BUILD_TOOL_HOME");
+        String buildToolHome = System.getenv("BUILD_TOOL_HOME");
 
         loadConfig(
-                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "fisco.properties",
-                RESOURCE_DIR,
-                "fisco.properties");
+            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "fisco.properties",
+            RESOURCE_DIR,
+            "fisco.properties");
         loadConfig(
-                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.key",
-                RESOURCE_DIR,
-                "node.key");
+            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.key",
+            RESOURCE_DIR,
+            "node.key");
         loadConfig(
-                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.crt",
-                RESOURCE_DIR,
-                "node.crt");
+            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.crt",
+            RESOURCE_DIR,
+            "node.crt");
         loadConfig(
-                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "ca.crt",
-                RESOURCE_DIR,
-                "ca.crt");
+            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "ca.crt",
+            RESOURCE_DIR,
+            "ca.crt");
         loadConfig(
-                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "weidentity.properties",
-                RESOURCE_DIR,
-                "weidentity.properties");
+            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "weidentity.properties",
+            RESOURCE_DIR,
+            "weidentity.properties");
 
         loadConfig(
-                build_tool_home + SLASH_CHARACTER + BUILD_TOOL_ADMIN_KEY + "ecdsa_key",
-                KEY_DIR,
-                "ecdsa_key");
+            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_ADMIN_KEY + "ecdsa_key",
+            KEY_DIR,
+            "ecdsa_key");
 
     }
 
@@ -242,7 +250,7 @@ public class FileUtil {
      * @param src  The source configure file
      * @param dest the target configure path
      * @param name the name of file
-     * @throws BusinessException
+     * @throws BusinessException the BusinessException
      */
     private static void loadConfig(String src, String dest, String name) throws BusinessException {
         File buildToolConfig = new File(src);
@@ -257,12 +265,13 @@ public class FileUtil {
             logger.info(String.format("Using the default config %s in %s", name, dest));
         } else {
             logger.error(String.format("The file named %s is not in %s ", name, dest));
-            logger.error("1. If you have not deployed Build Tool " +
-                    "(https://github.com/WeBankFinTech/WeIdentity-Build-Tools), " +
-                    "please deploy Build Tool to prepare this file.");
+            logger.error("1. If you have not deployed Build Tool " 
+                + "(https://github.com/WeBankFinTech/WeIdentity-Build-Tools), " 
+                + "please deploy Build Tool to prepare this file.");
             logger.error("2. If you have deployed Build Tool, please restart the bash.");
-            logger.error(String.format("3. If you do not want to deploy Build Tool in your machine, " +
-                    "please manually prepare it to %s.", dest));
+            logger.error(
+                String.format("3. If you do not want to deploy Build Tool in your machine, " 
+                    + "please manually prepare it to %s.", dest));
             throw new BusinessException(String.format("The Config of %s is essential", name));
         }
     }

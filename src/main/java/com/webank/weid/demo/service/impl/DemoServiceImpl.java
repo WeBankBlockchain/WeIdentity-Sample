@@ -21,7 +21,6 @@ package com.webank.weid.demo.service.impl;
 
 import java.util.Map;
 
-import com.webank.weid.protocol.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,12 @@ import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
+import com.webank.weid.protocol.request.AuthenticationArgs;
+import com.webank.weid.protocol.request.CptMapArgs;
+import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
+import com.webank.weid.protocol.request.CreateWeIdArgs;
+import com.webank.weid.protocol.request.PublicKeyArgs;
+import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.rpc.AuthorityIssuerService;
@@ -176,15 +181,6 @@ public class DemoServiceImpl implements DemoService {
             return createResult;
         }
 
-//        // 2, call set public key
-//        ResponseData<Integer> setPublicKeyRes = this.setPublicKey(createResult.getResult());
-//        if (setPublicKeyRes.getResult() != ErrorCode.SUCCESS.getCode()) {
-//            createResult.setErrorCode(
-//                ErrorCode.getTypeByErrorCode(setPublicKeyRes.getErrorCode())
-//            );
-//            return createResult;
-//        }
-
         // 3, call set authentication
         ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
         if (!setAuthenticateRes.getResult()) {
@@ -203,17 +199,6 @@ public class DemoServiceImpl implements DemoService {
      * @return the response data
      */
     private ResponseData<Integer> addPublicKey(CreateWeIdDataResult createWeIdDataResult) {
-
-//        // build setPublicKey parameters.
-//        SetPublicKeyArgs setPublicKeyArgs = new SetPublicKeyArgs();
-//        setPublicKeyArgs.setWeId(createWeIdDataResult.getWeId());
-//        setPublicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
-//        setPublicKeyArgs.setUserWeIdPrivateKey(new WeIdPrivateKey());
-//        setPublicKeyArgs.getUserWeIdPrivateKey()
-//            .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
-//
-//        // call SDK method to chain set attribute.
-//        ResponseData<Boolean> setResponse = weIdService.setPublicKey(setPublicKeyArgs);
 
         PublicKeyArgs publicKeyArgs = new PublicKeyArgs();
         publicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
@@ -238,18 +223,6 @@ public class DemoServiceImpl implements DemoService {
      * @return the response data
      */
     private ResponseData<Boolean> setAuthentication(CreateWeIdDataResult createWeIdDataResult) {
-
-//        // build setAuthentication parameters.
-//        SetAuthenticationArgs setAuthenticationArgs = new SetAuthenticationArgs();
-//        setAuthenticationArgs.setWeId(createWeIdDataResult.getWeId());
-//        setAuthenticationArgs
-//            .setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
-//        setAuthenticationArgs.setUserWeIdPrivateKey(new WeIdPrivateKey());
-//        setAuthenticationArgs.getUserWeIdPrivateKey()
-//            .setPrivateKey(createWeIdDataResult.getUserWeIdPrivateKey().getPrivateKey());
-//
-//        // call SDK method to chain set attribute.
-//        ResponseData<Boolean> setResponse = weIdService.setAuthentication(setAuthenticationArgs);
 
         AuthenticationArgs authenticationArgs = new AuthenticationArgs();
         authenticationArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());

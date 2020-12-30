@@ -89,7 +89,7 @@ public class DemoMemberController {
     }
 
     /**
-     * recognize the issuer on chain
+     * recognize the issuer on chain.
      *
      * @return true is success, false is failure.
      */
