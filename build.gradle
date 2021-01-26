@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'org.springframework.boot' version '2.4.1'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
 }
@@ -28,7 +28,7 @@ if (!gradle.startParameter.isOffline()) {
     apply plugin: 'signing'
 }
 
-version = "1.0.8"
+version = "1.0.9"
 def repo ="${repoType}"
 //设置jdk的版本
 sourceCompatibility = 1.8
@@ -53,7 +53,7 @@ repositories {
     }
 }
 
-def spring_version = "5.2.8.RELEASE"
+def spring_version = "5.3.2"
 def log4j_version = "2.13.3";
 def slf4j_version = "1.7.30";
 def jackson_version = "2.11.0";
@@ -120,7 +120,7 @@ dependencies {
         compile files('./dependencies/weid-java-sdk-pipeline.jar')
     } else {
         println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
-        compile("com.webank:weid-java-sdk:1.7.1") {
+        compile("com.webank:weid-java-sdk:1.8.0") {
             exclude group:"org.slf4j", module: "slf4j-log4j12"
         }
     }
