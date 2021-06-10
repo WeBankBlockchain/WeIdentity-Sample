@@ -219,22 +219,46 @@ public class FileUtil {
             RESOURCE_DIR,
             "fisco.properties");
         loadConfig(
-            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.key",
-            RESOURCE_DIR,
-            "node.key");
-        loadConfig(
-            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.crt",
-            RESOURCE_DIR,
-            "node.crt");
-        loadConfig(
-            buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "ca.crt",
-            RESOURCE_DIR,
-            "ca.crt");
-        loadConfig(
             buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "weidentity.properties",
             RESOURCE_DIR,
             "weidentity.properties");
-
+        String encryptType = PropertiesUtils.getEncryptType();
+        logger.info("the encryptType = {}", encryptType);
+        if ("1".contentEquals(encryptType)) {
+            loadConfig(
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "gmca.crt",
+                RESOURCE_DIR,
+                "gmca.crt");
+            loadConfig(
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "gmsdk.crt",
+                RESOURCE_DIR,
+                "gmsdk.crt");
+            loadConfig(
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "gmsdk.key",
+                RESOURCE_DIR,
+                "gmsdk.key");
+            loadConfig(
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "gmensdk.crt",
+                RESOURCE_DIR,
+                "gmensdk.crt");
+            loadConfig(
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "gmensdk.key",
+                RESOURCE_DIR,
+                "gmensdk.key");
+        } else {
+            loadConfig(
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.key",
+                RESOURCE_DIR,
+                "node.key");
+            loadConfig(
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.crt",
+                RESOURCE_DIR,
+                "node.crt");
+            loadConfig(
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "ca.crt",
+                RESOURCE_DIR,
+                "ca.crt");
+        }
         loadConfig(
             buildToolHome + SLASH_CHARACTER + BUILD_TOOL_ADMIN_KEY + "ecdsa_key",
             KEY_DIR,

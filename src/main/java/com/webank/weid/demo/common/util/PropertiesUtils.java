@@ -26,6 +26,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.webank.weid.util.PropertyUtils;
+
 /**
  * read Profile tool.
  * 
@@ -91,5 +93,13 @@ public class PropertiesUtils {
             loadProps();
         }
         return props.getProperty(key, defaultValue);
+    }
+
+    /**
+     * get the encrypt type.
+     * @return encryptType
+     */
+    public static String getEncryptType() {
+       return PropertyUtils.getProperty("encrypt.type");
     }
 }
