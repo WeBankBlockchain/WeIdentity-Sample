@@ -28,7 +28,7 @@ if (!gradle.startParameter.isOffline()) {
     apply plugin: 'signing'
 }
 
-version = "1.0.10"
+version = "1.0.11"
 def repo ="${repoType}"
 //设置jdk的版本
 sourceCompatibility = 1.8
