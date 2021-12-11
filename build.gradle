@@ -54,7 +54,7 @@ repositories {
 }
 
 def spring_version = "5.3.2"
-def log4j_version = "2.13.3";
+def log4j_version = "2.15.0";
 def slf4j_version = "1.7.30";
 def jackson_version = "2.11.0";
 def mysql_version = "8.0.20";
@@ -107,6 +107,10 @@ List other = [
         "javassist:javassist:3.12.1.GA"
 ]
 
+List protobuf = [
+        "com.google.protobuf:protobuf-java:3.9.1"
+]
+
 configurations {
     localDeps
 }
@@ -120,7 +124,7 @@ dependencies {
         compile files('./dependencies/weid-java-sdk-pipeline.jar')
     } else {
         println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
-        compile("com.webank:weid-java-sdk:1.8.2") {
+        compile("com.webank:weid-java-sdk:1.8.3") {
             exclude group:"org.slf4j", module: "slf4j-log4j12"
         }
     }
@@ -133,7 +137,7 @@ dependencies {
 				exclude group:"org.apache.logging.log4j"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
-            compile apache_commons, swagger, json, mysql_driver, spring, other
+            compile apache_commons, swagger, json, mysql_driver, spring, other, protobuf
         }
     }
     if (gradleVer.startsWith("5")) {
@@ -145,7 +149,7 @@ dependencies {
 				exclude group:"org.apache.logging.log4j"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
-            compile apache_commons, swagger, json, mysql_driver, spring, other
+            compile apache_commons, swagger, json, mysql_driver, spring, other, protobuf
         } else {
             compileOnly files('dist/lib/lombok-1.18.12.jar')
             annotationProcessor files('dist/lib/lombok-1.18.12.jar')
