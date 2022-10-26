@@ -29,7 +29,6 @@ import com.webank.weid.constant.JsonSchemaConstant;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.CredentialPojoList;
-import com.webank.weid.protocol.base.PublicKeyProperty;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.base.WeIdPublicKey;
@@ -65,13 +64,7 @@ public class TransportaionIssuer {
         // 创建weid
         CreateWeIdDataResult result = weidService.createWeId().getResult();
         ResponseData<WeIdDocument> weIdDocumentRes = weidService.getWeIdDocument(result.getWeId());
-        String publicKeyId = null;
-        for (PublicKeyProperty publicKey : weIdDocumentRes.getResult().getPublicKey()) {
-            if (publicKey.getOwner().equals(result.getWeId())) {
-                publicKeyId = publicKey.getId();
-                break;
-            }
-        }
+        String publicKeyId = result.getUserWeIdPublicKey().getPublicKey();
         // 构造WeIdAuthentication
         WeIdAuthentication weIdAuthentication = buildWeIdAuthority(result, publicKeyId);
         

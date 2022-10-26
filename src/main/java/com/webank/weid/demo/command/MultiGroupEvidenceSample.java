@@ -27,7 +27,6 @@ import com.webank.weid.constant.ProcessingMode;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.CredentialPojoList;
 import com.webank.weid.protocol.base.EvidenceInfo;
-import com.webank.weid.protocol.base.PublicKeyProperty;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
@@ -48,7 +47,7 @@ public class MultiGroupEvidenceSample {
 
     static CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();
 
-    static EvidenceService evidenceService = new EvidenceServiceImpl(ProcessingMode.IMMEDIATE, 2);
+    static EvidenceService evidenceService = new EvidenceServiceImpl(ProcessingMode.IMMEDIATE, "2");
 
     /**
      * Demo过程说明
@@ -76,13 +75,8 @@ public class MultiGroupEvidenceSample {
         // 2. 创建lite Credential
         ResponseData<WeIdDocument> weIdDocumentRes = 
             weidService.getWeIdDocument(createWeId.getWeId());
-        String publicKeyId = null;
-        for (PublicKeyProperty publicKey : weIdDocumentRes.getResult().getPublicKey()) {
-            if (publicKey.getOwner().equals(createWeId.getWeId())) {
-                publicKeyId = publicKey.getId();
-                break;
-            }
-        }
+        String publicKeyId = createWeIdRes.getResult().getUserWeIdPublicKey().getPublicKey();
+
         // 构造WeIdAuthentication
         WeIdAuthentication weIdAuthentication = buildWeIdAuthority(createWeId, publicKeyId);
         CreateCredentialPojoArgs<Map<String, Object>> createArgs = 

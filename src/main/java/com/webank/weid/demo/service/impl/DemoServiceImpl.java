@@ -193,30 +193,6 @@ public class DemoServiceImpl implements DemoService {
     }
 
     /**
-     * Set Public Key For WeIdentity DID Document.
-     *
-     * @param createWeIdDataResult the object of CreateWeIdDataResult
-     * @return the response data
-     */
-    private ResponseData<Integer> addPublicKey(CreateWeIdDataResult createWeIdDataResult) {
-
-        PublicKeyArgs publicKeyArgs = new PublicKeyArgs();
-        publicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
-
-        ResponseData<Integer> setResponse = weIdService.addPublicKey(
-                createWeIdDataResult.getWeId(),
-                publicKeyArgs,
-                createWeIdDataResult.getUserWeIdPrivateKey());
-
-        logger.info(
-            "setPublicKey is result,errorCode:{},errorMessage:{}",
-            setResponse.getErrorCode(), 
-            setResponse.getErrorMessage()
-        );
-        return setResponse;
-    }
-
-    /**
      * Set Authentication For WeIdentity DID Document.
      *
      * @param createWeIdDataResult createWeIdDataResult the object of CreateWeIdDataResult
@@ -338,7 +314,7 @@ public class DemoServiceImpl implements DemoService {
         weIdAuthentication.setWeIdPrivateKey(new WeIdPrivateKey());
         weIdAuthentication.getWeIdPrivateKey().setPrivateKey(privateKey);
         weIdAuthentication.setWeId(issuer);
-        weIdAuthentication.setWeIdPublicKeyId(issuer);
+        weIdAuthentication.setAuthenticationMethodId(issuer);
         args.setWeIdAuthentication(weIdAuthentication);
 
         // create credentials by SDK.

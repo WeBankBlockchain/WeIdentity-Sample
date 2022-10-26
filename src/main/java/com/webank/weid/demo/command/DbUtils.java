@@ -26,7 +26,7 @@ public class DbUtils {
      * @return the challenge
      */
     public static Challenge queryChallenge(String nonce) {
-        String fileName = DataToolUtils.sha3(nonce);
+        String fileName = DataToolUtils.serialize(nonce);
         String value = DemoUtil.queryDataFromFile(fileName);
         Challenge challenge = DataToolUtils.deserialize(value, Challenge.class);
         BaseBean.print("queryChallenge result:");
@@ -40,7 +40,7 @@ public class DbUtils {
      * @param data the data for save
      */
     public static void save(String key, Object data) {
-        String fileName = DataToolUtils.sha3(key);
+        String fileName = DataToolUtils.serialize(key);
         DemoUtil.saveDataInFile(fileName, data);
     }
     
