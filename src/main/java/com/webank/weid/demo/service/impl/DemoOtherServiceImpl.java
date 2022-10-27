@@ -446,7 +446,7 @@ public class DemoOtherServiceImpl implements DemoOtherService {
         weIdAuthentication.setWeId(weid);
         WeIdPrivateKey weIdPrivateKey = getWeIdPrivateKey(weid);
         weIdAuthentication.setWeIdPrivateKey(weIdPrivateKey);
-        weIdAuthentication.setWeIdPublicKeyId(weid + "#key0");
+        weIdAuthentication.setAuthenticationMethodId(weid + "#key0");
         return weIdAuthentication;
     }
 }

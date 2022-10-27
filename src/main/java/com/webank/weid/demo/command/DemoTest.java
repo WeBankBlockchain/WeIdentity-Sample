@@ -71,7 +71,7 @@ public class DemoTest extends DemoBase {
         BaseBean.print(cptResult);
 
         // create Credential.
-        String publicKeyId = demoService.getPublicKeyId(createWeId.getWeId());
+        String publicKeyId = createWeId.getUserWeIdPublicKey().getPublicKey();
         WeIdAuthentication weIdAuthentication = buildWeIdAuthority(createWeId, publicKeyId);
         CreateCredentialPojoArgs<Map<String, Object>>  createCredentialPojoArgs = 
             buildCreateCredentialPojoArgs(cptResult.getCptId(), weIdAuthentication);
