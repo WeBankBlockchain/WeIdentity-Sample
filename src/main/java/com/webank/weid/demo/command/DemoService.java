@@ -83,6 +83,36 @@ public class DemoService {
     }
 
     /**
+     * Set Public Key For WeIdentity DID Document.
+     *
+     * @param createResult the Object of CreateWeIdDataResult
+     */
+//    public void addPublicKey(CreateWeIdDataResult createResult)
+//            throws BusinessException {
+//
+//        PublicKeyArgs publicKeyArgs = new PublicKeyArgs();
+//        publicKeyArgs.setPublicKey(createResult.getUserWeIdPublicKey().getPublicKey());
+//        ResponseData<Integer> responseSetPub = weIdService.addPublicKey(
+//                createResult.getWeId(), publicKeyArgs, createResult.getUserWeIdPrivateKey());
+//
+//        BaseBean.print("setPublicKey result:");
+//        BaseBean.print(responseSetPub);
+//
+//        if (responseSetPub.getErrorCode() != ErrorCode.SUCCESS.getCode()
+//                && responseSetPub.getErrorCode()
+//                == ErrorCode.WEID_PUBLIC_KEY_ALREADY_EXISTS.getCode()) {
+//            logger.info("the publicKey already exist!");
+//        } else if (responseSetPub.getErrorCode() != ErrorCode.SUCCESS.getCode()
+//                || responseSetPub.getResult() == -1) {
+//            logger.error("failed to call setPublicKey method, code={}, message={}",
+//                    responseSetPub.getErrorCode(),
+//                    responseSetPub.getErrorMessage()
+//            );
+//            throw new BusinessException(responseSetPub.getErrorMessage());
+//        }
+//    }
+
+    /**
      * Create a WeIdentity DID from the provided public key.
      * A private key is required to send transaction, but may be not matching the given public key
      *
@@ -724,5 +754,22 @@ public class DemoService {
         }
         return verify.getResult();
     }
+
+    /**
+     * get the public key ID.
+     * @param weId the weId
+     * @return the publicKeyId
+     */
+//    public String getPublicKeyId(String weId) {
+//        ResponseData<WeIdDocument> weIdDocumentRes = weIdService.getWeIdDocument(weId);
+//        String publicKeyId = null;
+//        for (PublicKeyProperty publicKey : weIdDocumentRes.getResult().getPublicKey()) {
+//            if (publicKey.getOwner().equals(weId)) {
+//                publicKeyId = publicKey.getId();
+//                break;
+//            }
+//        }
+//        return publicKeyId;
+//    }
 
 }
