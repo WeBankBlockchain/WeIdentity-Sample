@@ -247,13 +247,13 @@ public class FileUtil {
                 "gmensdk.key");
         } else {
             loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.key",
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "sdk.key",
                 RESOURCE_DIR,
-                "node.key");
+                "sdk.key");
             loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "node.crt",
+                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "sdk.crt",
                 RESOURCE_DIR,
-                "node.crt");
+                "sdk.crt");
             loadConfig(
                 buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "ca.crt",
                 RESOURCE_DIR,
