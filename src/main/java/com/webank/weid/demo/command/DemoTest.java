@@ -236,13 +236,9 @@ public class DemoTest extends DemoBase {
 
         PasswordKey passwordKey = new PasswordKey();
         CryptoKeyPair keyPair = DataToolUtils.cryptoSuite.createKeyPair();
-        BigInteger bigPublicKey =
-                new BigInteger(1, Numeric.hexStringToByteArray(keyPair.getHexPublicKey()));
-        BigInteger bigPrivateKey =
-                new BigInteger(1, Numeric.hexStringToByteArray(keyPair.getHexPrivateKey()));
+        String publicKey = DataToolUtils.hexStr2DecStr(keyPair.getHexPublicKey());
+        String privateKey = DataToolUtils.hexStr2DecStr(keyPair.getHexPrivateKey());
 
-        String publicKey = String.valueOf(bigPublicKey);
-        String privateKey = String.valueOf(bigPrivateKey);
         passwordKey.setPrivateKey(privateKey);
         passwordKey.setPublicKey(publicKey);
         return passwordKey;
