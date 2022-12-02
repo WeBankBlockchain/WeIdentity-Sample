@@ -164,13 +164,13 @@ public class DemoServiceImpl implements DemoService {
         }
 
         // 3, call set authentication
-        ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
-        if (!setAuthenticateRes.getResult()) {
-            createResult.setErrorCode(
-                ErrorCode.getTypeByErrorCode(setAuthenticateRes.getErrorCode())
-            );
-            return createResult;
-        }
+//        ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
+//        if (!setAuthenticateRes.getResult()) {
+//            createResult.setErrorCode(
+//                ErrorCode.getTypeByErrorCode(setAuthenticateRes.getErrorCode())
+//            );
+//            return createResult;
+//        }
         return createResult;
     }
 
