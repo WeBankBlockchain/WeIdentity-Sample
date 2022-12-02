@@ -82,6 +82,6 @@ public class PropertiesUtils {
      * @return encryptType
      */
     public static String getEncryptType() {
-       return PropertyUtils.getProperty("encrypt.type");
+       return getProperty("encrypt.type");
     }
 }
