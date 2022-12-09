@@ -6,6 +6,8 @@ weid-sample 是基于 [WeIdentity](https://weidentity.readthedocs.io/zh_CN/lates
 版本说明
 --------
 
+WeIdentity及其组件的[兼容版本说明文档](https://weidentity.readthedocs.io/zh_CN/develop/docs/compatibility.html) 请查看！
+
 | WeIdentity-Sample 版本 | WeIdentity 版本 | Contract 版本 |
 | :---- | :---- | :---- |
 | v1.0.10 | v1.8.2 | v1.2.30 |
