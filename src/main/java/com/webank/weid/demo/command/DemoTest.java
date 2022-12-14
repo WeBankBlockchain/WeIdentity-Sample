@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.webank.weid.blockchain.service.fisco.CryptoFisco;
+import com.webank.weid.blockchain.util.DataToolUtils;
 import com.webank.weid.constant.CredentialType;
 import com.webank.weid.constant.JsonSchemaConstant;
 import com.webank.weid.demo.common.dto.PasswordKey;
@@ -16,7 +18,6 @@ import com.webank.weid.protocol.request.CreateWeIdArgs;
 import com.webank.weid.protocol.request.ServiceArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.util.DataToolUtils;
 import org.fisco.bcos.sdk.crypto.keypair.CryptoKeyPair;
 import org.fisco.bcos.sdk.utils.Numeric;
 
@@ -235,7 +236,7 @@ public class DemoTest extends DemoBase {
     public static PasswordKey createEcKeyPair() {
 
         PasswordKey passwordKey = new PasswordKey();
-        CryptoKeyPair keyPair = DataToolUtils.cryptoSuite.createKeyPair();
+        CryptoKeyPair keyPair = CryptoFisco.cryptoSuite.createKeyPair();
         String publicKey = DataToolUtils.hexStr2DecStr(keyPair.getHexPublicKey());
         String privateKey = DataToolUtils.hexStr2DecStr(keyPair.getHexPrivateKey());
 

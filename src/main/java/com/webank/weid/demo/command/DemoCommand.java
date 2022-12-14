@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.webank.weid.kit.util.ScanCodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,6 @@ import com.webank.weid.protocol.base.PresentationE;
 import com.webank.weid.protocol.base.PresentationPolicyE;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.util.DataToolUtils;
-import com.webank.weid.util.ScanCodeUtils;
 
 /**
  * command operation.

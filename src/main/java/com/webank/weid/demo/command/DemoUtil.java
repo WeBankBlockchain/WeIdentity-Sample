@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webank.weid.kit.amop.AmopService;
+import com.webank.weid.kit.amop.AmopServiceImpl;
+import com.webank.weid.kit.protocol.response.ResponseData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +26,6 @@ import com.webank.weid.protocol.base.PolicyAndChallenge;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
-import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.AmopService;
-import com.webank.weid.service.impl.AmopServiceImpl;
 import com.webank.weid.util.DataToolUtils;
 
 /**
@@ -264,7 +264,7 @@ public class DemoUtil {
     ) {
 
         AmopService amopService = new AmopServiceImpl();
-        ResponseData<PolicyAndChallenge> response = 
+        ResponseData<PolicyAndChallenge> response =
             amopService.getPolicyAndChallenge(orgId, policyId, targetWeId);
         
         BaseBean.print("queryPolicyAndChallenge from amop result:");

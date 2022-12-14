@@ -1,18 +1,18 @@
 
 package com.webank.weid.demo.command;
 
+import com.webank.weid.kit.transportation.TransportationFactory;
+import com.webank.weid.kit.transportation.entity.TransportationType;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.CredentialPojoList;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
-import com.webank.weid.suite.api.transportation.TransportationFactory;
-import com.webank.weid.suite.api.transportation.params.TransportationType;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.WeIdService;
 
 public class TransportationVerifier {
 
@@ -37,7 +37,7 @@ public class TransportationVerifier {
         WeIdAuthentication weIdAuthentication = 
             new WeIdAuthentication(weId, privateKey.getPrivateKey());
 
-        ResponseData<CredentialPojoList> deserialize = 
+        com.webank.weid.kit.protocol.response.ResponseData<CredentialPojoList> deserialize =
             TransportationFactory.build(TransportationType.QR_CODE)
                 .deserialize(
                       weIdAuthentication, 

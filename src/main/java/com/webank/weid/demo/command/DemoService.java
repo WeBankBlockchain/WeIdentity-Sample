@@ -4,8 +4,15 @@ package com.webank.weid.demo.command;
 import java.util.List;
 import java.util.Map;
 
+import com.webank.weid.kit.transportation.TransportationFactory;
+import com.webank.weid.kit.transportation.entity.EncodeType;
+import com.webank.weid.kit.transportation.entity.ProtocolProperty;
 import com.webank.weid.protocol.base.*;
 import com.webank.weid.protocol.request.*;
+import com.webank.weid.service.rpc.AuthorityIssuerService;
+import com.webank.weid.service.rpc.CptService;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.WeIdService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,17 +20,10 @@ import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.exception.BusinessException;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.AuthorityIssuerService;
-import com.webank.weid.rpc.CptService;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.AuthorityIssuerServiceImpl;
 import com.webank.weid.service.impl.CptServiceImpl;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
-import com.webank.weid.suite.api.transportation.TransportationFactory;
-import com.webank.weid.suite.api.transportation.params.EncodeType;
-import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
 
 /**
  * the service for command.
@@ -597,7 +597,7 @@ public class DemoService {
      */
     public String presentationEToJson(List<String> weIds, PresentationE presentationE) {
 
-        ResponseData<String> response =
+        com.webank.weid.kit.protocol.response.ResponseData<String> response =
                 TransportationFactory
                         .newJsonTransportation()
                         .specify(weIds)
@@ -621,7 +621,7 @@ public class DemoService {
      */
     public String presentationEToQrCode(List<String> weIds, PresentationE presentationE) {
 
-        ResponseData<String> response =
+        com.webank.weid.kit.protocol.response.ResponseData<String> response =
                 TransportationFactory
                         .newQrCodeTransportation()
                         .specify(weIds)
@@ -652,7 +652,7 @@ public class DemoService {
         weIdAuthentication.setAuthenticationMethodId(createWeId.getWeId() + "#keys-0");
         weIdAuthentication.setWeIdPrivateKey(createWeId.getUserWeIdPrivateKey());
 
-        ResponseData<PresentationE> response =
+        com.webank.weid.kit.protocol.response.ResponseData<PresentationE> response =
                 TransportationFactory
                         .newJsonTransportation()
                         .deserialize(weIdAuthentication, presentationJson, PresentationE.class);
@@ -681,7 +681,7 @@ public class DemoService {
         weIdAuthentication.setAuthenticationMethodId(createWeId.getWeId() + "#keys-0");
         weIdAuthentication.setWeIdPrivateKey(createWeId.getUserWeIdPrivateKey());
 
-        ResponseData<PresentationE> response =
+        com.webank.weid.kit.protocol.response.ResponseData<PresentationE> response =
                 TransportationFactory
                         .newQrCodeTransportation()
                         .deserialize(weIdAuthentication, presentationJson, PresentationE.class);

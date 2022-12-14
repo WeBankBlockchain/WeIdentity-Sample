@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.webank.weid.constant.CredentialType;
 import com.webank.weid.constant.ProcessingMode;
+import com.webank.weid.kit.crypto.CryptoServiceFactory;
+import com.webank.weid.kit.crypto.params.CryptoType;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.CredentialPojoList;
 import com.webank.weid.protocol.base.EvidenceInfo;
@@ -14,14 +16,12 @@ import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.EvidenceService;
-import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.EvidenceServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
-import com.webank.weid.suite.api.crypto.CryptoServiceFactory;
-import com.webank.weid.suite.api.crypto.params.CryptoType;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.EvidenceService;
+import com.webank.weid.service.rpc.WeIdService;
 
 public class MultiGroupEvidenceSample {
 
