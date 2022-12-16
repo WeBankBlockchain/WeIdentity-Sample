@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.webank.weid.constant.JsonSchemaConstant;
+import com.webank.weid.kit.transportation.TransportationFactory;
+import com.webank.weid.kit.transportation.entity.EncodeType;
+import com.webank.weid.kit.transportation.entity.ProtocolProperty;
+import com.webank.weid.kit.transportation.entity.TransMode;
+import com.webank.weid.kit.transportation.entity.TransportationType;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.CredentialPojoList;
@@ -18,17 +23,12 @@ import com.webank.weid.protocol.request.CptMapArgs;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.CptService;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.CptServiceImpl;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
-import com.webank.weid.suite.api.transportation.TransportationFactory;
-import com.webank.weid.suite.api.transportation.params.EncodeType;
-import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
-import com.webank.weid.suite.api.transportation.params.TransMode;
-import com.webank.weid.suite.api.transportation.params.TransportationType;
+import com.webank.weid.service.rpc.CptService;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.WeIdService;
 
 public class TransportaionIssuer {
     
@@ -80,7 +80,7 @@ public class TransportaionIssuer {
         
         // 调用序列化接口，生成条码编码
         // 如果序列化Presentation 将list修改成Presentation对象
-        ResponseData<String> serialize = 
+        com.webank.weid.kit.protocol.response.ResponseData<String> serialize =
             TransportationFactory.build(TransportationType.QR_CODE)
                 .specify(verifierWeIdList)
                 .serialize(
@@ -93,7 +93,7 @@ public class TransportaionIssuer {
         
         // 调用反序列化接口，根据条码编码获取对应数据，自己机构间走本地模式
         // 如果想获取的是PresentationE 将CredentialPojoList修改成PresentationE
-        ResponseData<CredentialPojoList> deserialize = 
+        com.webank.weid.kit.protocol.response.ResponseData<CredentialPojoList> deserialize =
             TransportationFactory.build(TransportationType.QR_CODE)
                 .deserialize(weIdAuthentication, serialize.getResult(), CredentialPojoList.class);
         System.out.println("根据条码编号获取凭证:");

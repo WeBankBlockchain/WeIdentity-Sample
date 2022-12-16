@@ -1,5 +1,6 @@
 package com.webank.weid.demo.service.impl;
 
+import com.webank.weid.blockchain.service.fisco.CryptoFisco;
 import com.webank.weid.util.DataToolUtils;
 import org.fisco.bcos.sdk.crypto.keypair.CryptoKeyPair;
 import org.fisco.bcos.sdk.crypto.keypair.ECDSAKeyPair;
@@ -22,7 +23,7 @@ public class ToolServiceImpl implements ToolService {
     @Override
     public ResponseData<String> getPublicKey(String privateKey) {
 
-        CryptoKeyPair keyPair = DataToolUtils.cryptoSuite.getKeyPairFactory().createKeyPair(new BigInteger(privateKey));
+        CryptoKeyPair keyPair = CryptoFisco.cryptoSuite.getKeyPairFactory().createKeyPair(new BigInteger(privateKey));
         String publicKey = DataToolUtils.hexStr2DecStr(keyPair.getHexPublicKey());
 
         return new ResponseData<>(publicKey, ErrorCode.SUCCESS);
