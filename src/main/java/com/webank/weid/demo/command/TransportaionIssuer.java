@@ -1,21 +1,3 @@
-/*
- *       Copyright© (2019-2020) WeBank Co., Ltd.
- *
- *       This file is part of weidentity-sample.
- *
- *       weidentity-sample is free software: you can redistribute it and/or modify
- *       it under the terms of the GNU Lesser General Public License as published by
- *       the Free Software Foundation, either version 3 of the License, or
- *       (at your option) any later version.
- *
- *       weidentity-sample is distributed in the hope that it will be useful,
- *       but WITHOUT ANY WARRANTY; without even the implied warranty of
- *       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *       GNU Lesser General Public License for more details.
- *
- *       You should have received a copy of the GNU Lesser General Public License
- *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
- */
 
 package com.webank.weid.demo.command;
 
@@ -26,10 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.webank.weid.constant.JsonSchemaConstant;
+import com.webank.weid.kit.transportation.TransportationFactory;
+import com.webank.weid.kit.transportation.entity.EncodeType;
+import com.webank.weid.kit.transportation.entity.ProtocolProperty;
+import com.webank.weid.kit.transportation.entity.TransMode;
+import com.webank.weid.kit.transportation.entity.TransportationType;
 import com.webank.weid.protocol.base.CptBaseInfo;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.CredentialPojoList;
-import com.webank.weid.protocol.base.PublicKeyProperty;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.base.WeIdPublicKey;
@@ -37,17 +23,12 @@ import com.webank.weid.protocol.request.CptMapArgs;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.CptService;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.CptServiceImpl;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
-import com.webank.weid.suite.api.transportation.TransportationFactory;
-import com.webank.weid.suite.api.transportation.params.EncodeType;
-import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
-import com.webank.weid.suite.api.transportation.params.TransMode;
-import com.webank.weid.suite.api.transportation.params.TransportationType;
+import com.webank.weid.service.rpc.CptService;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.WeIdService;
 
 public class TransportaionIssuer {
     
@@ -65,13 +46,7 @@ public class TransportaionIssuer {
         // 创建weid
         CreateWeIdDataResult result = weidService.createWeId().getResult();
         ResponseData<WeIdDocument> weIdDocumentRes = weidService.getWeIdDocument(result.getWeId());
-        String publicKeyId = null;
-        for (PublicKeyProperty publicKey : weIdDocumentRes.getResult().getPublicKey()) {
-            if (publicKey.getOwner().equals(result.getWeId())) {
-                publicKeyId = publicKey.getId();
-                break;
-            }
-        }
+        String publicKeyId = result.getUserWeIdPublicKey().getPublicKey();
         // 构造WeIdAuthentication
         WeIdAuthentication weIdAuthentication = buildWeIdAuthority(result, publicKeyId);
         
@@ -105,7 +80,7 @@ public class TransportaionIssuer {
         
         // 调用序列化接口，生成条码编码
         // 如果序列化Presentation 将list修改成Presentation对象
-        ResponseData<String> serialize = 
+        com.webank.weid.kit.protocol.response.ResponseData<String> serialize =
             TransportationFactory.build(TransportationType.QR_CODE)
                 .specify(verifierWeIdList)
                 .serialize(
@@ -118,7 +93,7 @@ public class TransportaionIssuer {
         
         // 调用反序列化接口，根据条码编码获取对应数据，自己机构间走本地模式
         // 如果想获取的是PresentationE 将CredentialPojoList修改成PresentationE
-        ResponseData<CredentialPojoList> deserialize = 
+        com.webank.weid.kit.protocol.response.ResponseData<CredentialPojoList> deserialize =
             TransportationFactory.build(TransportationType.QR_CODE)
                 .deserialize(weIdAuthentication, serialize.getResult(), CredentialPojoList.class);
         System.out.println("根据条码编号获取凭证:");

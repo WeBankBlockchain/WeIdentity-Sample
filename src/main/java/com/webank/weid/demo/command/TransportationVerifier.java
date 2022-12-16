@@ -1,36 +1,18 @@
-/*
- *       Copyright© (2019-2020) WeBank Co., Ltd.
- *
- *       This file is part of weidentity-sample.
- *
- *       weidentity-sample is free software: you can redistribute it and/or modify
- *       it under the terms of the GNU Lesser General Public License as published by
- *       the Free Software Foundation, either version 3 of the License, or
- *       (at your option) any later version.
- *
- *       weidentity-sample is distributed in the hope that it will be useful,
- *       but WITHOUT ANY WARRANTY; without even the implied warranty of
- *       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *       GNU Lesser General Public License for more details.
- *
- *       You should have received a copy of the GNU Lesser General Public License
- *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
- */
 
 package com.webank.weid.demo.command;
 
+import com.webank.weid.kit.transportation.TransportationFactory;
+import com.webank.weid.kit.transportation.entity.TransportationType;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.CredentialPojoList;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
-import com.webank.weid.suite.api.transportation.TransportationFactory;
-import com.webank.weid.suite.api.transportation.params.TransportationType;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.WeIdService;
 
 public class TransportationVerifier {
 
@@ -55,7 +37,7 @@ public class TransportationVerifier {
         WeIdAuthentication weIdAuthentication = 
             new WeIdAuthentication(weId, privateKey.getPrivateKey());
 
-        ResponseData<CredentialPojoList> deserialize = 
+        com.webank.weid.kit.protocol.response.ResponseData<CredentialPojoList> deserialize =
             TransportationFactory.build(TransportationType.QR_CODE)
                 .deserialize(
                       weIdAuthentication, 

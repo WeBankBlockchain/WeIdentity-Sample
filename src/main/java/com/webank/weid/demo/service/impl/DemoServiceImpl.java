@@ -1,26 +1,12 @@
-/*
- *       Copyright© (2019) WeBank Co., Ltd.
- *
- *       This file is part of weidentity-sample.
- *
- *       weidentity-sample is free software: you can redistribute it and/or modify
- *       it under the terms of the GNU Lesser General Public License as published by
- *       the Free Software Foundation, either version 3 of the License, or
- *       (at your option) any later version.
- *
- *       weidentity-sample is distributed in the hope that it will be useful,
- *       but WITHOUT ANY WARRANTY; without even the implied warranty of
- *       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *       GNU Lesser General Public License for more details.
- *
- *       You should have received a copy of the GNU Lesser General Public License
- *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
- */
 
 package com.webank.weid.demo.service.impl;
 
 import java.util.Map;
 
+import com.webank.weid.service.rpc.AuthorityIssuerService;
+import com.webank.weid.service.rpc.CptService;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.WeIdService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -39,14 +25,9 @@ import com.webank.weid.protocol.request.AuthenticationArgs;
 import com.webank.weid.protocol.request.CptMapArgs;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.request.CreateWeIdArgs;
-import com.webank.weid.protocol.request.PublicKeyArgs;
 import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.AuthorityIssuerService;
-import com.webank.weid.rpc.CptService;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.AuthorityIssuerServiceImpl;
 import com.webank.weid.service.impl.CptServiceImpl;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
@@ -182,38 +163,14 @@ public class DemoServiceImpl implements DemoService {
         }
 
         // 3, call set authentication
-        ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
-        if (!setAuthenticateRes.getResult()) {
-            createResult.setErrorCode(
-                ErrorCode.getTypeByErrorCode(setAuthenticateRes.getErrorCode())
-            );
-            return createResult;
-        }
+//        ResponseData<Boolean> setAuthenticateRes = this.setAuthentication(createResult.getResult());
+//        if (!setAuthenticateRes.getResult()) {
+//            createResult.setErrorCode(
+//                ErrorCode.getTypeByErrorCode(setAuthenticateRes.getErrorCode())
+//            );
+//            return createResult;
+//        }
         return createResult;
-    }
-
-    /**
-     * Set Public Key For WeIdentity DID Document.
-     *
-     * @param createWeIdDataResult the object of CreateWeIdDataResult
-     * @return the response data
-     */
-    private ResponseData<Integer> addPublicKey(CreateWeIdDataResult createWeIdDataResult) {
-
-        PublicKeyArgs publicKeyArgs = new PublicKeyArgs();
-        publicKeyArgs.setPublicKey(createWeIdDataResult.getUserWeIdPublicKey().getPublicKey());
-
-        ResponseData<Integer> setResponse = weIdService.addPublicKey(
-                createWeIdDataResult.getWeId(),
-                publicKeyArgs,
-                createWeIdDataResult.getUserWeIdPrivateKey());
-
-        logger.info(
-            "setPublicKey is result,errorCode:{},errorMessage:{}",
-            setResponse.getErrorCode(), 
-            setResponse.getErrorMessage()
-        );
-        return setResponse;
     }
 
     /**
@@ -338,7 +295,7 @@ public class DemoServiceImpl implements DemoService {
         weIdAuthentication.setWeIdPrivateKey(new WeIdPrivateKey());
         weIdAuthentication.getWeIdPrivateKey().setPrivateKey(privateKey);
         weIdAuthentication.setWeId(issuer);
-        weIdAuthentication.setWeIdPublicKeyId(issuer);
+        weIdAuthentication.setAuthenticationMethodId(issuer);
         args.setWeIdAuthentication(weIdAuthentication);
 
         // create credentials by SDK.

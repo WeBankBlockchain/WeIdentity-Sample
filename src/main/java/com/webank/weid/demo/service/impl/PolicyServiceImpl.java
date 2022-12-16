@@ -1,10 +1,10 @@
 package com.webank.weid.demo.service.impl;
 
 import com.webank.weid.demo.command.DbUtils;
+import com.webank.weid.kit.amop.callback.PresentationPolicyService;
 import com.webank.weid.protocol.base.Challenge;
 import com.webank.weid.protocol.base.PolicyAndChallenge;
 import com.webank.weid.protocol.base.PresentationPolicyE;
-import com.webank.weid.service.impl.callback.PresentationPolicyService;
 
 public class PolicyServiceImpl extends PresentationPolicyService {
 

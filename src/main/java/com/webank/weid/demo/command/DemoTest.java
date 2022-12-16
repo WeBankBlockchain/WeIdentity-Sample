@@ -1,36 +1,25 @@
-/*
- *       Copyright© (2019) WeBank Co., Ltd.
- *
- *       This file is part of weidentity-sample.
- *
- *       weidentity-sample is free software: you can redistribute it and/or modify
- *       it under the terms of the GNU Lesser General Public License as published by
- *       the Free Software Foundation, either version 3 of the License, or
- *       (at your option) any later version.
- *
- *       weidentity-sample is distributed in the hope that it will be useful,
- *       but WITHOUT ANY WARRANTY; without even the implied warranty of
- *       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *       GNU Lesser General Public License for more details.
- *
- *       You should have received a copy of the GNU Lesser General Public License
- *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
- */
 
 package com.webank.weid.demo.command;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.webank.weid.blockchain.service.fisco.CryptoFisco;
+import com.webank.weid.blockchain.util.DataToolUtils;
 import com.webank.weid.constant.CredentialType;
 import com.webank.weid.constant.JsonSchemaConstant;
-import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.CredentialPojo;
-import com.webank.weid.protocol.base.WeIdAuthentication;
-import com.webank.weid.protocol.base.WeIdDocument;
+import com.webank.weid.demo.common.dto.PasswordKey;
+import com.webank.weid.protocol.base.*;
+import com.webank.weid.protocol.request.AuthenticationArgs;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
+import com.webank.weid.protocol.request.CreateWeIdArgs;
+import com.webank.weid.protocol.request.ServiceArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
+import com.webank.weid.protocol.response.ResponseData;
+import org.fisco.bcos.sdk.crypto.keypair.CryptoKeyPair;
+import org.fisco.bcos.sdk.utils.Numeric;
 
 /**
  * WeIdentity DID demo.
@@ -50,17 +39,53 @@ public class DemoTest extends DemoBase {
         CreateWeIdDataResult createWeId = demoService.createWeId();
         BaseBean.print(createWeId);
 
-        demoService.setAuthentication(createWeId);
+        CreateWeIdArgs createWeIdArgs = buildCreateWeIdArgs();
+        WeIdPublicKey weIdPublicKey = new WeIdPublicKey();
+        weIdPublicKey.setPublicKey(createWeIdArgs.getPublicKey());
+        String createWeId1 = demoService.createWeIdByPublicKey(weIdPublicKey, createWeIdArgs.getWeIdPrivateKey());
+        BaseBean.print(createWeId1);
+
+        String createWeId2 = demoService.createWeId(createWeIdArgs);
+        BaseBean.print(createWeId2);
+
+        String getWeIdDocumentJson = demoService.getWeIdDocumentJson(createWeId.getWeId());
+        BaseBean.print(getWeIdDocumentJson);
+
+        ServiceArgs setServiceArgs = buildSetServiceArgs(createWeId);
+
+        demoService.setService(createWeId.getWeId(),
+                setServiceArgs, createWeId.getUserWeIdPrivateKey());
+
+//        demoService.setAuthentication(createWeId);
+
+        WeIdDocumentMetadata getWeIdDocumentMetadata = demoService.getWeIdDocumentMetadata(createWeId.getWeId());
+        BaseBean.print(getWeIdDocumentMetadata);
+
+        boolean isWeIdExist = demoService.isWeIdExist(createWeId.getWeId());
+        BaseBean.print(isWeIdExist);
+
+        boolean isDeactivated = demoService.isWeIdExist(createWeId.getWeId());
+        BaseBean.print(isDeactivated);
+
+        AuthenticationArgs setAuthenticationArgs = new AuthenticationArgs();
+        setAuthenticationArgs.setController(createWeId.getWeId());
+        setAuthenticationArgs
+                .setPublicKey(createWeId.getUserWeIdPublicKey().getPublicKey());
+        boolean revokeAuthentication = demoService.revokeAuthentication(
+                createWeId.getWeId(),
+                setAuthenticationArgs,
+                createWeId.getUserWeIdPrivateKey());
+        BaseBean.print(revokeAuthentication);
 
         // get WeId DOM.
         WeIdDocument weIdDom = demoService.getWeIdDom(createWeId.getWeId());
         BaseBean.print(weIdDom);
 
         // registered authority issuer.
-        demoService.registerAuthorityIssuer(
-            createWeId, String.valueOf(System.currentTimeMillis()), "0");
+//        demoService.registerAuthorityIssuer(
+//            createWeId, String.valueOf(System.currentTimeMillis()), "0");
         // recognize AuthorityIssuer
-        demoService.recognizeAuthorityIssuer(createWeId);
+//        demoService.recognizeAuthorityIssuer(createWeId);
         
         // registered CPT.
         CptBaseInfo cptResult =
@@ -71,7 +96,7 @@ public class DemoTest extends DemoBase {
         BaseBean.print(cptResult);
 
         // create Credential.
-        String publicKeyId = demoService.getPublicKeyId(createWeId.getWeId());
+        String publicKeyId = createWeId.getUserWeIdPublicKey().getPublicKey();
         WeIdAuthentication weIdAuthentication = buildWeIdAuthority(createWeId, publicKeyId);
         CreateCredentialPojoArgs<Map<String, Object>>  createCredentialPojoArgs = 
             buildCreateCredentialPojoArgs(cptResult.getCptId(), weIdAuthentication);
@@ -183,5 +208,54 @@ public class DemoTest extends DemoBase {
             createWeId.getUserWeIdPrivateKey().getPrivateKey(),
             publicKeyId
         );
+    }
+
+    /**
+     * build default CreateWeIdArgs.
+     *
+     * @return CreateWeIdArgs
+     */
+    public static CreateWeIdArgs buildCreateWeIdArgs() {
+        CreateWeIdArgs args = new CreateWeIdArgs();
+        PasswordKey passwordKey = createEcKeyPair();
+        args.setPublicKey(passwordKey.getPublicKey());
+
+        WeIdPrivateKey weIdPrivateKey = new WeIdPrivateKey();
+        weIdPrivateKey.setPrivateKey(passwordKey.getPrivateKey());
+
+        args.setWeIdPrivateKey(weIdPrivateKey);
+
+        return args;
+    }
+
+    /**
+     * create a new public key - private key.
+     *
+     * @return PasswordKey
+     */
+    public static PasswordKey createEcKeyPair() {
+
+        PasswordKey passwordKey = new PasswordKey();
+        CryptoKeyPair keyPair = CryptoFisco.cryptoSuite.createKeyPair();
+        String publicKey = DataToolUtils.hexStr2DecStr(keyPair.getHexPublicKey());
+        String privateKey = DataToolUtils.hexStr2DecStr(keyPair.getHexPrivateKey());
+
+        passwordKey.setPrivateKey(privateKey);
+        passwordKey.setPublicKey(publicKey);
+        return passwordKey;
+    }
+
+    /**
+     * buildSetPublicKeyArgs.
+     *
+     * @param createWeId WeId
+     * @return SetServiceArgs
+     */
+    public static ServiceArgs buildSetServiceArgs(CreateWeIdDataResult createWeId) {
+
+        ServiceArgs serviceArgs = new ServiceArgs();
+        serviceArgs.setType("drivingCardService");
+        serviceArgs.setServiceEndpoint("https://weidentity.webank.com/endpoint/xxxxx");
+        return serviceArgs;
     }
 }

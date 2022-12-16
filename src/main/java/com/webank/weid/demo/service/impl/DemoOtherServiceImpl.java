@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.webank.weid.kit.transportation.TransportationFactory;
+import com.webank.weid.kit.transportation.entity.EncodeType;
+import com.webank.weid.kit.transportation.entity.ProtocolProperty;
+import com.webank.weid.kit.transportation.entity.TransportationType;
+import com.webank.weid.kit.transportation.inf.Transportation;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.EvidenceService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +43,8 @@ import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.inf.Hashable;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.EvidenceService;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.EvidenceServiceImpl;
-import com.webank.weid.suite.api.transportation.TransportationFactory;
-import com.webank.weid.suite.api.transportation.inf.Transportation;
-import com.webank.weid.suite.api.transportation.params.EncodeType;
-import com.webank.weid.suite.api.transportation.params.ProtocolProperty;
-import com.webank.weid.suite.api.transportation.params.TransportationType;
 import com.webank.weid.util.DataToolUtils;
 
 /**
@@ -413,7 +413,7 @@ public class DemoOtherServiceImpl implements DemoOtherService {
                 jsonTransportationSerializeModel.getPresentationE(), PresentationE.class);
 
             //原文方式调用
-            ResponseData<String> responseData =
+            com.webank.weid.kit.protocol.response.ResponseData<String> responseData =
                 TransportationFactory
                     .newJsonTransportation()
                     .specify(jsonTransportationSerializeModel.getVerifierWeIdList())
@@ -425,7 +425,11 @@ public class DemoOtherServiceImpl implements DemoOtherService {
                                     jsonTransportationSerializeModel.getEncodeType()))));
             logger.info("{} responseData: {}", methodName,
                 DataToolUtils.objToJsonStrWithNoPretty(responseData));
-            return responseData;
+            ResponseData newResponseData = new ResponseData();
+            newResponseData.setResult(responseData.getResult());
+            newResponseData.setErrorCode(ErrorCode.getTypeByErrorCode(responseData.getErrorCode()));
+            newResponseData.setErrorMessage(responseData.getErrorMessage());
+            return newResponseData;
         } catch (Exception e) {
             logger.error("{} error", methodName, e);
             return new ResponseData<>(null, ErrorCode.TRANSACTION_EXECUTE_ERROR);
@@ -446,7 +450,7 @@ public class DemoOtherServiceImpl implements DemoOtherService {
         weIdAuthentication.setWeId(weid);
         WeIdPrivateKey weIdPrivateKey = getWeIdPrivateKey(weid);
         weIdAuthentication.setWeIdPrivateKey(weIdPrivateKey);
-        weIdAuthentication.setWeIdPublicKeyId(weid + "#key0");
+        weIdAuthentication.setAuthenticationMethodId(weid + "#key0");
         return weIdAuthentication;
     }
 }

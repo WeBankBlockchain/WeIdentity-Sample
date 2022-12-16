@@ -1,21 +1,3 @@
-/*
- *       Copyright© (2019-2020) WeBank Co., Ltd.
- *
- *       This file is part of weidentity-sample.
- *
- *       weidentity-sample is free software: you can redistribute it and/or modify
- *       it under the terms of the GNU Lesser General Public License as published by
- *       the Free Software Foundation, either version 3 of the License, or
- *       (at your option) any later version.
- *
- *       weidentity-sample is distributed in the hope that it will be useful,
- *       but WITHOUT ANY WARRANTY; without even the implied warranty of
- *       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *       GNU Lesser General Public License for more details.
- *
- *       You should have received a copy of the GNU Lesser General Public License
- *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
- */
 
 package com.webank.weid.demo.command;
 
@@ -24,23 +6,22 @@ import java.util.Map;
 
 import com.webank.weid.constant.CredentialType;
 import com.webank.weid.constant.ProcessingMode;
+import com.webank.weid.kit.crypto.CryptoServiceFactory;
+import com.webank.weid.kit.crypto.params.CryptoType;
 import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.CredentialPojoList;
 import com.webank.weid.protocol.base.EvidenceInfo;
-import com.webank.weid.protocol.base.PublicKeyProperty;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.CredentialPojoService;
-import com.webank.weid.rpc.EvidenceService;
-import com.webank.weid.rpc.WeIdService;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.EvidenceServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
-import com.webank.weid.suite.api.crypto.CryptoServiceFactory;
-import com.webank.weid.suite.api.crypto.params.CryptoType;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.EvidenceService;
+import com.webank.weid.service.rpc.WeIdService;
 
 public class MultiGroupEvidenceSample {
 
@@ -48,7 +29,7 @@ public class MultiGroupEvidenceSample {
 
     static CredentialPojoService credentialPojoService = new CredentialPojoServiceImpl();
 
-    static EvidenceService evidenceService = new EvidenceServiceImpl(ProcessingMode.IMMEDIATE, 2);
+    static EvidenceService evidenceService = new EvidenceServiceImpl(ProcessingMode.IMMEDIATE, "2");
 
     /**
      * Demo过程说明
@@ -76,13 +57,8 @@ public class MultiGroupEvidenceSample {
         // 2. 创建lite Credential
         ResponseData<WeIdDocument> weIdDocumentRes = 
             weidService.getWeIdDocument(createWeId.getWeId());
-        String publicKeyId = null;
-        for (PublicKeyProperty publicKey : weIdDocumentRes.getResult().getPublicKey()) {
-            if (publicKey.getOwner().equals(createWeId.getWeId())) {
-                publicKeyId = publicKey.getId();
-                break;
-            }
-        }
+        String publicKeyId = createWeIdRes.getResult().getUserWeIdPublicKey().getPublicKey();
+
         // 构造WeIdAuthentication
         WeIdAuthentication weIdAuthentication = buildWeIdAuthority(createWeId, publicKeyId);
         CreateCredentialPojoArgs<Map<String, Object>> createArgs = 

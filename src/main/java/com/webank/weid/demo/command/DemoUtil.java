@@ -1,21 +1,3 @@
-/*
- *       Copyright© (2019) WeBank Co., Ltd.
- *
- *       This file is part of weidentity-sample.
- *
- *       weidentity-sample is free software: you can redistribute it and/or modify
- *       it under the terms of the GNU Lesser General Public License as published by
- *       the Free Software Foundation, either version 3 of the License, or
- *       (at your option) any later version.
- *
- *       weidentity-sample is distributed in the hope that it will be useful,
- *       but WITHOUT ANY WARRANTY; without even the implied warranty of
- *       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *       GNU Lesser General Public License for more details.
- *
- *       You should have received a copy of the GNU Lesser General Public License
- *       along with weidentity-sample.  If not, see <https://www.gnu.org/licenses/>.
- */
 
 package com.webank.weid.demo.command;
 
@@ -25,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webank.weid.kit.amop.AmopService;
+import com.webank.weid.kit.amop.AmopServiceImpl;
+import com.webank.weid.kit.protocol.response.ResponseData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +26,6 @@ import com.webank.weid.protocol.base.PolicyAndChallenge;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
-import com.webank.weid.protocol.response.ResponseData;
-import com.webank.weid.rpc.AmopService;
-import com.webank.weid.service.impl.AmopServiceImpl;
 import com.webank.weid.util.DataToolUtils;
 
 /**
@@ -184,7 +166,7 @@ public class DemoUtil {
     private static WeIdAuthentication buildWeIdAuthentication(CreateWeIdDataResult weIdData) {
         WeIdAuthentication weIdAuthentication = new WeIdAuthentication();
         weIdAuthentication.setWeId(weIdData.getWeId());
-        weIdAuthentication.setWeIdPublicKeyId(weIdData.getWeId() + "#keys-0");
+        weIdAuthentication.setAuthenticationMethodId(weIdData.getWeId() + "#keys-0");
         weIdAuthentication.setWeIdPrivateKey(weIdData.getUserWeIdPrivateKey());
         return weIdAuthentication;
     }
@@ -282,7 +264,7 @@ public class DemoUtil {
     ) {
 
         AmopService amopService = new AmopServiceImpl();
-        ResponseData<PolicyAndChallenge> response = 
+        ResponseData<PolicyAndChallenge> response =
             amopService.getPolicyAndChallenge(orgId, policyId, targetWeId);
         
         BaseBean.print("queryPolicyAndChallenge from amop result:");
