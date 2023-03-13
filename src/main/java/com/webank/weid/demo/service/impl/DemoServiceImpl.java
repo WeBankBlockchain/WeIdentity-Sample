@@ -1,38 +1,29 @@
 
 package com.webank.weid.demo.service.impl;
 
-import java.util.Map;
-
-import com.webank.weid.service.rpc.AuthorityIssuerService;
-import com.webank.weid.service.rpc.CptService;
-import com.webank.weid.service.rpc.CredentialPojoService;
-import com.webank.weid.service.rpc.WeIdService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.webank.weid.constant.CredentialType;
 import com.webank.weid.constant.ErrorCode;
 import com.webank.weid.demo.common.util.FileUtil;
 import com.webank.weid.demo.common.util.PrivateKeyUtil;
 import com.webank.weid.demo.service.DemoService;
-import com.webank.weid.protocol.base.AuthorityIssuer;
-import com.webank.weid.protocol.base.CptBaseInfo;
-import com.webank.weid.protocol.base.CredentialPojo;
-import com.webank.weid.protocol.base.WeIdAuthentication;
-import com.webank.weid.protocol.base.WeIdPrivateKey;
-import com.webank.weid.protocol.request.AuthenticationArgs;
-import com.webank.weid.protocol.request.CptMapArgs;
-import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
-import com.webank.weid.protocol.request.CreateWeIdArgs;
-import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
+import com.webank.weid.protocol.base.*;
+import com.webank.weid.protocol.request.*;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.service.impl.AuthorityIssuerServiceImpl;
 import com.webank.weid.service.impl.CptServiceImpl;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.WeIdServiceImpl;
+import com.webank.weid.service.rpc.AuthorityIssuerService;
+import com.webank.weid.service.rpc.CptService;
+import com.webank.weid.service.rpc.CredentialPojoService;
+import com.webank.weid.service.rpc.WeIdService;
 import com.webank.weid.util.DataToolUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * Demo service.
