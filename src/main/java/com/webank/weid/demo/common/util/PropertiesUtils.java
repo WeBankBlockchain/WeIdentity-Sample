@@ -1,6 +1,8 @@
 
 package com.webank.weid.demo.common.util;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -39,14 +41,23 @@ public class PropertiesUtils {
      */
     private static synchronized void loadProps() {
         props = new Properties();
-        InputStream resourceAsStream = PropertiesUtils.class.getClassLoader()
-            .getResourceAsStream(APPLICATION_FILE);
+
+        InputStream resourceAsStream = PropertiesUtils.class.getClassLoader().getResourceAsStream(APPLICATION_FILE);
         try {
             props.load(resourceAsStream);
             logger.info("loadProps finish...");
         } catch (IOException e) {
             logger.error("loadProps error", e);
         }
+        /*
+        try{
+            InputStream resourceAsStream = new FileInputStream("E:\\weid-afee\\WeIdentity-Sample\\resources\\application.properties");
+            props.load(resourceAsStream);
+            logger.info("loadProps finish...");
+        } catch (IOException e) {
+            logger.info(e.getMessage());
+        }
+         */
     }
 
     /**
@@ -83,5 +94,13 @@ public class PropertiesUtils {
      */
     public static String getEncryptType() {
        return getProperty("encrypt.type");
+    }
+
+    /**
+     * get the FISCOBCOS version.
+     * @return fiscoVersion
+     */
+    public static String getFiscoVersion() {
+        return getProperty("bcos.version");
     }
 }
