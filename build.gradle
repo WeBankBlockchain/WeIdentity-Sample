@@ -28,7 +28,7 @@ if (!gradle.startParameter.isOffline()) {
     apply plugin: 'signing'
 }
 
-version = "1.0.11"
+version = "3.0.0"
 def repo ="${repoType}"
 //设置jdk的版本
 sourceCompatibility = 1.8
@@ -59,6 +59,7 @@ def slf4j_version = "1.7.30";
 def jackson_version = "2.11.0";
 def mysql_version = "8.0.20";
 def swagger_version = "2.9.2";
+def netty_version = "4.1.89.Final";
 
 List swagger = [
         "io.springfox:springfox-swagger2:$swagger_version",
@@ -111,8 +112,23 @@ List protobuf = [
         "com.google.protobuf:protobuf-java:3.9.1"
 ]
 
+List netty = [
+        "io.netty:netty-common:$netty_version",
+        "io.netty:netty-codec:$netty_version",
+        "io.netty:netty-buffer:$netty_version",
+        "io.netty:netty-transport:$netty_version",
+        "io.netty:netty-resolver:$netty_version",
+        "io.netty:netty-resolver-dns:$netty_version",
+        "io.netty:netty-handler:$netty_version",
+        "io.netty:netty-all:$netty_version",
+        "io.netty:netty-codec-dns:$netty_version",
+        "io.netty:netty-resolver-dns-native-macos:$netty_version",
+        "io.netty:netty-transport-native-kqueue:$netty_version",
+]
+
 configurations {
     localDeps
+    all*.exclude group: "io.netty", module: "netty-tcnative"
 }
 
 //添加编译时的依赖
@@ -124,10 +140,10 @@ dependencies {
         compile files('./dependencies/weid-java-sdk-pipeline.jar')
     } else {
         println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
-        compile("com.webank:weid-java-sdk:3.0.0-rc.1") {
+        compile("com.webank:weid-java-sdk:3.0.0-rc.2") {
             exclude group:"org.slf4j", module: "slf4j-log4j12"
         }
-        compile("com.webank:weid-kit:3.0.0-rc.1-SNAPSHOT")
+        compile("com.webank:weid-kit:3.0.0-rc.2-SNAPSHOT")
     }
     if (gradleVer.startsWith("4")) {
         if (gradle.startParameter.isOffline()) {
@@ -150,7 +166,7 @@ dependencies {
 				exclude group:"org.apache.logging.log4j"
 			}
             compile fileTree(dir:'libs', include:'*.jar')
-            compile apache_commons, swagger, json, mysql_driver, spring, other, protobuf
+            compile apache_commons, swagger, json, mysql_driver, spring, other, protobuf, netty
         } else {
             compileOnly files('dist/lib/lombok-1.18.12.jar')
             annotationProcessor files('dist/lib/lombok-1.18.12.jar')
