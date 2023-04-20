@@ -189,6 +189,7 @@ javadoc/
 doc/bak/
 /bin/
 /logs/
+/resources/
 
 # for eclipse
 .settings/
