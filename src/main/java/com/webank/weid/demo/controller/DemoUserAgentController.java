@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.webank.weid.demo.service.DemoService;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
-import com.webank.weid.protocol.response.ResponseData;
+import com.webank.weid.blockchain.protocol.response.ResponseData;
 
 /**
  * Demo Controller.
