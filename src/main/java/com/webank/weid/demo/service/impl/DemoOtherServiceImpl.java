@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.webank.weid.constant.ErrorCode;
+import com.webank.weid.blockchain.constant.ErrorCode;
 import com.webank.weid.demo.common.model.CreateCredentialPojoModel;
 import com.webank.weid.demo.common.model.CreateEvidenceModel;
 import com.webank.weid.demo.common.model.CreatePresentationModel;
@@ -42,7 +42,7 @@ import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.inf.Hashable;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
-import com.webank.weid.protocol.response.ResponseData;
+import com.webank.weid.blockchain.protocol.response.ResponseData;
 import com.webank.weid.service.impl.CredentialPojoServiceImpl;
 import com.webank.weid.service.impl.EvidenceServiceImpl;
 import com.webank.weid.util.DataToolUtils;

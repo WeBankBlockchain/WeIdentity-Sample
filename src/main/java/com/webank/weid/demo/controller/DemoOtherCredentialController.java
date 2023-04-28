@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.webank.weid.demo.common.model.VerifyCredentialModel;
 import com.webank.weid.demo.service.DemoOtherService;
-import com.webank.weid.protocol.response.ResponseData;
+import com.webank.weid.blockchain.protocol.response.ResponseData;
 
 /**
  * Demo Controller.
