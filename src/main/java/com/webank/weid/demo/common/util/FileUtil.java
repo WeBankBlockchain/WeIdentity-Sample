@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
+import com.webank.weid.service.local.CptServiceLocal;
+import com.webank.weid.util.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,73 +206,75 @@ public class FileUtil {
             buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "weidentity.properties",
             RESOURCE_DIR,
             "weidentity.properties");
-        loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/amop/consumer_private_key.p12",
-                RESOURCE_DIR + "conf/amop/",
-                "consumer_private_key.p12");
-        loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/amop/consumer_public_key.pem",
-                RESOURCE_DIR + "conf/amop/",
-                "consumer_public_key.pem");
-        String encryptType = PropertiesUtils.getEncryptType();
-        String fiscoVersion = PropertiesUtils.getFiscoVersion();
-        logger.info("the encryptType = {}", encryptType);
-        logger.info("the fiscoVersion = {}", fiscoVersion);
-        if ("1".contentEquals(encryptType) && "2".contentEquals(fiscoVersion)) {
+        if (PropertyUtils.getProperty("deploy.style").equals("blockchain")) {
             loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmca.crt",
-                RESOURCE_DIR + "conf/gm/",
-                "gmca.crt");
+                    buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/amop/consumer_private_key.p12",
+                    RESOURCE_DIR + "conf/amop/",
+                    "consumer_private_key.p12");
             loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmsdk.crt",
-                RESOURCE_DIR + "conf/gm/",
-                "gmsdk.crt");
-            loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmsdk.key",
-                RESOURCE_DIR + "conf/gm/",
-                "gmsdk.key");
-            loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmensdk.crt",
-                RESOURCE_DIR + "conf/gm/",
-                "gmensdk.crt");
-            loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmensdk.key",
-                RESOURCE_DIR + "conf/gm/",
-                "gmensdk.key");
-        } else if("0".contentEquals(encryptType)) {
-            loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sdk.key",
-                RESOURCE_DIR + "conf/",
-                "sdk.key");
-            loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sdk.crt",
-                RESOURCE_DIR + "conf/",
-                "sdk.crt");
-            loadConfig(
-                buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/ca.crt",
-                RESOURCE_DIR + "conf/",
-                "ca.crt");
-        } else {
-            loadConfig(
-                    buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_ca.crt",
-                    RESOURCE_DIR + "conf/",
-                    "sm_ca.crt");
-            loadConfig(
-                    buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_sdk.crt",
-                    RESOURCE_DIR + "conf/",
-                    "sm_sdk.crt");
-            loadConfig(
-                    buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_sdk.key",
-                    RESOURCE_DIR + "conf/",
-                    "sm_sdk.key");
-            loadConfig(
-                    buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_ensdk.crt",
-                    RESOURCE_DIR + "conf/",
-                    "sm_ensdk.crt");
-            loadConfig(
-                    buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_ensdk.key",
-                    RESOURCE_DIR + "conf/",
-                    "sm_ensdk.key");
+                    buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/amop/consumer_public_key.pem",
+                    RESOURCE_DIR + "conf/amop/",
+                    "consumer_public_key.pem");
+            String encryptType = PropertiesUtils.getEncryptType();
+            String fiscoVersion = PropertiesUtils.getFiscoVersion();
+            logger.info("the encryptType = {}", encryptType);
+            logger.info("the fiscoVersion = {}", fiscoVersion);
+            if ("1".contentEquals(encryptType) && "2".contentEquals(fiscoVersion)) {
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmca.crt",
+                        RESOURCE_DIR + "conf/gm/",
+                        "gmca.crt");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmsdk.crt",
+                        RESOURCE_DIR + "conf/gm/",
+                        "gmsdk.crt");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmsdk.key",
+                        RESOURCE_DIR + "conf/gm/",
+                        "gmsdk.key");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmensdk.crt",
+                        RESOURCE_DIR + "conf/gm/",
+                        "gmensdk.crt");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/gm/gmensdk.key",
+                        RESOURCE_DIR + "conf/gm/",
+                        "gmensdk.key");
+            } else if("0".contentEquals(encryptType)) {
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sdk.key",
+                        RESOURCE_DIR + "conf/",
+                        "sdk.key");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sdk.crt",
+                        RESOURCE_DIR + "conf/",
+                        "sdk.crt");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/ca.crt",
+                        RESOURCE_DIR + "conf/",
+                        "ca.crt");
+            } else {
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_ca.crt",
+                        RESOURCE_DIR + "conf/",
+                        "sm_ca.crt");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_sdk.crt",
+                        RESOURCE_DIR + "conf/",
+                        "sm_sdk.crt");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_sdk.key",
+                        RESOURCE_DIR + "conf/",
+                        "sm_sdk.key");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_ensdk.crt",
+                        RESOURCE_DIR + "conf/",
+                        "sm_ensdk.crt");
+                loadConfig(
+                        buildToolHome + SLASH_CHARACTER + BUILD_TOOL_RESOURCE_DIR + "conf/sm_ensdk.key",
+                        RESOURCE_DIR + "conf/",
+                        "sm_ensdk.key");
+            }
         }
         loadConfig(
             buildToolHome + SLASH_CHARACTER + BUILD_TOOL_ADMIN_KEY + "private_key",
