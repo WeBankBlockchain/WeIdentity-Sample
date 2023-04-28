@@ -28,7 +28,7 @@ if (!gradle.startParameter.isOffline()) {
     apply plugin: 'signing'
 }
 
-version = "3.0.0"
+version = "3.1.0"
 def repo ="${repoType}"
 //设置jdk的版本
 sourceCompatibility = 1.8
@@ -140,10 +140,10 @@ dependencies {
         compile files('./dependencies/weid-java-sdk-pipeline.jar')
     } else {
         println "No pipeline jar found for WeIdentity Java SDK, using gradle version.."
-        compile("com.webank:weid-java-sdk:3.1.0-rc.1-SNAPSHOT") {
+        compile("com.webank:weid-java-sdk:3.1.0-rc.1") {
             exclude group:"org.slf4j", module: "slf4j-log4j12"
         }
-        compile("com.webank:weid-kit:3.1.0-rc.1-SNAPSHOT")
+        compile("com.webank:weid-kit:3.1.0-rc.1")
     }
     if (gradleVer.startsWith("4")) {
         if (gradle.startParameter.isOffline()) {
